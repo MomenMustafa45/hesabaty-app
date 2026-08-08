@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  LayoutChangeEvent,
-  Modal,
-  PanResponder,
-  Pressable,
-  View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, LayoutChangeEvent, Modal, Pressable, View } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './BottomSheet.styles';
 
@@ -24,65 +24,67 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, chil
   const theme = useTheme();
   const styles = createStyles(theme);
   const [isMounted, setIsMounted] = useState(visible);
-  const [sheetHeight, setSheetHeight] = useState(SCREEN_HEIGHT);
-  const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const progress = useSharedValue(visible ? 1 : 0);
+  const sheetHeight = useSharedValue(SCREEN_HEIGHT);
 
   useEffect(() => {
     if (visible) {
       setIsMounted(true);
-      Animated.timing(progress, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+      progress.value = withTiming(1, { duration: 300 });
       return;
     }
-    Animated.timing(progress, { toValue: 0, duration: 250, useNativeDriver: true }).start(result => {
-      if (result.finished) {
-        setIsMounted(false);
+    progress.value = withTiming(0, { duration: 250 }, finished => {
+      if (finished) {
+        runOnJS(setIsMounted)(false);
       }
     });
   }, [visible, progress]);
 
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 4,
-        onPanResponderMove: (_, gesture) => {
-          if (gesture.dy <= 0 || sheetHeight === 0) {
-            return;
-          }
-          const nextProgress = Math.min(1, Math.max(0, 1 - gesture.dy / sheetHeight));
-          progress.setValue(nextProgress);
-        },
-        onPanResponderRelease: (_, gesture) => {
-          if (gesture.dy > DISMISS_THRESHOLD) {
-            onClose();
-            return;
-          }
-          Animated.spring(progress, { toValue: 1, useNativeDriver: true }).start();
-        },
-      }),
-    [onClose, progress, sheetHeight],
-  );
+  const panGesture = Gesture.Pan()
+    .activeOffsetY(4)
+    .onUpdate(event => {
+      if (event.translationY <= 0 || sheetHeight.value === 0) {
+        return;
+      }
+      progress.value = Math.min(1, Math.max(0, 1 - event.translationY / sheetHeight.value));
+    })
+    .onEnd(event => {
+      if (event.translationY > DISMISS_THRESHOLD) {
+        runOnJS(onClose)();
+        return;
+      }
+      progress.value = withSpring(1);
+    });
 
   const handleLayout = (event: LayoutChangeEvent) => {
-    setSheetHeight(event.nativeEvent.layout.height);
+    sheetHeight.value = event.nativeEvent.layout.height;
   };
 
-  const translateY = progress.interpolate({ inputRange: [0, 1], outputRange: [sheetHeight, 0] });
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: (1 - progress.value) * sheetHeight.value }],
+  }));
+
+  const backdropAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+  }));
 
   return (
     <Modal visible={isMounted} transparent animationType="none" onRequestClose={onClose}>
-      <View style={{ flex: 1 }}>
+      {/* Modal renders in a separate native window/surface — gesture-handler
+          only intercepts touches within a GestureHandlerRootView on that
+          surface, so it needs its own nested root here, not just the one at
+          the app root. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <Pressable style={{ flex: 1 }} onPress={onClose}>
-          <Animated.View style={[styles.backdrop, { opacity: progress }]} />
+          <Animated.View style={[styles.backdrop, backdropAnimatedStyle]} />
         </Pressable>
-        <Animated.View
-          style={[styles.sheet, { transform: [{ translateY }] }]}
-          onLayout={handleLayout}>
-          <View {...panResponder.panHandlers}>
+        <Animated.View style={[styles.sheet, sheetAnimatedStyle]} onLayout={handleLayout}>
+          <GestureDetector gesture={panGesture}>
             <View style={styles.handle} />
-          </View>
+          </GestureDetector>
           <View style={styles.body}>{children}</View>
         </Animated.View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   );
 };

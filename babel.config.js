@@ -22,5 +22,7 @@ module.exports = {
         },
       },
     ],
+    // Must stay last — react-native-worklets/plugin requirement.
+    'react-native-worklets/plugin',
   ],
 };

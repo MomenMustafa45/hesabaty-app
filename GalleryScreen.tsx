@@ -6,7 +6,7 @@
  * Not part of Section 2's real navigation — delete once M1 is verified.
  */
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import AppBadge from '@components/AppBadge';
 import AppButton from '@components/AppButton';
 import AppCard from '@components/AppCard';
@@ -20,6 +20,7 @@ import EmptyState from '@components/EmptyState';
 import { categoryColors, Theme, ThemeMode } from '@config/theme';
 import { ThemeProvider, useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './GalleryScreen.styles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ALL_ICON_NAMES: AppIconName[] = [
   'home',
@@ -60,10 +61,10 @@ const Section: React.FC<SectionProps> = ({ label, styles, children }) => (
   </View>
 );
 
-const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = ({
-  mode,
-  onToggleMode,
-}) => {
+const GalleryContent: React.FC<{
+  mode: ThemeMode;
+  onToggleMode: () => void;
+}> = ({ mode, onToggleMode }) => {
   const theme: Theme = useTheme();
   const styles = createStyles(theme);
   const [selectedChip, setSelectedChip] = useState('food');
@@ -81,16 +82,19 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
             fullWidth={false}
             style={styles.themeToggleButton}
             onPress={onToggleMode}
-            leadingIcon={<AppIcon name={mode === 'light' ? 'moon' : 'sun'} size={16} />}>
+            leadingIcon={
+              <AppIcon name={mode === 'light' ? 'moon' : 'sun'} size={16} />
+            }
+          >
             {mode === 'light' ? 'Dark' : 'Light'}
           </AppButton>
         </View>
 
         <View style={styles.rtlNote}>
           <AppText variant="muted" color="goldText">
-            RTL is not live-toggleable this milestone — it requires I18nManager.forceRTL +
-            app restart (M10). Verify mirroring manually by setting the simulator language to
-            Arabic and relaunching.
+            RTL is not live-toggleable this milestone — it requires
+            I18nManager.forceRTL + app restart (M10). Verify mirroring manually
+            by setting the simulator language to Arabic and relaunching.
           </AppText>
         </View>
 
@@ -112,7 +116,10 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
             <AppButton variant="primary" disabled>
               Disabled primary
             </AppButton>
-            <AppButton variant="primary" leadingIcon={<AppIcon name="plus" size={16} color="#fff" />}>
+            <AppButton
+              variant="primary"
+              leadingIcon={<AppIcon name="plus" size={16} color="#fff" />}
+            >
               With leading icon
             </AppButton>
           </View>
@@ -121,7 +128,9 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
         <Section label="Card" styles={styles}>
           <AppCard>
             <AppText variant="h3">Card title</AppText>
-            <AppText variant="muted">sand2 background, line border, 18px radius/padding.</AppText>
+            <AppText variant="muted">
+              sand2 background, line border, 18px radius/padding.
+            </AppText>
           </AppCard>
         </Section>
 
@@ -142,15 +151,18 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
 
         <Section label="Chips" styles={styles}>
           <View style={styles.row}>
-            {(['food', 'transport', 'entertainment', 'other'] as const).map(category => (
-              <AppChip
-                key={category}
-                selected={selectedChip === category}
-                dotColor={categoryColors[category]}
-                onPress={() => setSelectedChip(category)}>
-                {category}
-              </AppChip>
-            ))}
+            {(['food', 'transport', 'entertainment', 'other'] as const).map(
+              category => (
+                <AppChip
+                  key={category}
+                  selected={selectedChip === category}
+                  dotColor={categoryColors[category]}
+                  onPress={() => setSelectedChip(category)}
+                >
+                  {category}
+                </AppChip>
+              ),
+            )}
           </View>
         </Section>
 
@@ -199,11 +211,15 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
         </Section>
       </ScrollView>
 
-      <BottomSheet visible={isSheetVisible} onClose={() => setIsSheetVisible(false)}>
+      <BottomSheet
+        visible={isSheetVisible}
+        onClose={() => setIsSheetVisible(false)}
+      >
         <View style={styles.sheetContent}>
           <AppText variant="h3">Bottom sheet</AppText>
           <AppText variant="muted">
-            26px top radius, drag the handle down or tap the backdrop to dismiss.
+            26px top radius, drag the handle down or tap the backdrop to
+            dismiss.
           </AppText>
           <AppButton variant="primary" onPress={() => setIsSheetVisible(false)}>
             Close
@@ -216,7 +232,8 @@ const GalleryContent: React.FC<{ mode: ThemeMode; onToggleMode: () => void }> = 
 
 export const GalleryScreen: React.FC = () => {
   const [mode, setMode] = useState<ThemeMode>('light');
-  const handleToggleMode = () => setMode(current => (current === 'light' ? 'dark' : 'light'));
+  const handleToggleMode = () =>
+    setMode(current => (current === 'light' ? 'dark' : 'light'));
 
   return (
     <ThemeProvider modeOverride={mode}>

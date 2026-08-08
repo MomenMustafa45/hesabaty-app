@@ -8,14 +8,20 @@
  * @format
  */
 import React from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GalleryScreen from './GalleryScreen';
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaProvider>
-      <GalleryScreen />
-    </SafeAreaProvider>
+    // TODO(M2): this wraps the temporary gallery root only. When real
+    // navigation (RootNavigator/AppProviders) replaces GalleryScreen, move
+    // this GestureHandlerRootView to wrap the permanent app root instead.
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <GalleryScreen />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
