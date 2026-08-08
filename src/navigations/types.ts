@@ -1,4 +1,5 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
+import { CycleType } from '@models/settings';
 
 export type AppTabParamList = {
   Home: undefined;
@@ -7,7 +8,20 @@ export type AppTabParamList = {
   Settings: undefined;
 };
 
+export type OnboardingStackParamList = {
+  Welcome: undefined;
+  CurrencyStep: undefined;
+  CycleAndLimitStep: { currency: string };
+  NotificationPermissionStep: {
+    currency: string;
+    monthlyLimit: number;
+    cycleType: CycleType;
+    cycleStartDay: number | null;
+  };
+};
+
 export type RootStackParamList = {
+  Onboarding: NavigatorScreenParams<OnboardingStackParamList>;
   AppTabs: NavigatorScreenParams<AppTabParamList>;
   AddTransactionSheet: undefined;
 };

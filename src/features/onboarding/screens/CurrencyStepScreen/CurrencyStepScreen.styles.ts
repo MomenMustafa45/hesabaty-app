@@ -1,0 +1,33 @@
+import { StyleSheet } from 'react-native';
+import { Theme } from '@config/theme';
+
+export const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: theme.colors.sand,
+      paddingHorizontal: 24,
+      paddingBottom: 32,
+    },
+    content: {
+      flex: 1,
+      paddingTop: 12,
+      gap: 8,
+    },
+    subtitle: {
+      marginBottom: 8,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: 10,
+      marginTop: 16,
+    },
+    backButton: {
+      width: 'auto',
+      paddingHorizontal: 20,
+      flexGrow: 0,
+    },
+    continueButton: {
+      flex: 1,
+    },
+  });
