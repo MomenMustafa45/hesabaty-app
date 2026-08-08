@@ -6,28 +6,33 @@
 
 ## 1. Foundational stack (locked)
 
-| Concern           | Choice                                                                                                                                                                                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Framework         | React Native CLI (bare, no Expo), new architecture                                                                                                                                                                                                            |
-| Language          | TypeScript                                                                                                                                                                                                                                                    |
-| Package manager   | bun                                                                                                                                                                                                                                                           |
-| Local database    | `@op-engineering/op-sqlite`                                                                                                                                                                                                                                   |
-| Key-value storage | MMKV (settings, preferences — mirrors the reference project's pattern). `react-native-mmkv@4.x` is Nitro Modules-based and requires `react-native-nitro-modules` as a peer dependency — surfaced by Cursor during M0, approved, now part of the locked stack. |
-| Client state      | Zustand (settings/app state)                                                                                                                                                                                                                                  |
-| Async data layer  | React Query — wraps local SQLite reads/writes too, not just network calls, giving loading/refetch semantics for free even with no backend                                                                                                                     |
-| Navigation        | React Navigation — native bottom tabs via `createNativeBottomTabNavigator` from `@react-navigation/bottom-tabs/unstable`                                                                                                                                      |
-| i18n              | i18next + react-i18next + react-native-localize; RTL handled via `I18nManager` + full app restart on language change (native RTL cannot flip live like the HTML prototype does)                                                                               |
-| Theming           | `ThemeProvider` resolving light/dark from system `Appearance` + MMKV-persisted override                                                                                                                                                                       |
-| Notifications     | TBD — sub-step 8                                                                                                                                                                                                                                              |
-| App identity      | Internal/technical name `Hasabaty`; on-device display name `حساباتي`; bundle ID / application ID `com.hasabaty.app` (iOS + Android)                                                                                                                           |
+| Concern               | Choice                                                                                                                                                                                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework             | React Native CLI (bare, no Expo), new architecture                                                                                                                                                                                                            |
+| Language              | TypeScript                                                                                                                                                                                                                                                    |
+| Package manager       | bun                                                                                                                                                                                                                                                           |
+| Local database        | `@op-engineering/op-sqlite`                                                                                                                                                                                                                                   |
+| Key-value storage     | MMKV (settings, preferences — mirrors the reference project's pattern). `react-native-mmkv@4.x` is Nitro Modules-based and requires `react-native-nitro-modules` as a peer dependency — surfaced by Cursor during M0, approved, now part of the locked stack. |
+| Client state          | Zustand (settings/app state)                                                                                                                                                                                                                                  |
+| Async data layer      | React Query — wraps local SQLite reads/writes too, not just network calls, giving loading/refetch semantics for free even with no backend                                                                                                                     |
+| Navigation            | React Navigation — native bottom tabs via `createNativeBottomTabNavigator` from `@react-navigation/bottom-tabs/unstable`                                                                                                                                      |
+| i18n                  | i18next + react-i18next + react-native-localize; RTL handled via `I18nManager` + full app restart on language change (native RTL cannot flip live like the HTML prototype does)                                                                               |
+| App restart (for RTL) | `react-native-restart` — triggers a fast in-app reload after `I18nManager.forceRTL()` so the new layout direction actually takes effect                                                                                                                       |
+| Theming               | `ThemeProvider` resolving light/dark from system `Appearance` + MMKV-persisted override                                                                                                                                                                       |
+| Notifications         | TBD — sub-step 8                                                                                                                                                                                                                                              |
+| App identity          | Internal/technical name `Hasabaty`; on-device display name `حساباتي`; bundle ID / application ID `com.hasabaty.app` (iOS + Android)                                                                                                                           |
 
 **Known risk flagged for Cursor:** the native bottom tabs API is genuinely unstable as the name says — as of now there's an open Android bug where returning from a screen outside the tab navigator can blank out tab content, and an iOS label-positioning glitch on first render. Test the "tab → screen outside tabs → back" flow early, not at the end. Tab bar icons must be image assets (native constraint) — everywhere else in the app, our hand-drawn SVG icon set carries over directly.
+
+**RTL implementation, precisely (for M10):** React Native has no `direction` style prop equivalent to HTML's `dir` attribute — the real mechanism is `I18nManager`. On language change: `i18n.changeLanguage(lang)` → persist the choice to MMKV → `I18nManager.allowRTL(isArabic)` + `I18nManager.forceRTL(isArabic)` → `RNRestart.restart()`. On every cold start, read the persisted language and call `I18nManager.forceRTL()` again _before_ the root component mounts (same pattern as the reference project's `i18n.ts` init) so direction is correct from launch, not only after a manual switch.
 
 ---
 
 ## 2. Folder structure
 
 Feature-first, matching the reference project's conventions exactly — no new patterns invented.
+
+**Every component and screen, without exception, lives in its own folder** — never a flat `Name.tsx` file sitting directly in a parent directory. Each folder holds the same triple as the reference project: `Name.tsx`, `Name.styles.ts` (a `createStyles(theme)` factory, not static `StyleSheet.create` used directly), and `index.ts` re-exporting it. Example: `src/components/AppText/{AppText.tsx, AppText.styles.ts, index.ts}` — not `src/components/AppText.tsx`. This applies everywhere the folder tree below shows a bare component/screen name — read each one as its own folder.
 
 ```
 src/
@@ -181,14 +186,16 @@ Font family: **Cairo** (Google Font — needs `.ttf` files added to `src/assets/
 
 ### 6.4 Spacing & radius
 
-| Token          | Value     | Used for                         |
-| -------------- | --------- | -------------------------------- |
-| `radius`       | 18px      | Cards, sheets (top corners)      |
-| `radiusSm`     | 12px      | Buttons, inputs, chips-container |
-| Card padding   | 18px      |                                  |
-| Button padding | 15px 18px |                                  |
-| Input padding  | 13px 14px |                                  |
-| Chip padding   | 9px 14px  |                                  |
+| Token          | Value                | Used for                                                                                                                      |
+| -------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `radius`       | 18px                 | Cards, sheets (top corners)                                                                                                   |
+| `radiusSm`     | 12px                 | Buttons, inputs, chips-container                                                                                              |
+| Card padding   | 18px                 |                                                                                                                               |
+| Button padding | 15px 18px            |                                                                                                                               |
+| Input padding  | 13px 14px            |                                                                                                                               |
+| Chip padding   | 9px 14px             |                                                                                                                               |
+| `sheetRadius`  | 26px                 | Bottom-sheet top corners only — distinct from `radius`, caught during M1 cross-checking against the prototype's `.sheet` rule |
+| `overlay`      | `rgba(20,20,18,.42)` | Sheet/modal backdrop — same in both themes, not a light/dark token                                                            |
 
 ### 6.5 Category colors (fixed — not theme-dependent, same in light/dark)
 

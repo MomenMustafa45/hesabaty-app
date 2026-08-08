@@ -9,21 +9,33 @@
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-Hasabaty.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Hasabaty.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		15BAF5E842D8C191E592357D /* Cairo-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0DA6E37BC83CD06942E7C556 /* Cairo-Medium.ttf */; };
+		1A4846AB0C462DD8B7025FDC /* Cairo-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 86F20FC41335BF0C156881A0 /* Cairo-Light.ttf */; };
 		3C3999988B1B45C53A9C349D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9917FB20C18847EF6BC3422D /* Cairo-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 63F4AFB49564F926DEE1ACFC /* Cairo-Bold.ttf */; };
+		AB68FB8FD62B5AE99E78CDA3 /* Cairo-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1DCBEE4EA583F6D78E2D8CD6 /* Cairo-Regular.ttf */; };
+		BE8D6EA664CC5DE42AD03552 /* Cairo-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A71C7EE2963AF631C30E674F /* Cairo-ExtraBold.ttf */; };
+		E545E15F576FDB6E8D6B205D /* Cairo-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E99BC7DEDCC9C37536F77EA2 /* Cairo-SemiBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0DA6E37BC83CD06942E7C556 /* Cairo-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-Medium.ttf"; path = "Hasabaty/Fonts/Cairo-Medium.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Hasabaty.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hasabaty.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Hasabaty/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Hasabaty/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Hasabaty/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1DCBEE4EA583F6D78E2D8CD6 /* Cairo-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-Regular.ttf"; path = "Hasabaty/Fonts/Cairo-Regular.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Hasabaty.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hasabaty.debug.xcconfig"; path = "Target Support Files/Pods-Hasabaty/Pods-Hasabaty.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Hasabaty.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hasabaty.release.xcconfig"; path = "Target Support Files/Pods-Hasabaty/Pods-Hasabaty.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Hasabaty.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Hasabaty.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		63F4AFB49564F926DEE1ACFC /* Cairo-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-Bold.ttf"; path = "Hasabaty/Fonts/Cairo-Bold.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Hasabaty/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Hasabaty/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		86F20FC41335BF0C156881A0 /* Cairo-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-Light.ttf"; path = "Hasabaty/Fonts/Cairo-Light.ttf"; sourceTree = "<group>"; };
+		A71C7EE2963AF631C30E674F /* Cairo-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-ExtraBold.ttf"; path = "Hasabaty/Fonts/Cairo-ExtraBold.ttf"; sourceTree = "<group>"; };
+		E99BC7DEDCC9C37536F77EA2 /* Cairo-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Cairo-SemiBold.ttf"; path = "Hasabaty/Fonts/Cairo-SemiBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -47,6 +59,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				AC87A96DB336B9B44006B980 /* Fonts */,
 			);
 			name = Hasabaty;
 			sourceTree = "<group>";
@@ -87,6 +100,19 @@
 				13B07F961A680F5B00A75B9A /* Hasabaty.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AC87A96DB336B9B44006B980 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				63F4AFB49564F926DEE1ACFC /* Cairo-Bold.ttf */,
+				A71C7EE2963AF631C30E674F /* Cairo-ExtraBold.ttf */,
+				86F20FC41335BF0C156881A0 /* Cairo-Light.ttf */,
+				0DA6E37BC83CD06942E7C556 /* Cairo-Medium.ttf */,
+				1DCBEE4EA583F6D78E2D8CD6 /* Cairo-Regular.ttf */,
+				E99BC7DEDCC9C37536F77EA2 /* Cairo-SemiBold.ttf */,
+			);
+			name = Fonts;
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -161,6 +187,12 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3C3999988B1B45C53A9C349D /* PrivacyInfo.xcprivacy in Resources */,
+				9917FB20C18847EF6BC3422D /* Cairo-Bold.ttf in Resources */,
+				BE8D6EA664CC5DE42AD03552 /* Cairo-ExtraBold.ttf in Resources */,
+				1A4846AB0C462DD8B7025FDC /* Cairo-Light.ttf in Resources */,
+				15BAF5E842D8C191E592357D /* Cairo-Medium.ttf in Resources */,
+				AB68FB8FD62B5AE99E78CDA3 /* Cairo-Regular.ttf in Resources */,
+				E545E15F576FDB6E8D6B205D /* Cairo-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
