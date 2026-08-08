@@ -6,6 +6,7 @@ import AddTransactionSheet from '@features/transactions/screens/AddTransactionSh
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
 import { AppNavigator } from './AppNavigator';
+import { buildRootOnboardingInitialState } from './onboardingResumeState';
 import { OnboardingNavigator } from './OnboardingNavigator';
 import { RootStackParamList } from './types';
 
@@ -14,6 +15,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator: React.FC = () => {
   const theme = useTheme();
   const onboarded = useSettingsStore(state => state.onboarded);
+  const onboardingDraft = useSettingsStore(state => state.onboardingDraft);
   const [hasHydrated, setHasHydrated] = useState(
     useSettingsStore.persist.hasHydrated(),
   );
@@ -30,8 +32,12 @@ export const RootNavigator: React.FC = () => {
     return <View style={{ flex: 1, backgroundColor: theme.colors.sand }} />;
   }
 
+  const navigationInitialState = onboarded
+    ? undefined
+    : buildRootOnboardingInitialState(onboardingDraft);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer initialState={navigationInitialState}>
       <Stack.Navigator
         key={onboarded ? 'main' : 'onboarding'}
         screenOptions={{ headerShown: false }}>
