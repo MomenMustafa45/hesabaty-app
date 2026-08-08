@@ -7,7 +7,6 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       gap: 6,
       justifyContent: 'center',
-      marginBottom: 22,
     },
     dot: {
       width: 6,

@@ -1,1 +1,25 @@
-{}
+{
+  "appName": "حساباتي",
+  "welcome": "Welcome to",
+  "welcomeSub": "Track what you spend, what you earn, and stay inside your monthly limit — all on your device.",
+  "getStarted": "Get started",
+  "currencyTitle": "Choose your currency",
+  "currencySub": "This is how amounts will be shown across the app.",
+  "searchCurrency": "Search currencies",
+  "continueBtn": "Continue",
+  "back": "Back",
+  "cycleTitle": "Set your monthly limit",
+  "cycleSub": "Choose how your month is tracked and how much you want to spend.",
+  "calendarMonth": "Calendar month",
+  "calendarMonthSub": "Resets on the 1st of every month",
+  "customCycle": "Custom cycle",
+  "customCycleSub": "Resets on a day you choose — e.g. salary day",
+  "startDay": "Cycle start day",
+  "monthlyLimit": "Monthly spending limit",
+  "notifTitle": "Stay on track",
+  "notifSub": "We can remind you if you go quiet, and warn you before you hit your limit. You can change this anytime in Settings.",
+  "enableReminders": "Enable reminders",
+  "skipForNow": "Skip for now",
+  "langEn": "EN",
+  "langAr": "AR"
+}

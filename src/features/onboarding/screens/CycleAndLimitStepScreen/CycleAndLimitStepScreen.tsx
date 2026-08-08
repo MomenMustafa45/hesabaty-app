@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppButton from '@components/AppButton';
 import AppChip from '@components/AppChip';
 import AppIcon from '@components/AppIcon';
 import AppInput from '@components/AppInput';
 import AppText from '@components/AppText';
+import OnboardingLanguageSwitcher from '@features/onboarding/components/OnboardingLanguageSwitcher';
 import OnboardingStepDots from '@features/onboarding/components/OnboardingStepDots';
+import { localizationKeys } from '@locales/localizationKeys';
 import { CycleType } from '@models/settings';
 import { OnboardingStackParamList } from '@navigations/types';
 import { useTheme } from '@providers/ThemeProvider';
+import {
+  createDefaultOnboardingDraft,
+  useSettingsStore,
+} from '@store/settingsStore';
 import { createStyles } from './CycleAndLimitStepScreen.styles';
 
 type Props = NativeStackScreenProps<
@@ -32,20 +39,87 @@ export const CycleAndLimitStepScreen: React.FC<Props> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
+  const onboardingDraft = useSettingsStore(state => state.onboardingDraft);
+  const setOnboardingDraft = useSettingsStore(state => state.setOnboardingDraft);
   const { currency } = route.params;
-  const [cycleType, setCycleType] = useState<CycleType>('calendar');
-  const [cycleStartDay, setCycleStartDay] = useState('1');
-  const [draftLimit, setDraftLimit] = useState('6000');
+  const [cycleType, setCycleType] = useState<CycleType>(
+    onboardingDraft?.cycleType ?? 'calendar',
+  );
+  const [cycleStartDay, setCycleStartDay] = useState(
+    String(onboardingDraft?.cycleStartDay ?? 1),
+  );
+  const [draftLimit, setDraftLimit] = useState(
+    onboardingDraft?.draftLimitMajor ?? '6000',
+  );
+
+  const parsedStartDay = Math.max(
+    1,
+    Math.min(28, Number(cycleStartDay) || 1),
+  );
+
+  const draft = useMemo(
+    () => ({
+      ...(onboardingDraft ?? createDefaultOnboardingDraft()),
+      step: 'CycleAndLimitStep' as const,
+      currency,
+      cycleType,
+      cycleStartDay: cycleType === 'custom' ? parsedStartDay : null,
+      draftLimitMajor: draftLimit,
+    }),
+    [
+      onboardingDraft,
+      currency,
+      cycleType,
+      parsedStartDay,
+      draftLimit,
+    ],
+  );
 
   const cycleHint =
     cycleType === 'calendar'
-      ? 'Resets on the 1st of every month'
-      : 'Resets on a day you choose — e.g. salary day';
+      ? t(localizationKeys.calendarMonthSub)
+      : t(localizationKeys.customCycleSub);
 
   const minorLimit = majorUnitsToMinorUnits(draftLimit);
   const canContinue = minorLimit !== null;
 
+  const persistDraft = (next: typeof draft) => {
+    setOnboardingDraft(next);
+  };
+
+  const handleCycleTypeChange = (next: CycleType) => {
+    setCycleType(next);
+    persistDraft({
+      ...draft,
+      cycleType: next,
+      cycleStartDay: next === 'custom' ? parsedStartDay : null,
+    });
+  };
+
+  const handleStartDayChange = (value: string) => {
+    setCycleStartDay(value);
+    const day = Math.max(1, Math.min(28, Number(value) || 1));
+    persistDraft({
+      ...draft,
+      cycleStartDay: cycleType === 'custom' ? day : null,
+      draftLimitMajor: draftLimit,
+    });
+  };
+
+  const handleLimitChange = (value: string) => {
+    setDraftLimit(value);
+    persistDraft({
+      ...draft,
+      draftLimitMajor: value,
+    });
+  };
+
   const handleBack = () => {
+    setOnboardingDraft({
+      ...draft,
+      step: 'CurrencyStep',
+    });
     navigation.goBack();
   };
 
@@ -53,10 +127,10 @@ export const CycleAndLimitStepScreen: React.FC<Props> = ({
     if (minorLimit === null) {
       return;
     }
-    const parsedStartDay = Math.max(
-      1,
-      Math.min(28, Number(cycleStartDay) || 1),
-    );
+    setOnboardingDraft({
+      ...draft,
+      step: 'NotificationPermissionStep',
+    });
     navigation.navigate('NotificationPermissionStep', {
       currency,
       monthlyLimit: minorLimit,
@@ -67,23 +141,28 @@ export const CycleAndLimitStepScreen: React.FC<Props> = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      <OnboardingStepDots step={3} />
+      <View style={styles.topBar}>
+        <OnboardingStepDots step={3} />
+        <View style={styles.langSlot}>
+          <OnboardingLanguageSwitcher draft={draft} />
+        </View>
+      </View>
       <View style={styles.content}>
-        <AppText variant="h2">Set your monthly limit</AppText>
+        <AppText variant="h2">{t(localizationKeys.cycleTitle)}</AppText>
         <AppText variant="muted" style={styles.subtitle}>
-          Choose how your month is tracked and how much you want to spend.
+          {t(localizationKeys.cycleSub)}
         </AppText>
 
         <View style={styles.chipsRow}>
           <AppChip
             selected={cycleType === 'calendar'}
-            onPress={() => setCycleType('calendar')}>
-            Calendar month
+            onPress={() => handleCycleTypeChange('calendar')}>
+            {t(localizationKeys.calendarMonth)}
           </AppChip>
           <AppChip
             selected={cycleType === 'custom'}
-            onPress={() => setCycleType('custom')}>
-            Custom cycle
+            onPress={() => handleCycleTypeChange('custom')}>
+            {t(localizationKeys.customCycle)}
           </AppChip>
         </View>
         <AppText variant="tiny" style={styles.chipHint}>
@@ -92,19 +171,19 @@ export const CycleAndLimitStepScreen: React.FC<Props> = ({
 
         {cycleType === 'custom' ? (
           <AppInput
-            label="Cycle start day"
+            label={t(localizationKeys.startDay)}
             type="number"
             value={cycleStartDay}
-            onChangeText={setCycleStartDay}
+            onChangeText={handleStartDayChange}
             keyboardType="number-pad"
           />
         ) : null}
 
         <AppInput
-          label={`Monthly spending limit (${currency})`}
+          label={`${t(localizationKeys.monthlyLimit)} (${currency})`}
           type="number"
           value={draftLimit}
-          onChangeText={setDraftLimit}
+          onChangeText={handleLimitChange}
           keyboardType="decimal-pad"
         />
       </View>
@@ -114,15 +193,17 @@ export const CycleAndLimitStepScreen: React.FC<Props> = ({
           fullWidth={false}
           style={styles.backButton}
           onPress={handleBack}
-          leadingIcon={<AppIcon name="chevronLeft" size={18} color={theme.colors.ink} />}>
-          Back
+          leadingIcon={
+            <AppIcon name="chevronLeft" size={18} color={theme.colors.ink} />
+          }>
+          {t(localizationKeys.back)}
         </AppButton>
         <AppButton
           variant="primary"
           style={styles.continueButton}
           disabled={!canContinue}
           onPress={handleContinue}>
-          Continue
+          {t(localizationKeys.continueBtn)}
         </AppButton>
       </View>
     </SafeAreaView>

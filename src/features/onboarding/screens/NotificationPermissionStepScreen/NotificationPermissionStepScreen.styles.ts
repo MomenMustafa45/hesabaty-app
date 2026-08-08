@@ -9,6 +9,18 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: 24,
       paddingBottom: 32,
     },
+    topBar: {
+      position: 'relative',
+      minHeight: 36,
+      justifyContent: 'center',
+      marginBottom: 22,
+    },
+    langSlot: {
+      position: 'absolute',
+      end: 0,
+      top: 0,
+      zIndex: 1,
+    },
     body: {
       flex: 1,
       alignItems: 'center',
