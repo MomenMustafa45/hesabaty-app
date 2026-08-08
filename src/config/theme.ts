@@ -107,6 +107,13 @@ export const spacing = {
 
 export const overlay = 'rgba(20,20,18,.42)';
 
+/** SpendRing inner-ring strokes — same in light/dark (always on nile card). */
+export const ringColors = {
+  ringSafe: '#FFFFFF',
+  ringWarn: '#F4C15A',
+  ringDanger: '#FF6B57',
+} as const;
+
 export type CategoryColorKey =
   | 'electricity'
   | 'water'
@@ -148,6 +155,7 @@ export interface Theme {
   radii: typeof radii;
   spacing: typeof spacing;
   overlay: string;
+  ringColors: typeof ringColors;
   categoryColors: typeof categoryColors;
 }
 
@@ -160,6 +168,7 @@ export function getTheme(mode: ThemeMode): Theme {
     radii,
     spacing,
     overlay,
+    ringColors,
     categoryColors,
   };
 }

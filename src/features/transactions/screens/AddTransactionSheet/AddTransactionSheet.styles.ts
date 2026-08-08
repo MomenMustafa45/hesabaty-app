@@ -3,13 +3,42 @@ import { Theme } from '@config/theme';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: theme.colors.sand,
-      padding: theme.spacing.cardPadding,
-      gap: 16,
+    head: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingBottom: 6,
+      marginBottom: 8,
     },
-    closeButton: {
-      marginTop: 24,
+    headSpacer: {
+      width: 34,
+    },
+    closeBtn: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.colors.sand2,
+      borderWidth: 1,
+      borderColor: theme.colors.line,
+    },
+    field: {
+      marginTop: 12,
+      gap: 8,
+    },
+    fieldLabel: {
+      marginBottom: 2,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: 10,
+      marginTop: 14,
+    },
+    actionFlex: {
+      flex: 1,
+    },
+    deleteGhost: {
+      borderColor: theme.colors.coralLight,
     },
   });

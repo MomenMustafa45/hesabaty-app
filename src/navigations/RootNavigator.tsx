@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AddTransactionSheet from '@features/transactions/screens/AddTransactionSheet';
+import { TransactionSheetHost } from '@features/transactions/components/TransactionSheetHost';
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
 import { AppNavigator } from './AppNavigator';
@@ -38,22 +38,18 @@ export const RootNavigator: React.FC = () => {
 
   return (
     <NavigationContainer initialState={navigationInitialState}>
-      <Stack.Navigator
-        key={onboarded ? 'main' : 'onboarding'}
-        screenOptions={{ headerShown: false }}>
-        {onboarded ? (
-          <>
+      <>
+        <Stack.Navigator
+          key={onboarded ? 'main' : 'onboarding'}
+          screenOptions={{ headerShown: false }}>
+          {onboarded ? (
             <Stack.Screen name="AppTabs" component={AppNavigator} />
-            <Stack.Screen
-              name="AddTransactionSheet"
-              component={AddTransactionSheet}
-              options={{ presentation: 'modal' }}
-            />
-          </>
-        ) : (
-          <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
-        )}
-      </Stack.Navigator>
+          ) : (
+            <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+          )}
+        </Stack.Navigator>
+        {onboarded ? <TransactionSheetHost /> : null}
+      </>
     </NavigationContainer>
   );
 };

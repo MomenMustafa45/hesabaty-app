@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, PressableProps, StyleProp, Text, View, ViewStyle } from 'react-native';
+import { ColorTokens } from '@config/theme';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppButton.styles';
 
@@ -8,6 +9,8 @@ export interface AppButtonProps extends Omit<PressableProps, 'style'> {
   fullWidth?: boolean;
   disabled?: boolean;
   leadingIcon?: React.ReactNode;
+  /** Optional label color token override (e.g. coral for destructive ghost). */
+  labelColor?: keyof ColorTokens;
   children?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
 }
@@ -17,6 +20,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
   fullWidth = true,
   disabled = false,
   leadingIcon,
+  labelColor,
   children,
   style,
   ...rest
@@ -38,7 +42,12 @@ export const AppButton: React.FC<AppButtonProps> = ({
       ]}
       {...rest}>
       {leadingIcon ? <View>{leadingIcon}</View> : null}
-      <Text style={[styles.label, isPrimary ? styles.primaryLabel : styles.ghostLabel]}>
+      <Text
+        style={[
+          styles.label,
+          isPrimary ? styles.primaryLabel : styles.ghostLabel,
+          labelColor ? { color: theme.colors[labelColor] } : null,
+        ]}>
         {children}
       </Text>
     </Pressable>

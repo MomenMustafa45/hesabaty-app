@@ -23,7 +23,6 @@ export type OnboardingStackParamList = {
 export type RootStackParamList = {
   Onboarding: NavigatorScreenParams<OnboardingStackParamList>;
   AppTabs: NavigatorScreenParams<AppTabParamList>;
-  AddTransactionSheet: undefined;
 };
 
 declare global {

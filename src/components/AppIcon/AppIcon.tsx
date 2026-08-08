@@ -14,6 +14,8 @@ export type AppIconName =
   | 'chevronRight'
   | 'chevronForward'
   | 'chevronDown'
+  | 'chevDown'
+  | 'chevUp'
   | 'bell'
   | 'wallet'
   | 'globe'
@@ -31,6 +33,17 @@ export interface AppIconProps {
   size?: number;
   color?: string;
 }
+
+const renderChevronDown = (color: string): React.ReactNode => (
+  <Path
+    d="M6 9l6 6 6-6"
+    stroke={color}
+    strokeWidth={1.8}
+    fill="none"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+);
 
 const iconRenderers: Record<AppIconName, (color: string) => React.ReactNode> = {
   home: color => (
@@ -109,9 +122,12 @@ const iconRenderers: Record<AppIconName, (color: string) => React.ReactNode> = {
       strokeLinejoin="round"
     />
   ),
-  chevronDown: color => (
+  chevronDown: renderChevronDown,
+  /** Architecture §7 / §10.3 — same glyph as `chevronDown`. */
+  chevDown: renderChevronDown,
+  chevUp: color => (
     <Path
-      d="M6 9l6 6 6-6"
+      d="M6 15l6-6 6 6"
       stroke={color}
       strokeWidth={1.8}
       fill="none"
