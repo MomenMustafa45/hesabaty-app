@@ -41,8 +41,7 @@ export function applyRtlForLanguage(language: AppLanguage): void {
   I18nManager.forceRTL(isRtl);
 }
 
-const bootstrapLanguage =
-  readPersistedLanguage() ?? resolveDeviceLanguage();
+const bootstrapLanguage = readPersistedLanguage() ?? resolveDeviceLanguage();
 
 export function getBootstrapLanguage(): AppLanguage {
   return bootstrapLanguage;
