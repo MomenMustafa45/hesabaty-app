@@ -6,7 +6,7 @@ module.exports = {
     '^@navigations/(.*)$': '<rootDir>/src/navigations/$1',
     '^@lib/(.*)$': '<rootDir>/src/lib/$1',
     '^@config/(.*)$': '<rootDir>/src/config/$1',
-    '^@types/(.*)$': '<rootDir>/src/types/$1',
+    '^@models/(.*)$': '<rootDir>/src/types/$1',
     '^@assets/(.*)$': '<rootDir>/src/assets/$1',
     '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
     '^@store/(.*)$': '<rootDir>/src/store/$1',
