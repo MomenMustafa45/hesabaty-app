@@ -2,20 +2,19 @@
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
     "types": ["jest"],
-    "baseUrl": ".",
     "paths": {
-      "@components/*": ["src/components/*"],
-      "@features/*": ["src/features/*"],
-      "@navigations/*": ["src/navigations/*"],
-      "@lib/*": ["src/lib/*"],
-      "@config/*": ["src/config/*"],
-      "@types/*": ["src/types/*"],
-      "@assets/*": ["src/assets/*"],
-      "@hooks/*": ["src/hooks/*"],
-      "@store/*": ["src/store/*"],
-      "@providers/*": ["src/providers/*"],
-      "@storage/*": ["src/storage/*"],
-      "@locales/*": ["src/locales/*"]
+      "@components/*": ["./src/components/*"],
+      "@features/*": ["./src/features/*"],
+      "@navigations/*": ["./src/navigations/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@config/*": ["./src/config/*"],
+      "@types/*": ["./src/types/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@store/*": ["./src/store/*"],
+      "@providers/*": ["./src/providers/*"],
+      "@storage/*": ["./src/storage/*"],
+      "@locales/*": ["./src/locales/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
