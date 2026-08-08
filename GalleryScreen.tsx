@@ -11,6 +11,7 @@ import AppBadge from '@components/AppBadge';
 import AppButton from '@components/AppButton';
 import AppCard from '@components/AppCard';
 import AppChip from '@components/AppChip';
+import AppDate from '@components/AppDate';
 import AppIcon, { AppIconName } from '@components/AppIcon';
 import AppInput from '@components/AppInput';
 import AppText from '@components/AppText';
@@ -71,6 +72,8 @@ const GalleryContent: React.FC<{
   const [isToggleOn, setIsToggleOn] = useState(true);
   const [isSheetVisible, setIsSheetVisible] = useState(false);
   const [amount, setAmount] = useState('');
+  const [dateValue, setDateValue] = useState(new Date());
+  const [timeValue, setTimeValue] = useState(new Date());
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -144,8 +147,13 @@ const GalleryContent: React.FC<{
               value={amount}
               onChangeText={setAmount}
             />
-            <AppInput label="Date" type="date" placeholder="2026-08-08" />
-            <AppInput label="Time" type="time" placeholder="13:04" />
+          </View>
+        </Section>
+
+        <Section label="Date & time" styles={styles}>
+          <View style={styles.column}>
+            <AppDate label="Date" mode="date" value={dateValue} onChange={setDateValue} />
+            <AppDate label="Time" mode="time" value={timeValue} onChange={setTimeValue} />
           </View>
         </Section>
 

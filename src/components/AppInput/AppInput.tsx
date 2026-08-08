@@ -3,7 +3,7 @@ import { Text, TextInput, TextInputProps, View } from 'react-native';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppInput.styles';
 
-export type AppInputType = 'text' | 'number' | 'date' | 'time';
+export type AppInputType = 'text' | 'number';
 
 export interface AppInputProps extends Omit<TextInputProps, 'style'> {
   type?: AppInputType;
@@ -14,8 +14,6 @@ export interface AppInputProps extends Omit<TextInputProps, 'style'> {
 const keyboardTypeByInputType: Record<AppInputType, TextInputProps['keyboardType']> = {
   text: 'default',
   number: 'numeric',
-  date: 'default',
-  time: 'default',
 };
 
 export const AppInput: React.FC<AppInputProps> = ({
