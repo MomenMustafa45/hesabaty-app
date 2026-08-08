@@ -52,6 +52,10 @@ src/
       components/        CategoryChips, AmountInput, RepeatToggle
       api/               transactionsApi.ts, transactionsQueryKeys.ts
       hooks/             useTransactions, useAddTransaction, useUpdateTransaction, useDeleteTransaction
+    categories/
+      api/               categoriesApi.ts, categoriesQueryKeys.ts (read-layer only — used by
+                          transactions, history, insights, settings; management UI stays in settings/)
+      hooks/             useCategories
     history/
       screens/           HistoryScreen, MonthPickerSheet
       hooks/             useMonthTransactions
@@ -85,18 +89,59 @@ src/
 ## 3. Path aliases
 
 The reference project's existing alias set already covers حساباتي one-for-one — no new aliases needed:
-`@components`, `@features`, `@navigations`, `@lib`, `@config`, `@types`, `@assets`, `@hooks`, `@store`, `@providers`, `@storage`, `@locales`.
+`@components`, `@features`, `@navigations`, `@lib`, `@config`, `@models` (maps to `src/types/` — renamed from `@types` because TypeScript reserves `@types/*` for DefinitelyTyped packages), `@assets`, `@hooks`, `@store`, `@providers`, `@storage`, `@locales`.
 
 Same rule applies as the reference doc states: `babel.config.js`, `tsconfig.json` (`paths`), and `jest.config.js` (`moduleNameMapper`) must all stay in sync whenever this list changes.
 
-## 4. Data model (preview — finalized in the data-layer sub-step)
+## 4. Data model
 
-Two SQLite tables, not stored in MMKV, since they're relational and user-editable:
+Two SQLite tables via `@op-engineering/op-sqlite`. Settings (currency, monthly limit, cycle type/start day, onboarded flag, notification prefs, theme/language preference) live in Zustand + MMKV, not here — they're single-row config, not relational data.
 
-- **`transactions`** — id, type, category_id, amount, description, date, recurring, created_at, updated_at
-- **`categories`** — id, type, label_en, label_ar, color, is_default, sort_order (seeded with our default set on first run)
+### 4.1 `transactions`
 
-Settings (currency, monthly limit, cycle type/start day, onboarded flag, notification prefs, theme/language preference) live in Zustand + MMKV, not SQLite — they're single-row config, not relational data.
+| Column        | Type               | Notes                                                                                                                                                                                                                                    |
+| ------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | `TEXT PRIMARY KEY` | UUID, not autoincrement — locked back in Step 1 so the schema is sync-ready if cloud backup happens later. Generation method is Cursor's call; verify what's actually available/compatible in this RN/Hermes setup before picking one.   |
+| `type`        | `TEXT`             | `'expense'` \| `'income'`                                                                                                                                                                                                                |
+| `category_id` | `TEXT`             | FK → `categories.id`                                                                                                                                                                                                                     |
+| `amount`      | `INTEGER`          | **Minor units (piastres), not a float.** Storing money as `REAL` risks floating-point rounding errors — standard practice for financial data is integer minor-units, divided by 100 only at display time. 50.00 EGP is stored as `5000`. |
+| `description` | `TEXT`             | nullable                                                                                                                                                                                                                                 |
+| `date`        | `TEXT`             | ISO date `YYYY-MM-DD`, matching the prototype's convention                                                                                                                                                                               |
+| `recurring`   | `INTEGER`          | 0/1 boolean                                                                                                                                                                                                                              |
+| `created_at`  | `TEXT`             | ISO timestamp                                                                                                                                                                                                                            |
+| `updated_at`  | `TEXT`             | ISO timestamp                                                                                                                                                                                                                            |
+
+Indexes on `date`, `category_id`, and `type` — Home/History/Insights all filter by date range and category constantly.
+
+### 4.2 `categories`
+
+| Column       | Type               | Notes                                                                                                                                                                                                  |
+| ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`         | `TEXT PRIMARY KEY` | Default categories use fixed semantic slugs (`electricity`, `food`, ...) matching Section 6.5 and the seed data below. User-added custom categories get a generated UUID, same policy as transactions. |
+| `type`       | `TEXT`             | `'expense'` \| `'income'`                                                                                                                                                                              |
+| `label_en`   | `TEXT`             |                                                                                                                                                                                                        |
+| `label_ar`   | `TEXT`             |                                                                                                                                                                                                        |
+| `color`      | `TEXT`             | hex, matches Section 6.5                                                                                                                                                                               |
+| `is_default` | `INTEGER`          | 0/1 — protects the last-remaining default category from deletion, matching the prototype's rule                                                                                                        |
+| `sort_order` | `INTEGER`          |                                                                                                                                                                                                        |
+
+### 4.3 Seed data (insert on first run, exact values from the prototype)
+
+**Expense:** `electricity` (`#C89B3C`, Electricity / الكهرباء), `water` (`#3B8AD4`, Water / المياه), `food` (`#D2472E`, Food / الطعام), `transport` (`#7C6FE0`, Transport / المواصلات), `rent` (`#5B6B73`, Rent / الإيجار), `phone` (`#0B6B57`, Phone/Internet / الهاتف والإنترنت), `shopping` (`#D4527E`, Shopping / التسوق), `health` (`#C23B3B`, Health / الصحة), `entertainment` (`#9455C9`, Entertainment / الترفيه), `other` (`#8A8880`, Other / أخرى).
+
+**Income:** `salary` (`#0B6B57`, Salary / الراتب), `freelance` (`#3B8AD4`, Freelance / عمل حر), `gift` (`#D4527E`, Gift / هدية), `other_income` (`#8A8880`, Other income / دخل آخر).
+
+### 4.4 Migrations
+
+`op-sqlite` has no built-in migration framework — it's a low-level driver, not an ORM. Use a simple versioned approach: numbered SQL migration files run in sequence, tracked via SQLite's own `PRAGMA user_version`, applied once on app startup. This isn't optional scaffolding — the schema _will_ change across later milestones (recurring-transaction handling, export/import), so a real migration path from day one avoids a painful retrofit.
+
+### 4.5 React Query layer
+
+Matches the reference project's pattern exactly, just pointed at local SQLite instead of a network call: `features/transactions/api/transactionsApi.ts` (raw `op-sqlite` queries), `transactionsQueryKeys.ts` (centralized keys), and `hooks/` wrapping each as `useTransactions` (query) plus `useAddTransaction`/`useUpdateTransaction`/`useDeleteTransaction` (mutations, invalidating the relevant query keys on success).
+
+**First prompt to give Cursor (Milestone 3):**
+
+> Read Section 4 of `hasabaty-architecture.md` fully. Build the SQLite schema and migration system exactly as specified — integer minor-units for `amount`, not floats; UUID text primary keys; the versioned-migration approach via `PRAGMA user_version`, not direct table creation with no upgrade path. Seed the exact default categories from 4.3 on first run. Then build the React Query layer per 4.5. Add a temporary debug screen (same throwaway pattern as M1's gallery, clearly marked for deletion) listing raw rows from both tables so we can verify the schema and seed data actually work before any real screen depends on it. Before writing code, confirm your approach for UUID generation (what's actually compatible with this RN/Hermes setup) and tell me your plan. Same rigor as every milestone — verify on both platforms, show me actual proof, not just a written claim.
 
 ---
 

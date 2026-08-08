@@ -1,5 +1,8 @@
 import React from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { queryClient } from '@lib/queryClient';
+import '@lib/db';
 import { ThemeProvider } from './ThemeProvider';
 
 export interface AppProvidersProps {
@@ -8,7 +11,9 @@ export interface AppProvidersProps {
 
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => (
   <SafeAreaProvider>
-    <ThemeProvider>{children}</ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </QueryClientProvider>
   </SafeAreaProvider>
 );
 

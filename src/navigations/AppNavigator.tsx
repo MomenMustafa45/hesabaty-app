@@ -1,10 +1,12 @@
 import React from 'react';
 import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 import HistoryScreen from '@features/history/screens/HistoryScreen';
-import HomeScreen from '@features/home/screens/HomeScreen';
 import InsightsScreen from '@features/insights/screens/InsightsScreen';
 import SettingsScreen from '@features/settings/screens/SettingsScreen';
 import { useTheme } from '@providers/ThemeProvider';
+// TODO(M3 verify): temporary — restore HomeScreen import and swap the Home
+// tab component back once DebugDataScreen verification is done.
+import DebugDataScreen from '../../DebugDataScreen';
 import { tabBarIcons } from './tabBarIcons';
 import { AppTabParamList } from './types';
 
@@ -22,7 +24,7 @@ export const AppNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={DebugDataScreen}
         options={{ tabBarIcon: tabBarIcons.home }}
       />
       <Tab.Screen
