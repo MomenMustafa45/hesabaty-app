@@ -3,6 +3,9 @@ import { Theme } from '@config/theme';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
+    root: {
+      flex: 1,
+    },
     backdrop: {
       position: 'absolute',
       top: 0,
@@ -30,9 +33,13 @@ export const createStyles = (theme: Theme) =>
       marginTop: 10,
       marginBottom: 4,
     },
+    scroll: {
+      flexGrow: 0,
+    },
     body: {
       paddingHorizontal: 20,
       paddingTop: 6,
       paddingBottom: 28,
+      gap: 12,
     },
   });

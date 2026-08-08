@@ -329,3 +329,24 @@ Onboarding is a first-impression, one-time flow — getting stuck in the wrong l
 **First prompt to give Cursor (Milestone 4):**
 
 > Read Section 8 fully, plus the onboarding screen names already locked in Section 1 (`WelcomeScreen`, `CurrencyStepScreen`, `CycleAndLimitStepScreen`, `NotificationPermissionStepScreen`). Build `settingsStore.ts` per 8.1, wire the real onboarding flow using `AppText`/`AppButton`/`AppInput`/`AppChip` from the design system — no new UI patterns invented. Currency step uses the exact list in 8.2. Confirm `react-native-notify-kit`'s current compatibility with RN 0.86.2/new architecture before using it for the permission step per 8.3. On completion, set `onboarded: true` and navigate into the real tab navigator (replacing whatever `DebugDataScreen` is currently sitting on Home — this is also the moment to do that swap-back). Tell me your plan before writing code, same as every milestone.
+
+---
+
+## 9. Keyboard handling — resolve before M5
+
+Not yet addressed anywhere in this doc, and M5 (`AddTransactionSheet`: amount, description, date, all inside a sheet) is about to be the most keyboard-heavy screen in the app. Fix this now, at the component level, not per-screen later.
+
+**Highest-risk spot:** `BottomSheet` renders inside RN's `Modal` — a separate native surface, same category of problem we already hit with gesture-handler needing its own nested root inside the Modal. Keyboard-avoidance has a similar reputation for behaving inconsistently inside `Modal`. Don't assume it works; verify it explicitly, same rigor as the gesture-handler-in-Modal fix.
+
+**Two real approaches to investigate, not one assumed:**
+
+1. Native OS-level handling (`android:windowSoftInputMode="adjustResize"` in `AndroidManifest.xml` + RN's built-in `KeyboardAvoidingView` with platform-appropriate `behavior` — typically `'padding'` on iOS) — the traditional approach, but with known platform-inconsistency quirks.
+2. `react-native-keyboard-controller` — more robust, Reanimated-powered keyboard handling with smoother cross-platform behavior. We already have `react-native-reanimated` installed from the `BottomSheet` migration, so this pairs naturally if it's compatible.
+
+**Scope:** fix `BottomSheet` itself first (internal to the component, so `AddTransactionSheet` and any future sheet inherit it for free), then verify the same behavior is correct wherever `AppInput`/`AppDate` are used outside a sheet too — onboarding's `CycleAndLimitStepScreen` already has live number inputs built in M4 and should be checked, not assumed fine.
+
+**Decision (locked):** `react-native-keyboard-controller` — chosen over native `KeyboardAvoidingView`/`adjustResize` specifically because Section 9's failure mode is Modal + multi-input sheet, and the library has documented, Modal-aware APIs (`automaticOffset`, `KeyboardAwareScrollView`) plus resolved Fabric/Modal focus-event issues, rather than inherited platform-inconsistency quirks. Verify with real screenshots on **both platforms independently** — don't let one platform's pass stand in for the other, this exact asymmetry has bitten us before (`AppDate`'s picker UI, `BottomSheet`'s gesture registration).
+
+**First prompt to give Cursor:**
+
+> Read Section 9. Investigate both keyboard-handling approaches for RN 0.86.2/new architecture, specifically how each behaves with inputs inside `BottomSheet`'s `Modal` — don't assume either works cleanly inside a Modal, verify it. Recommend one with reasoning, confirm compatibility if it's `react-native-keyboard-controller` (new dependency, needs approval same as everything else). Fix `BottomSheet` internally first, then check `CycleAndLimitStepScreen`'s existing inputs from M4 aren't already exhibiting a keyboard-covering-the-input bug. Show me an actual screenshot/recording of a text input inside an open `BottomSheet` with the keyboard up, not just a written claim it works. Tell me your plan before writing code.

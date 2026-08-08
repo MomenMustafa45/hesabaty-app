@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, LayoutChangeEvent, Modal, Pressable, View } from 'react-native';
+import {
+  Dimensions,
+  LayoutChangeEvent,
+  Modal,
+  Pressable,
+  View,
+} from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {
+  KeyboardAwareScrollView,
+  useReanimatedKeyboardAnimation,
+} from 'react-native-keyboard-controller';
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -20,12 +30,17 @@ export interface BottomSheetProps {
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const DISMISS_THRESHOLD = 100;
 
-export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, children }) => {
+export const BottomSheet: React.FC<BottomSheetProps> = ({
+  visible,
+  onClose,
+  children,
+}) => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const [isMounted, setIsMounted] = useState(visible);
   const progress = useSharedValue(visible ? 1 : 0);
   const sheetHeight = useSharedValue(SCREEN_HEIGHT);
+  const { height: keyboardHeight } = useReanimatedKeyboardAnimation();
 
   useEffect(() => {
     if (visible) {
@@ -46,7 +61,10 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, chil
       if (event.translationY <= 0 || sheetHeight.value === 0) {
         return;
       }
-      progress.value = Math.min(1, Math.max(0, 1 - event.translationY / sheetHeight.value));
+      progress.value = Math.min(
+        1,
+        Math.max(0, 1 - event.translationY / sheetHeight.value),
+      );
     })
     .onEnd(event => {
       if (event.translationY > DISMISS_THRESHOLD) {
@@ -60,8 +78,15 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, chil
     sheetHeight.value = event.nativeEvent.layout.height;
   };
 
+  // keyboardHeight is 0 when closed and negative (-keyboard px) when open,
+  // so adding it lifts the absolute-bottom sheet above the keyboard.
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: (1 - progress.value) * sheetHeight.value }],
+    transform: [
+      {
+        translateY:
+          (1 - progress.value) * sheetHeight.value + keyboardHeight.value,
+      },
+    ],
   }));
 
   const backdropAnimatedStyle = useAnimatedStyle(() => ({
@@ -69,20 +94,33 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, chil
   }));
 
   return (
-    <Modal visible={isMounted} transparent animationType="none" onRequestClose={onClose}>
+    <Modal
+      visible={isMounted}
+      transparent
+      animationType="none"
+      onRequestClose={onClose}>
       {/* Modal renders in a separate native window/surface — gesture-handler
           only intercepts touches within a GestureHandlerRootView on that
           surface, so it needs its own nested root here, not just the one at
           the app root. */}
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Pressable style={{ flex: 1 }} onPress={onClose}>
+      <GestureHandlerRootView style={styles.root}>
+        <Pressable style={styles.root} onPress={onClose}>
           <Animated.View style={[styles.backdrop, backdropAnimatedStyle]} />
         </Pressable>
-        <Animated.View style={[styles.sheet, sheetAnimatedStyle]} onLayout={handleLayout}>
+        <Animated.View
+          style={[styles.sheet, sheetAnimatedStyle]}
+          onLayout={handleLayout}>
           <GestureDetector gesture={panGesture}>
             <View style={styles.handle} />
           </GestureDetector>
-          <View style={styles.body}>{children}</View>
+          <KeyboardAwareScrollView
+            bottomOffset={24}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+            style={styles.scroll}
+            contentContainerStyle={styles.body}>
+            {children}
+          </KeyboardAwareScrollView>
         </Animated.View>
       </GestureHandlerRootView>
     </Modal>
