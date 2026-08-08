@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساباتي — prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nile:#0B6B57; --nile-dark:#084F41; --nile-light:#E3F0EB;
+    --gold:#C89B3C; --gold-light:#F6ECD3; --gold-text:#8a6a1f;
+    --coral:#D2472E; --coral-light:#FBE7E2;
+    --sand:#F5F3EE; --sand2:#FFFFFF;
+    --ink:#211E1A; --ink2:#75706A; --ink3:#A8A39B;
+    --line:#E7E2D8; --glass:rgba(255,255,255,.94);
+    --radius:18px; --radius-sm:12px;
+    color-scheme:light;
+  }
+  html[data-theme="dark"]{
+    --nile:#1C9E80; --nile-dark:#127A63; --nile-light:rgba(28,158,128,.18);
+    --gold:#D9AE55; --gold-light:rgba(217,174,85,.16); --gold-text:#F0D18C;
+    --coral:#E4573C; --coral-light:rgba(228,87,60,.16);
+    --sand:#16181B; --sand2:#1F2226;
+    --ink:#F1EEE7; --ink2:#9C978F; --ink3:#6B675F;
+    --line:#2C2F33; --glass:rgba(24,26,29,.86);
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Cairo',sans-serif;
+    background:#14171A;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:48px 20px;
+  }
+  .stage{display:flex; flex-direction:column; align-items:center; gap:18px;}
+  .stage-label{color:#6B7176; font-size:13px; letter-spacing:.04em;}
+  .phone{
+    width:390px; height:844px;
+    background:#0A0C0D;
+    border-radius:54px;
+    padding:14px;
+    box-shadow:0 40px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+    position:relative;
+  }
+  .screen{
+    width:100%; height:100%;
+    background:var(--sand);
+    border-radius:40px;
+    overflow:hidden;
+    position:relative;
+    display:flex; flex-direction:column;
+    color:var(--ink);
+  }
+  .statusbar{
+    height:46px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 30px; font-size:14px; font-weight:600; color:var(--ink);
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .content{flex:1; overflow-y:auto; padding:0 20px 110px; -webkit-overflow-scrolling:touch;}
+  .content::-webkit-scrollbar{display:none;}
+
+  h1{font-size:22px; font-weight:700;}
+  h2{font-size:18px; font-weight:700;}
+  h3{font-size:15px; font-weight:600;}
+  .muted{color:var(--ink2); font-size:13px;}
+  .tiny{font-size:11px; color:var(--ink3);}
+
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:var(--radius-sm); font-family:inherit;
+    font-size:15px; font-weight:600; cursor:pointer; padding:15px 18px;
+    width:100%;
+  }
+  .btn-primary{background:var(--nile); color:#fff;}
+  .btn-primary:active{background:var(--nile-dark);}
+  .btn-ghost{background:transparent; color:var(--ink2); border:1px solid var(--line);}
+  .btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  .card{background:var(--sand2); border:1px solid var(--line); border-radius:var(--radius); padding:18px;}
+  .row{display:flex; align-items:center; justify-content:space-between;}
+
+  /* Onboarding */
+  .onb{height:100%; display:flex; flex-direction:column; padding:0 24px 32px; text-align:center;}
+  .onb-body{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;}
+  .onb-mark{
+    width:76px; height:76px; border-radius:22px; background:var(--nile);
+    display:flex; align-items:center; justify-content:center; color:#fff;
+  }
+  .dots{display:flex; gap:6px; justify-content:center; margin-bottom:22px;}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--line);}
+  .dot.active{background:var(--nile); width:18px; border-radius:4px;}
+  .field{text-align:start; margin-bottom:16px;}
+  .field label{display:block; font-size:12px; font-weight:600; color:var(--ink2); margin-bottom:8px;}
+  .input{
+    width:100%; border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:13px 14px; font-family:inherit; font-size:15px; background:var(--sand2); color:var(--ink);
+  }
+  .input:focus{outline:none; border-color:var(--nile);}
+  .search-input{width:100%; border:1px solid var(--line); border-radius:999px; padding:11px 16px; font-family:inherit; font-size:14px; margin-bottom:10px; background:var(--sand2); color:var(--ink);}
+  .list-pick{max-height:340px; overflow-y:auto; border:1px solid var(--line); border-radius:var(--radius-sm);}
+  .list-pick-item{display:flex; align-items:center; justify-content:space-between; padding:13px 14px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .list-pick-item:last-child{border-bottom:none;}
+  .list-pick-item:active{background:var(--sand);}
+  .list-pick-item.selected{background:var(--nile-light);}
+  .cur-code{font-weight:700; font-size:13px; color:var(--nile); width:44px;}
+
+  .seg{display:flex; background:var(--sand); border-radius:999px; padding:4px; border:1px solid var(--line);}
+  .seg button{flex:1; border:none; background:transparent; padding:11px; border-radius:999px; font-family:inherit; font-weight:600; font-size:13px; color:var(--ink2); cursor:pointer;}
+  .seg button.active{background:var(--sand2); color:var(--ink); box-shadow:0 2px 6px rgba(0,0,0,.08);}
+
+  .radio-row{display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:var(--radius-sm); padding:13px 14px; margin-bottom:10px; cursor:pointer;}
+  .radio-row.selected{border-color:var(--nile); background:var(--nile-light);}
+  .radio-dot{width:18px; height:18px; border-radius:50%; border:2px solid var(--line); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .radio-row.selected .radio-dot{border-color:var(--nile);}
+  .radio-row.selected .radio-dot::after{content:''; width:9px; height:9px; border-radius:50%; background:var(--nile);}
+
+  /* App shell */
+  .app-header{padding:10px 0 16px; display:flex; align-items:center; justify-content:space-between;}
+  .app-header .greet .tiny{margin-bottom:2px;}
+  .icon-btn{width:38px; height:38px; border-radius:50%; background:var(--sand2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+
+  .banner{background:var(--gold-light); border:1px solid var(--gold); border-radius:var(--radius-sm); padding:12px 14px; font-size:12.5px; margin-bottom:16px; display:flex; justify-content:space-between; gap:10px; align-items:flex-start;}
+  .banner button{border:none; background:transparent; color:var(--ink2); cursor:pointer; font-size:16px; line-height:1;}
+
+  /* Rings */
+  .ring-card{background:var(--nile); border-radius:var(--radius); padding:22px; color:#fff; margin-bottom:14px; position:relative; overflow:hidden;}
+  .ring-wrap{display:flex; align-items:center; gap:18px;}
+  .ring-figures{flex:1;}
+  .ring-figures .big{font-size:26px; font-weight:700; line-height:1.15;}
+  .ring-figures .cap{font-size:12px; opacity:.75; margin-top:2px;}
+  .ring-legend{display:flex; gap:14px; margin-top:14px;}
+  .ring-legend div{display:flex; align-items:center; gap:6px; font-size:11px; opacity:.85;}
+  .swatch{width:8px; height:8px; border-radius:2px;}
+
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;}
+  .stat-card{background:var(--sand2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px;}
+  .stat-card .v{font-size:18px; font-weight:700; margin-top:2px;}
+  .stat-card.income .v{color:var(--nile);}
+  .stat-card.expense .v{color:var(--coral);}
+
+  .section-head{display:flex; align-items:center; justify-content:space-between; margin:6px 0 10px;}
+  .section-head a{font-size:12.5px; color:var(--nile); font-weight:600; cursor:pointer;}
+
+  .txn-row{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer;}
+  .txn-row:last-child{border-bottom:none;}
+  .cat-dot{width:38px; height:38px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:700;}
+  .txn-mid{flex:1; min-width:0;}
+  .txn-mid .t{font-size:14px; font-weight:600;}
+  .txn-mid .s{font-size:12px; color:var(--ink2); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .txn-amt{font-size:14px; font-weight:700; flex-shrink:0;}
+  .txn-amt.expense{color:var(--coral);}
+  .txn-amt.income{color:var(--nile);}
+  .empty{text-align:center; padding:50px 10px; color:var(--ink2);}
+  .empty .em-mark{width:56px; height:56px; border-radius:16px; background:var(--sand2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+
+  /* Bottom nav */
+  .bottomnav{
+    position:absolute; left:0; right:0; bottom:0;
+    background:var(--glass); backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:flex; padding:10px 8px 22px;
+    z-index:60;
+  }
+  .navitem{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; color:var(--ink3); border:none; background:transparent; font-family:inherit;}
+  .navitem.active{color:var(--nile);}
+  .navitem span{font-size:10.5px; font-weight:600;}
+  .fab{
+    position:absolute; z-index:70; bottom:92px;
+    width:56px; height:56px; border-radius:50%;
+    background:var(--gold); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 10px 22px rgba(200,155,60,.45); cursor:pointer;
+  }
+  html[dir="ltr"] .fab{right:20px;}
+  html[dir="rtl"] .fab{left:20px;}
+
+  /* Sheet */
+  .backdrop{position:absolute; inset:0; background:rgba(20,20,18,.42); opacity:0; pointer-events:none; transition:opacity .25s; z-index:90;}
+  .backdrop.open{opacity:1; pointer-events:auto;}
+  .sheet{
+    position:absolute; left:0; right:0; bottom:0; max-height:88%;
+    background:var(--sand2); border-radius:26px 26px 0 0;
+    transform:translateY(100%); transition:transform .3s cubic-bezier(.32,.72,0,1);
+    z-index:95; display:flex; flex-direction:column;
+  }
+  .sheet.open{transform:translateY(0);}
+  .sheet-handle{width:36px; height:4px; background:var(--line); border-radius:4px; margin:10px auto 4px;}
+  .sheet-head{display:flex; align-items:center; justify-content:space-between; padding:10px 20px 6px;}
+  .sheet-body{overflow-y:auto; padding:6px 20px 28px;}
+  .chip-row{display:flex; gap:8px; overflow-x:auto; padding:4px 0 6px;}
+  .chip-row::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0; display:flex; align-items:center; gap:6px; padding:9px 14px; border-radius:999px;
+    border:1px solid var(--line); font-size:13px; font-weight:600; cursor:pointer; background:var(--sand2); white-space:nowrap;
+  }
+  .chip.selected{border-color:var(--nile); background:var(--nile); color:#fff;}
+  .chip .dot{width:8px; height:8px; border-radius:50%;}
+  .amount-input{width:100%; border:none; font-family:inherit; font-size:38px; font-weight:700; text-align:center; background:transparent; color:var(--ink);}
+  .amount-input:focus{outline:none;}
+  .amount-wrap{text-align:center; padding:14px 0 6px;}
+  .amount-cur{color:var(--ink2); font-size:14px; font-weight:600;}
+  .toggle{width:44px; height:26px; border-radius:999px; background:var(--line); position:relative; cursor:pointer; flex-shrink:0; transition:background .2s;}
+  .toggle.on{background:var(--nile);}
+  .toggle .knob{position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .toggle.on .knob{transform:translateX(18px);}
+  html[dir="rtl"] .toggle.on .knob{transform:translateX(-18px);}
+  .check-row{display:flex; align-items:center; justify-content:space-between; padding:12px 0;}
+
+  /* Settings */
+  .set-row{display:flex; align-items:center; justify-content:space-between; padding:15px 4px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .set-row:last-child{border-bottom:none;}
+  .set-row .l{display:flex; align-items:center; gap:12px;}
+  .set-ico{width:36px; height:36px; border-radius:10px; background:var(--nile-light); color:var(--nile); display:flex; align-items:center; justify-content:center;}
+  .subhead{padding:20px 4px 20px; display:flex; align-items:center; gap:12px;}
+  .back-btn{width:34px; height:34px; border-radius:50%; background:var(--sand2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+
+  .catmanage-row{display:flex; align-items:center; justify-content:space-between; padding:12px 4px; border-bottom:1px solid var(--line);}
+  .catmanage-row .l{display:flex; align-items:center; gap:12px;}
+  .x-btn{width:26px; height:26px; border-radius:50%; background:var(--coral-light); color:var(--coral); border:none; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .add-cat-row{display:flex; gap:8px; margin-top:14px;}
+  .add-cat-row .input{flex:1;}
+
+  .best-toggle{display:flex; gap:8px; margin-bottom:16px;}
+  .best-toggle button{flex:1; border:1px solid var(--line); background:var(--sand2); padding:10px; border-radius:var(--radius-sm); font-family:inherit; font-size:12.5px; font-weight:600; color:var(--ink2); cursor:pointer;}
+  .best-toggle button.active{border-color:var(--gold); background:var(--gold-light); color:var(--gold-text);}
+  .month-bar-row{display:flex; align-items:flex-end; gap:10px;}
+  .legend-row{display:flex; align-items:center; justify-content:space-between; padding:9px 0;}
+  .legend-l{display:flex; align-items:center; gap:9px;}
+
+  svg{display:block;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="stage-label">حساباتي — clickable mobile prototype</div>
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div id="app"></div>
+    </div>
+  </div>
+  <div class="stage-label">Tap around freely — this is a UX prototype, not the final build. Data resets on page reload.</div>
+</div>
+
+<script>
+/* ---------- i18n ---------- */
+const STR = {
+  en: {
+    appName:'حساباتي', welcome:'Welcome to', welcomeSub:'Track what you spend, what you earn, and stay inside your monthly limit — all on your device.',
+    getStarted:'Get started', currencyTitle:'Choose your currency', currencySub:'This is how amounts will be shown across the app.',
+    searchCurrency:'Search currencies', continueBtn:'Continue', back:'Back',
+    cycleTitle:'Set your monthly limit', cycleSub:'Choose how your month is tracked and how much you want to spend.',
+    calendarMonth:'Calendar month', calendarMonthSub:'Resets on the 1st of every month',
+    customCycle:'Custom cycle', customCycleSub:'Resets on a day you choose — e.g. salary day',
+    startDay:'Cycle start day', monthlyLimit:'Monthly spending limit', finish:'Finish setup',
+    notifTitle:'Stay on track', notifSub:'We can remind you if you go quiet, and warn you before you hit your limit. You can change this anytime in Settings.',
+    enableReminders:'Enable reminders', skipForNow:'Skip for now',
+    home:'Home', history:'History', insights:'Insights', settings:'Settings',
+    hi:'Welcome back', spent:'spent', ofLimit:'of your limit', cycleElapsed:'of cycle elapsed',
+    income:'Income', netBalance:'Net balance', recent:'Recent', seeAll:'See all',
+    noTxnsTitle:'Nothing logged yet', noTxnsSub:'Tap the + button to add your first transaction.',
+    demoBanner:'Sample data added so you can try History and Insights right away.',
+    addTxn:'Add transaction', editTxn:'Edit transaction', expense:'Expense', incomeTab:'Income',
+    category:'Category', addCategory:'Add', description:'Description', descriptionPh:'Add a note (optional)',
+    date:'Date', repeatMonthly:'Repeat monthly', repeatSub:'Auto-fills this category & amount next cycle',
+    save:'Save', cancel:'Cancel', delete:'Delete', newCategoryPh:'New category name',
+    prevMonth:'Previous month', nextMonth:'Next month', totalSpent:'Total spent', totalIncome:'Total income',
+    monthlyTrend:'Monthly trend', byCategory:'By category', bestMonth:'Best month', lowestSpend:'Lowest spend', highestSavings:'Highest savings',
+    saved:'saved', completedOnly:'Based on completed months only',
+    settingsTitle:'Settings', currency:'Currency', budgetCycle:'Budget cycle & limit', categories:'Categories',
+    notifications:'Notifications', language:'Language', about:'About', aboutBody:'Your data is stored only on this device. Nothing is uploaded, and no account is required.',
+    manageCategories:'Manage categories', dailyReminder:'Daily reminder', dailyReminderSub:'Nudge me if I haven\'t logged anything today',
+    reminderTime:'Reminder time', limitWarnings:'Limit warnings', limitWarningsSub:'Warn me at ~80% and 100% of my limit',
+    monthlyReport:'Monthly report', monthlyReportSub:'Remind me once a month to check my report',
+    preview:'Preview', previewLimitTxt:'You\'ve used 82% of your August limit', previewReportTxt:'Your July report is ready to view',
+    editLimit:'Edit budget cycle & limit', selectCurrency:'Select currency', done:'Done',
+    selectMonthTitle:'Select a month', currentMonth:'Jump to current month', bestBadge:'Best',
+    appearance:'Appearance', light:'Light', dark:'Dark',
+    newMonthTitle:'New month', confirmRecurringTitle:'Confirm your recurring bills', lastAmount:'Last amount',
+    noRecurringPending:'No recurring bills waiting for confirmation.', continueToHome:'Continue to home',
+    overLimitLast:'over your limit', underLimitLast:'within your limit',
+    prototypeTools:'Prototype preview', previewRollover:'Preview: new month rollover',
+    exportRow:'Export & import', exportTitle:'Export your data',
+    exportBody:"Save a copy of everything you've logged. Nothing uploads automatically — pick a backup file to keep everything safe, or a spreadsheet if you just want to browse your spending in Excel or Sheets.",
+    exportJson:'Backup file (JSON)', exportCsv:'Spreadsheet (CSV)',
+    exportNote:"Save it to Drive, email it to yourself, or send it to Files — keep it somewhere safe in case you switch phones.",
+    importTitle:'Import data', importBody:'Have a backup file from before, or one shared from another device? Choose the JSON backup file to bring those transactions back in.',
+    importChoose:'Choose backup file', importError:"That file couldn't be read — make sure it's a حساباتي backup file (.json).",
+    importPreviewTitle:'Ready to import', importCount:'transactions found',
+    importMerge:'Merge with current data', importReplace:'Replace all current data',
+    importReplaceConfirm:"This deletes all current transactions and replaces them with the imported file. This can't be undone. Continue?",
+  },
+  ar: {
+    appName:'حساباتي', welcome:'أهلاً بك في', welcomeSub:'تابع مصروفك ودخلك، والتزم بحدك الشهري — كل ذلك على جهازك فقط.',
+    getStarted:'ابدأ الآن', currencyTitle:'اختر عملتك', currencySub:'هكذا ستظهر المبالغ في التطبيق.',
+    searchCurrency:'ابحث عن عملة', continueBtn:'متابعة', back:'رجوع',
+    cycleTitle:'حدد حدك الشهري', cycleSub:'اختر طريقة حساب شهرك والمبلغ الذي تريد الالتزام به.',
+    calendarMonth:'الشهر الميلادي', calendarMonthSub:'يبدأ من جديد أول كل شهر',
+    customCycle:'دورة مخصصة', customCycleSub:'يبدأ من يوم تختاره — مثل يوم الراتب',
+    startDay:'يوم بداية الدورة', monthlyLimit:'الحد الشهري للصرف', finish:'إنهاء الإعداد',
+    notifTitle:'ابقَ على المسار', notifSub:'يمكننا تذكيرك إذا لم تسجل شيئًا، وتنبيهك قبل الوصول لحدك. يمكنك تغيير هذا لاحقًا من الإعدادات.',
+    enableReminders:'تفعيل التذكيرات', skipForNow:'تخطي الآن',
+    home:'الرئيسية', history:'السجل', insights:'الإحصائيات', settings:'الإعدادات',
+    hi:'أهلاً بعودتك', spent:'مصروف', ofLimit:'من حدك', cycleElapsed:'من الدورة',
+    income:'الدخل', netBalance:'الصافي', recent:'الأحدث', seeAll:'عرض الكل',
+    noTxnsTitle:'لا يوجد شيء بعد', noTxnsSub:'اضغط على زر + لإضافة أول معاملة.',
+    demoBanner:'أضفنا بيانات تجريبية لتجربة السجل والإحصائيات فورًا.',
+    addTxn:'إضافة معاملة', editTxn:'تعديل المعاملة', expense:'مصروف', incomeTab:'دخل',
+    category:'الفئة', addCategory:'إضافة', description:'الوصف', descriptionPh:'أضف ملاحظة (اختياري)',
+    date:'التاريخ', repeatMonthly:'تكرار شهري', repeatSub:'يعبّئ نفس الفئة والمبلغ تلقائيًا الدورة القادمة',
+    save:'حفظ', cancel:'إلغاء', delete:'حذف', newCategoryPh:'اسم الفئة الجديدة',
+    prevMonth:'الشهر السابق', nextMonth:'الشهر التالي', totalSpent:'إجمالي الصرف', totalIncome:'إجمالي الدخل',
+    monthlyTrend:'الاتجاه الشهري', byCategory:'حسب الفئة', bestMonth:'أفضل شهر', lowestSpend:'أقل صرف', highestSavings:'أعلى ادخار',
+    saved:'مدخر', completedOnly:'يعتمد على الأشهر المكتملة فقط',
+    settingsTitle:'الإعدادات', currency:'العملة', budgetCycle:'الدورة والحد الشهري', categories:'الفئات',
+    notifications:'الإشعارات', language:'اللغة', about:'حول التطبيق', aboutBody:'بياناتك مخزنة على جهازك فقط. لا يتم رفع أي شيء، ولا حاجة لحساب.',
+    manageCategories:'إدارة الفئات', dailyReminder:'تذكير يومي', dailyReminderSub:'ذكّرني إذا لم أسجل شيئًا اليوم',
+    reminderTime:'وقت التذكير', limitWarnings:'تنبيهات الحد', limitWarningsSub:'نبّهني عند ٨٠٪ و١٠٠٪ من حدي',
+    monthlyReport:'التقرير الشهري', monthlyReportSub:'ذكّرني مرة شهريًا لمراجعة تقريري',
+    preview:'معاينة', previewLimitTxt:'استخدمت ٨٢٪ من حد أغسطس', previewReportTxt:'تقرير يوليو جاهز للعرض',
+    editLimit:'تعديل الدورة والحد الشهري', selectCurrency:'اختر العملة', done:'تم',
+    selectMonthTitle:'اختر شهرًا', currentMonth:'الانتقال إلى الشهر الحالي', bestBadge:'الأفضل',
+    appearance:'المظهر', light:'فاتح', dark:'داكن',
+    newMonthTitle:'شهر جديد', confirmRecurringTitle:'أكّد فواتيرك المتكررة', lastAmount:'آخر مبلغ',
+    noRecurringPending:'لا توجد فواتير متكررة بانتظار التأكيد.', continueToHome:'المتابعة إلى الرئيسية',
+    overLimitLast:'تجاوزت حدك', underLimitLast:'ضمن حدك',
+    prototypeTools:'معاينة النموذج التجريبي', previewRollover:'معاينة: بداية شهر جديد',
+    exportRow:'التصدير والاستيراد', exportTitle:'تصدير بياناتك',
+    exportBody:'احفظ نسخة من كل ما سجلته. لا شيء يُرفع تلقائيًا — اختر ملف نسخة احتياطية للحفاظ على بياناتك، أو جدول بيانات لتصفح مصروفك في إكسل أو شيتس.',
+    exportJson:'ملف نسخة احتياطية (JSON)', exportCsv:'جدول بيانات (CSV)',
+    exportNote:'احفظه في Drive، أو أرسله لبريدك، أو شاركه إلى الملفات — احتفظ به في مكان آمن إذا غيّرت هاتفك.',
+    importTitle:'استيراد البيانات', importBody:'لديك ملف نسخة احتياطية سابق، أو ملف تمت مشاركته من جهاز آخر؟ اختر ملف JSON لاسترجاع تلك المعاملات.',
+    importChoose:'اختر ملف النسخة الاحتياطية', importError:'تعذّرت قراءة هذا الملف — تأكد أنه ملف نسخة احتياطية من حساباتي (.json).',
+    importPreviewTitle:'جاهز للاستيراد', importCount:'معاملة تم العثور عليها',
+    importMerge:'الدمج مع البيانات الحالية', importReplace:'استبدال كل البيانات الحالية',
+    importReplaceConfirm:'سيؤدي هذا إلى حذف كل معاملاتك الحالية واستبدالها بالملف المستورد. لا يمكن التراجع عن هذا. متابعة؟',
+  }
+};
+function t(k){ return STR[state.lang][k] || k; }
+
+/* ---------- data ---------- */
+const CURRENCIES = [
+  {code:'EGP', name:'Egyptian pound', sym:'ج.م'}, {code:'USD', name:'US dollar', sym:'$'},
+  {code:'EUR', name:'Euro', sym:'€'}, {code:'GBP', name:'British pound', sym:'£'},
+  {code:'SAR', name:'Saudi riyal', sym:'ر.س'}, {code:'AED', name:'UAE dirham', sym:'د.إ'},
+  {code:'KWD', name:'Kuwaiti dinar', sym:'د.ك'}, {code:'QAR', name:'Qatari riyal', sym:'ر.ق'},
+  {code:'JOD', name:'Jordanian dinar', sym:'د.أ'}, {code:'CAD', name:'Canadian dollar', sym:'$'},
+  {code:'AUD', name:'Australian dollar', sym:'$'}, {code:'TRY', name:'Turkish lira', sym:'₺'},
+  {code:'INR', name:'Indian rupee', sym:'₹'}, {code:'JPY', name:'Japanese yen', sym:'¥'},
+  {code:'CNY', name:'Chinese yuan', sym:'¥'}, {code:'CHF', name:'Swiss franc', sym:'Fr'},
+  {code:'MAD', name:'Moroccan dirham', sym:'د.م'}, {code:'TND', name:'Tunisian dinar', sym:'د.ت'},
+];
+const EXP_CATS = [
+  {id:'electricity', en:'Electricity', ar:'الكهرباء', color:'#C89B3C'},
+  {id:'water', en:'Water', ar:'المياه', color:'#3B8AD4'},
+  {id:'food', en:'Food', ar:'الطعام', color:'#D2472E'},
+  {id:'transport', en:'Transport', ar:'المواصلات', color:'#7C6FE0'},
+  {id:'rent', en:'Rent', ar:'الإيجار', color:'#5B6B73'},
+  {id:'phone', en:'Phone / internet', ar:'الهاتف والإنترنت', color:'#0B6B57'},
+  {id:'shopping', en:'Shopping', ar:'التسوق', color:'#D4527E'},
+  {id:'health', en:'Health', ar:'الصحة', color:'#C23B3B'},
+  {id:'entertainment', en:'Entertainment', ar:'الترفيه', color:'#9455C9'},
+  {id:'other', en:'Other', ar:'أخرى', color:'#8A8880'},
+];
+const INC_CATS = [
+  {id:'salary', en:'Salary', ar:'الراتب', color:'#0B6B57'},
+  {id:'freelance', en:'Freelance', ar:'عمل حر', color:'#3B8AD4'},
+  {id:'gift', en:'Gift', ar:'هدية', color:'#D4527E'},
+  {id:'other_income', en:'Other income', ar:'دخل آخر', color:'#8A8880'},
+];
+function catName(c){ return state.lang==='ar' ? c.ar : c.en; }
+function findCat(id, type){ return (type==='income'?INC_CATS:EXP_CATS).find(c=>c.id===id) || (type==='income'?INC_CATS:EXP_CATS)[EXP_CATS.length-1]; }
+
+/* ---------- state ---------- */
+let state = {
+  lang:'en', theme:(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light',
+  onboarded:false, onboardStep:1,
+  currency:'EGP', cycleType:'calendar', cycleStartDay:1, monthlyLimit:6000, draftLimit:'6000',
+  notif:{daily:true, dailyTime:'20:00', limitWarn:true, monthly:true},
+  transactions:[], nextId:1,
+  screen:'home', settingsScreen:null,
+  demoBannerDismissed:false,
+  history:{ monthOffset:0 },
+  rollover:{ dismissed:[] },
+  importPreview:null,
+  insights:{ bestMetric:'spend' },
+  sheet:{ open:false, editingId:null, type:'expense', category:null, amount:'', desc:'', date:'', repeat:false, catSearch:'' },
+  curSearch:'', curPickerFor:'onboarding', monthPickerOpen:false,
+};
+window.appState = state; // inspect live state from devtools console if useful
+
+function ymKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+function monthLabel(d){
+  const months_en=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const months_ar=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const arr = state.lang==='ar'?months_ar:months_en;
+  return arr[d.getMonth()]+' '+d.getFullYear();
+}
+function addTxn(type, catId, amount, desc, date, recurring){
+  state.transactions.push({id:state.nextId++, type, category:catId, amount, desc:desc||'', date, recurring:!!recurring});
+}
+function seedDemoData(){
+  const now = new Date();
+  function mk(monthsAgo){ return new Date(now.getFullYear(), now.getMonth()-monthsAgo, 1); }
+  const plans = [
+    { ago:3, income:[['salary',8000]], expense:[['rent',1800],['food',1400],['transport',650],['electricity',450],['water',200],['phone',350],['shopping',250],['entertainment',100]] },
+    { ago:2, income:[['salary',6000]], expense:[['rent',1800],['food',1200],['transport',500],['electricity',400],['water',180],['phone',320],['health',300],['other',100]] },
+    { ago:1, income:[['salary',8000],['other_income',1200]], expense:[['rent',1800],['food',1900],['transport',800],['electricity',500],['water',220],['phone',380],['shopping',700],['entertainment',300]] },
+  ];
+  plans.forEach(p=>{
+    const base = mk(p.ago);
+    p.income.forEach((row,i)=> addTxn('income', row[0], row[1], '', new Date(base.getFullYear(),base.getMonth(),1+i*2).toISOString().slice(0,10)) );
+    p.expense.forEach((row,i)=>{
+      const isRecurring = row[0]==='rent' || row[0]==='phone';
+      addTxn('expense', row[0], row[1], '', new Date(base.getFullYear(),base.getMonth(), 3+i*3).toISOString().slice(0,10), isRecurring);
+    });
+  });
+  const cur = mk(0);
+  addTxn('income','salary',8000,'', new Date(cur.getFullYear(),cur.getMonth(),1).toISOString().slice(0,10));
+  addTxn('expense','rent',1800,'', new Date(cur.getFullYear(),cur.getMonth(),2).toISOString().slice(0,10), true);
+  addTxn('expense','food',900,'', new Date(cur.getFullYear(),cur.getMonth(),5).toISOString().slice(0,10));
+  addTxn('expense','transport',400,'', new Date(cur.getFullYear(),cur.getMonth(),6).toISOString().slice(0,10));
+  addTxn('expense','electricity',300,'Meter reading', new Date(cur.getFullYear(),cur.getMonth(),7).toISOString().slice(0,10));
+}
+
+/* ---------- cycle math ---------- */
+function getCycleRange(ref){
+  ref = ref || new Date();
+  if(state.cycleType==='calendar'){
+    return { start:new Date(ref.getFullYear(),ref.getMonth(),1), end:new Date(ref.getFullYear(),ref.getMonth()+1,0) };
+  }
+  let day = state.cycleStartDay||1;
+  let start = new Date(ref.getFullYear(), ref.getMonth(), Math.min(day,28));
+  if(ref.getDate() < day){ start = new Date(ref.getFullYear(), ref.getMonth()-1, Math.min(day,28)); }
+  let end = new Date(start.getFullYear(), start.getMonth()+1, Math.min(day,28));
+  end.setDate(end.getDate()-1);
+  return {start, end};
+}
+function inRange(dateStr, start, end){
+  const d = new Date(dateStr+'T00:00:00');
+  return d>=start && d<=end;
+}
+function currentCycleTxns(){
+  const {start,end} = getCycleRange(new Date());
+  return state.transactions.filter(tx=>inRange(tx.date,start,end));
+}
+function sumBy(txns, type){ return txns.filter(x=>x.type===type).reduce((s,x)=>s+x.amount,0); }
+function cur(){ return CURRENCIES.find(c=>c.code===state.currency) || CURRENCIES[0]; }
+function fmt(n){ return Math.round(n).toLocaleString(state.lang==='ar'?'en':'en')+' '+cur().sym; }
+
+function availableMonths(){
+  const set = new Set(state.transactions.map(t=>t.date.slice(0,7)));
+  const nowKey = ymKey(new Date());
+  set.add(nowKey);
+  return Array.from(set).sort();
+}
+function monthTxns(key){ return state.transactions.filter(t=>t.date.slice(0,7)===key); }
+function monthStats(key){
+  const txns = monthTxns(key);
+  const spend = sumBy(txns,'expense'), income = sumBy(txns,'income');
+  return { spend, income, net: income-spend };
+}
+function computeBestKey(){
+  const months = availableMonths();
+  const nowKey = ymKey(new Date());
+  const completed = months.filter(k=>k!==nowKey);
+  if(!completed.length) return null;
+  if(state.insights.bestMetric==='spend'){ return completed.reduce((a,b)=> monthStats(b).spend<monthStats(a).spend?b:a); }
+  return completed.reduce((a,b)=> monthStats(b).net>monthStats(a).net?b:a);
+}
+
+/* ---------- icons ---------- */
+const ICO = {
+  home:'<path d="M4 11.5 12 5l8 6.5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v8.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  history:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+  chart:'<path d="M5 19V10M11 19V5M17 19v-7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  gear:'<circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M12 3v2.2M12 18.8V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.2M18.8 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  plus:'<path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  chevL:'<path d="M15 5 8 12l7 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  chevR:'<path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  chevFwd:'<path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  chevDown:'<path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  bell:'<path d="M6 9a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 13 6 9Z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/><path d="M9.5 17a2.5 2.5 0 0 0 5 0" stroke="currentColor" stroke-width="1.7" fill="none"/>',
+  wallet:'<rect x="3.5" y="6.5" width="17" height="12" rx="2.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M16 12.5h2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3.5 9.5h17" stroke="currentColor" stroke-width="1.7"/>',
+  globe:'<circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M3.5 12h17M12 3.5c2.5 2.4 2.5 14.6 0 17M12 3.5c-2.5 2.4-2.5 14.6 0 17" stroke="currentColor" stroke-width="1.7" fill="none"/>',
+  info:'<circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M12 11v5.5M12 8v.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>',
+  tag:'<path d="M12.5 4H6a1.5 1.5 0 0 0-1.5 1.5V12l9 9 8-8-9-9Z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r="1.3" fill="currentColor"/>',
+  sun:'<circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.7" fill="none"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  moon:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/>',
+  edit:'<path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round" stroke-linecap="round"/>',
+  check:'<path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+  download:'<path d="M12 4v11M7 11l5 5 5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  upload:'<path d="M12 20V9M7 13l5-5 5 5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+};
+function icon(name, size, cls){ return `<svg width="${size||20}" height="${size||20}" viewBox="0 0 24 24" class="${cls||''}">${ICO[name]}</svg>`; }
+
+/* ---------- render root ---------- */
+function render(){
+  document.documentElement.setAttribute('dir', state.lang==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang', state.lang);
+  document.documentElement.setAttribute('data-theme', state.theme);
+  const app = document.getElementById('app');
+  if(!state.onboarded){ app.innerHTML = renderOnboarding(); return; }
+  let body = '';
+  if(state.settingsScreen){ body = renderSettingsSub(); }
+  else if(state.screen==='rollover'){ body = renderRollover(); }
+  else if(state.screen==='home') body = renderHome();
+  else if(state.screen==='history') body = renderHistory();
+  else if(state.screen==='insights') body = renderInsights();
+  else if(state.screen==='settings') body = renderSettings();
+  app.innerHTML = `
+    <div class="statusbar"><span>9:41</span><div class="icons">${icon('bell',15)}${icon('wallet',15)}</div></div>
+    <div class="content">${body}</div>
+    ${renderNav()}
+    ${renderFab()}
+    ${renderSheetShell()}
+    ${renderMonthPickerSheet()}
+  `;
+}
+function setLang(l){ state.lang=l; render(); }
+function setTheme(mode){ state.theme=mode; render(); }
+function toggleTheme(){ state.theme = state.theme==='dark'?'light':'dark'; render(); }
+
+/* ---------- onboarding ---------- */
+function renderOnboarding(){
+  const step = state.onboardStep;
+  let inner = '';
+  if(step===1){
+    inner = `
+      <div class="onb-body">
+        <div class="onb-mark">${icon('wallet',34)}</div>
+        <div><div class="muted">${t('welcome')}</div><h1>${t('appName')}</h1></div>
+        <p class="muted" style="max-width:280px; line-height:1.6;">${t('welcomeSub')}</p>
+      </div>
+      <button class="btn btn-primary" onclick="onboardStep(2)">${t('getStarted')}</button>`;
+  } else if(step===2){
+    const filtered = CURRENCIES.filter(c=> (c.name+c.code).toLowerCase().includes(state.curSearch.toLowerCase()) );
+    inner = `
+      <div style="text-align:start; padding-top:36px;">
+        <h2>${t('currencyTitle')}</h2>
+        <p class="muted" style="margin:6px 0 16px;">${t('currencySub')}</p>
+        <input class="search-input" placeholder="${t('searchCurrency')}" value="${state.curSearch}" oninput="state.curSearch=this.value; render();">
+        <div class="list-pick">
+          ${filtered.map(c=>`
+            <div class="list-pick-item ${state.currency===c.code?'selected':''}" onclick="selectCurrency('${c.code}')">
+              <div style="display:flex; align-items:center; gap:10px;"><span class="cur-code">${c.code}</span><span>${c.name}</span></div>
+              <span class="muted">${c.sym}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn btn-ghost" style="width:auto; padding:15px 20px;" onclick="onboardStep(1)">${icon('chevL',18)}</button>
+        <button class="btn btn-primary" onclick="onboardStep(3)">${t('continueBtn')}</button>
+      </div>`;
+  } else if(step===3){
+    inner = `
+      <div style="text-align:start; padding-top:36px;">
+        <h2>${t('cycleTitle')}</h2>
+        <p class="muted" style="margin:6px 0 16px;">${t('cycleSub')}</p>
+        <div class="radio-row ${state.cycleType==='calendar'?'selected':''}" onclick="state.cycleType='calendar'; render();">
+          <div class="radio-dot"></div>
+          <div><div style="font-weight:600; font-size:14px;">${t('calendarMonth')}</div><div class="tiny">${t('calendarMonthSub')}</div></div>
+        </div>
+        <div class="radio-row ${state.cycleType==='custom'?'selected':''}" onclick="state.cycleType='custom'; render();">
+          <div class="radio-dot"></div>
+          <div><div style="font-weight:600; font-size:14px;">${t('customCycle')}</div><div class="tiny">${t('customCycleSub')}</div></div>
+        </div>
+        ${state.cycleType==='custom' ? `
+          <div class="field" style="margin-top:14px;">
+            <label>${t('startDay')}</label>
+            <input class="input" type="number" min="1" max="28" value="${state.cycleStartDay}" oninput="state.cycleStartDay=Math.max(1,Math.min(28,+this.value||1))">
+          </div>` : ''}
+        <div class="field" style="margin-top:14px;">
+          <label>${t('monthlyLimit')} (${cur().code})</label>
+          <input class="input" type="number" min="0" value="${state.draftLimit}" oninput="state.draftLimit=this.value">
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:6px;">
+        <button class="btn btn-ghost" style="width:auto; padding:15px 20px;" onclick="onboardStep(2)">${icon('chevL',18)}</button>
+        <button class="btn btn-primary" ${(!state.draftLimit||+state.draftLimit<=0)?'disabled':''} onclick="onboardStep(4)">${t('continueBtn')}</button>
+      </div>`;
+  } else if(step===4){
+    inner = `
+      <div class="onb-body">
+        <div class="onb-mark" style="background:var(--gold);">${icon('bell',32)}</div>
+        <h2>${t('notifTitle')}</h2>
+        <p class="muted" style="max-width:280px; line-height:1.6;">${t('notifSub')}</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" onclick="finishOnboarding(true)">${t('enableReminders')}</button>
+        <button class="btn btn-ghost" onclick="finishOnboarding(false)">${t('skipForNow')}</button>
+      </div>`;
+  }
+  return `
+    <div class="onb">
+      <div style="padding-top:26px;"></div>
+      <div class="dots">${[1,2,3,4].map(i=>`<div class="dot ${i===step?'active':''}"></div>`).join('')}</div>
+      ${inner}
+    </div>`;
+}
+function onboardStep(n){ state.onboardStep=n; render(); }
+function selectCurrency(code){
+  state.currency = code;
+  if(!state.onboarded){ state.curSearch=''; onboardStep(3); }
+  else { state.settingsScreen=null; render(); }
+}
+function finishOnboarding(enableNotif){
+  state.monthlyLimit = +state.draftLimit || 6000;
+  state.notif.daily = enableNotif; state.notif.limitWarn = enableNotif; state.notif.monthly = enableNotif;
+  seedDemoData();
+  state.onboarded = true; state.screen='home';
+  render();
+}
+
+/* ---------- nav / fab ---------- */
+function renderNav(){
+  const items = [['home','home'],['history','history'],['insights','chart'],['settings','gear']];
+  return `<div class="bottomnav">
+    ${items.map(([key,ic])=>`
+      <button class="navitem ${state.screen===key && !state.settingsScreen?'active':''}" onclick="goScreen('${key}')">
+        ${icon(ic,21)}<span>${t(key)}</span>
+      </button>`).join('')}
+  </div>`;
+}
+function goScreen(s){ state.screen=s; state.settingsScreen=null; render(); }
+function renderFab(){
+  if(state.settingsScreen || state.screen==='insights' || state.screen==='rollover') return '';
+  return `<button class="fab" onclick="openAdd('expense')">${icon('plus',24)}</button>`;
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const {start,end} = getCycleRange(new Date());
+  const txns = currentCycleTxns();
+  const spend = sumBy(txns,'expense'), income = sumBy(txns,'income');
+  const pct = state.monthlyLimit>0 ? Math.min(1, spend/state.monthlyLimit) : 0;
+  const now = new Date();
+  const cyclePct = Math.min(1, (now-start)/(end-start+86400000));
+  const ringColor = pct>=1? '#FF6B57' : (pct>=0.8? '#F4C15A' : '#FFFFFF');
+  const R1=48, R2=38, C1=2*Math.PI*R1, C2=2*Math.PI*R2;
+  const recent = txns.slice().sort((a,b)=> b.date.localeCompare(a.date)).slice(0,5);
+  return `
+    ${!state.demoBannerDismissed?`
+      <div class="banner"><span>${t('demoBanner')}</span><button onclick="state.demoBannerDismissed=true; render();">${icon('x',13)}</button></div>`:''}
+    <div class="app-header">
+      <div class="greet"><div class="tiny">${t('hi')}</div><h1>${monthLabel(now)}</h1></div>
+      <div class="icon-btn" onclick="goScreen('settings')">${icon('wallet',18)}</div>
+    </div>
+    <div class="ring-card">
+      <div class="ring-wrap">
+        <svg width="112" height="112" viewBox="0 0 112 112">
+          <circle cx="56" cy="56" r="${R1}" stroke="rgba(255,255,255,.2)" stroke-width="7" fill="none"/>
+          <circle cx="56" cy="56" r="${R1}" stroke="${ringColor}" stroke-width="7" fill="none" stroke-linecap="round"
+            stroke-dasharray="${C1}" stroke-dashoffset="${C1*(1-pct)}" transform="rotate(-90 56 56)"/>
+          <circle cx="56" cy="56" r="${R2}" stroke="rgba(255,255,255,.15)" stroke-width="4" fill="none"/>
+          <circle cx="56" cy="56" r="${R2}" stroke="var(--gold)" stroke-width="4" fill="none" stroke-linecap="round"
+            stroke-dasharray="${C2}" stroke-dashoffset="${C2*(1-cyclePct)}" transform="rotate(-90 56 56)"/>
+          <text x="56" y="52" text-anchor="middle" fill="#fff" font-size="18" font-weight="700" font-family="Cairo">${Math.round(pct*100)}%</text>
+          <text x="56" y="68" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="9" font-family="Cairo">${t('ofLimit')}</text>
+        </svg>
+        <div class="ring-figures">
+          <div class="big">${fmt(spend)}</div>
+          <div class="cap">${t('spent')} · ${fmt(state.monthlyLimit)} ${t('ofLimit')}</div>
+        </div>
+      </div>
+      <div class="ring-legend">
+        <div><span class="swatch" style="background:${ringColor}"></span>${t('spent')}</div>
+        <div><span class="swatch" style="background:var(--gold)"></span>${Math.round(cyclePct*100)}% ${t('cycleElapsed')}</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card income"><div class="tiny">${t('income')}</div><div class="v">${fmt(income)}</div></div>
+      <div class="stat-card expense"><div class="tiny">${t('netBalance')}</div><div class="v" style="color:${income-spend>=0?'var(--nile)':'var(--coral)'}">${fmt(income-spend)}</div></div>
+    </div>
+    <div class="section-head"><h3>${t('recent')}</h3><a onclick="goScreen('history')">${t('seeAll')}</a></div>
+    ${recent.length===0? emptyState() : `<div class="card" style="padding:4px 16px;">${recent.map(txnRow).join('')}</div>`}
+  `;
+}
+function emptyState(){
+  return `<div class="empty"><div class="em-mark">${icon('wallet',24)}</div><div style="font-weight:600; margin-bottom:4px;">${t('noTxnsTitle')}</div><div class="tiny">${t('noTxnsSub')}</div></div>`;
+}
+function txnRow(tx){
+  const c = findCat(tx.category, tx.type);
+  const d = new Date(tx.date+'T00:00:00');
+  const dateStr = d.toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US', {month:'short', day:'numeric'});
+  return `
+    <div class="txn-row" onclick="editTransaction(${tx.id})">
+      <div class="cat-dot" style="background:${c.color}">${catName(c)[0]}</div>
+      <div class="txn-mid">
+        <div class="t">${catName(c)}${tx.recurring?' ↻':''}</div>
+        <div class="s">${tx.desc? tx.desc+' · ' : ''}${dateStr}</div>
+      </div>
+      <div class="txn-amt ${tx.type}">${tx.type==='expense'?'−':'+'}${fmt(tx.amount)}</div>
+    </div>`;
+}
+
+/* ---------- history ---------- */
+function renderHistory(){
+  const months = availableMonths();
+  let idx = months.length-1+state.history.monthOffset;
+  idx = Math.max(0, Math.min(months.length-1, idx));
+  state.history.monthOffset = idx-(months.length-1);
+  const key = months[idx];
+  const [y,m] = key.split('-').map(Number);
+  const label = monthLabel(new Date(y,m-1,1));
+  const txns = monthTxns(key).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const st = monthStats(key);
+  const grouped = {};
+  txns.forEach(tx=>{ (grouped[tx.date]=grouped[tx.date]||[]).push(tx); });
+  return `
+    <div class="app-header" style="padding-top:14px;">
+      <button class="icon-btn" ${idx<=0?'disabled style="opacity:.3"':''} onclick="state.history.monthOffset--; render();">${icon(state.lang==='ar'?'chevR':'chevL',16)}</button>
+      <div style="display:flex; align-items:center; gap:5px; cursor:pointer;" onclick="openMonthPicker()">
+        <h2>${label}</h2>${icon('chevDown',15)}
+      </div>
+      <button class="icon-btn" ${idx>=months.length-1?'disabled style="opacity:.3"':''} onclick="state.history.monthOffset++; render();">${icon(state.lang==='ar'?'chevL':'chevR',16)}</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card expense"><div class="tiny">${t('totalSpent')}</div><div class="v">${fmt(st.spend)}</div></div>
+      <div class="stat-card income"><div class="tiny">${t('totalIncome')}</div><div class="v">${fmt(st.income)}</div></div>
+    </div>
+    ${txns.length===0? emptyState() : Object.keys(grouped).sort().reverse().map(date=>{
+      const d = new Date(date+'T00:00:00');
+      const dl = d.toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US', {weekday:'short', month:'short', day:'numeric'});
+      return `<div class="tiny" style="margin:14px 0 4px; font-weight:600;">${dl}</div><div class="card" style="padding:4px 16px;">${grouped[date].map(txnRow).join('')}</div>`;
+    }).join('')}
+  `;
+}
+
+/* ---------- new-month rollover (recurring bill confirmation) ---------- */
+function pendingRecurring(){
+  const months = availableMonths();
+  const nowKey = ymKey(new Date());
+  const completed = months.filter(k=>k!==nowKey);
+  if(!completed.length) return [];
+  const prevKey = completed[completed.length-1];
+  const recurs = monthTxns(prevKey).filter(tx=>tx.recurring);
+  const map = {};
+  recurs.forEach(tx=>{ map[tx.type+':'+tx.category] = tx; });
+  const curKeys = new Set(currentCycleTxns().map(tx=>tx.type+':'+tx.category));
+  return Object.values(map).filter(tx=>{
+    const k = tx.type+':'+tx.category;
+    return !(state.rollover.dismissed.includes(k)) && !curKeys.has(k);
+  });
+}
+function renderRollover(){
+  const months = availableMonths();
+  const nowKey = ymKey(new Date());
+  const completed = months.filter(k=>k!==nowKey);
+  const prevKey = completed[completed.length-1];
+  const pending = pendingRecurring();
+  let summaryBlock = '';
+  if(prevKey){
+    const st = monthStats(prevKey);
+    const d = new Date(prevKey+'-01');
+    const label = d.toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US',{month:'long', year:'numeric'});
+    const over = state.monthlyLimit>0 && st.spend>state.monthlyLimit;
+    summaryBlock = `
+      <div class="card" style="margin-bottom:20px;">
+        <div class="tiny">${label}</div>
+        <div style="font-size:24px; font-weight:700; margin:4px 0; color:${over?'var(--coral)':'var(--nile)'};">${fmt(st.spend)}</div>
+        <div class="tiny">${over? t('overLimitLast') : t('underLimitLast')}</div>
+      </div>`;
+  }
+  return `
+    <div class="subhead"><div class="back-btn" onclick="closeRollover()">${icon(state.lang==='ar'?'chevR':'chevL',16)}</div><h2>${t('newMonthTitle')}</h2></div>
+    ${summaryBlock}
+    <h3 style="margin-bottom:10px;">${t('confirmRecurringTitle')}</h3>
+    ${pending.length ? `
+      <div class="card" style="padding:4px 16px; margin-bottom:20px;">
+        ${pending.map(tx=>{
+          const c = findCat(tx.category, tx.type);
+          const descSafe = (tx.desc||'').replace(/'/g,"\\'");
+          return `<div class="txn-row" style="cursor:default;">
+            <div class="cat-dot" style="background:${c.color}">${catName(c)[0]}</div>
+            <div class="txn-mid"><div class="t">${catName(c)}</div><div class="s">${t('lastAmount')}: ${fmt(tx.amount)}</div></div>
+            <div style="display:flex; gap:6px;">
+              <button class="icon-btn" style="width:32px; height:32px;" aria-label="Edit" onclick="editRecurring('${tx.type}','${tx.category}',${tx.amount},'${descSafe}')">${icon('edit',14)}</button>
+              <button class="icon-btn" style="width:32px; height:32px; color:var(--nile);" aria-label="Confirm" onclick="confirmRecurring('${tx.type}','${tx.category}',${tx.amount},'${descSafe}')">${icon('check',15)}</button>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div class="empty" style="padding:26px 10px;"><div class="tiny">${t('noRecurringPending')}</div></div>`}
+    <button class="btn btn-primary" onclick="closeRollover()">${t('continueToHome')}</button>
+  `;
+}
+function openRollover(){ state.rollover = {dismissed:[]}; state.screen='rollover'; state.settingsScreen=null; render(); }
+function closeRollover(){ state.screen='home'; render(); }
+function confirmRecurring(type, category, amount, desc){
+  addTxn(type, category, amount, desc, new Date().toISOString().slice(0,10), true);
+  state.rollover.dismissed.push(type+':'+category);
+  render();
+}
+function editRecurring(type, category, amount, desc){
+  state.sheet = { open:true, editingId:null, type, category, amount:String(amount), desc, date:new Date().toISOString().slice(0,10), repeat:true, fromRollover:true };
+  render();
+  requestAnimationFrame(()=>{ document.getElementById('sheetEl')?.classList.add('open'); document.getElementById('backdropEl')?.classList.add('open'); });
+}
+
+/* ---------- month picker ---------- */
+function renderMonthPickerSheet(){
+  const months = availableMonths();
+  const nowKey = ymKey(new Date());
+  const grouped = {};
+  months.forEach(k=>{ const y=k.slice(0,4); (grouped[y]=grouped[y]||[]).push(k); });
+  const years = Object.keys(grouped).sort().reverse();
+  const idx = Math.max(0, Math.min(months.length-1, months.length-1+state.history.monthOffset));
+  const curKey = months[idx];
+  const bestKey = computeBestKey();
+  return `
+    <div class="backdrop ${state.monthPickerOpen?'open':''}" id="monthBackdropEl" onclick="closeMonthPicker()"></div>
+    <div class="sheet ${state.monthPickerOpen?'open':''}" id="monthSheetEl" style="max-height:72%;">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div style="width:34px;"></div><h3>${t('selectMonthTitle')}</h3>
+        <div class="icon-btn" style="width:34px; height:34px;" onclick="closeMonthPicker()">${icon('x',15)}</div>
+      </div>
+      <div class="sheet-body">
+        <div class="list-pick-item" style="border:1px solid var(--line); border-radius:12px; margin-bottom:14px; color:var(--nile); font-weight:600;" onclick="selectMonth('${nowKey}')">
+          <span>${t('currentMonth')}</span>${icon('chevFwd',15)}
+        </div>
+        ${years.map(y=>`
+          <div class="tiny" style="font-weight:700; margin:12px 2px 6px;">${y}</div>
+          <div class="list-pick">
+            ${grouped[y].slice().reverse().map(k=>{
+              const st = monthStats(k);
+              const d = new Date(k+'-01');
+              const label = d.toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US',{month:'long'});
+              const isCur = k===curKey, isBest = k===bestKey;
+              return `<div class="list-pick-item ${isCur?'selected':''}" onclick="selectMonth('${k}')">
+                <span style="display:flex; align-items:center; gap:6px;">${label}${isBest?`<span class="tiny" style="color:var(--gold-text); background:var(--gold-light); padding:2px 7px; border-radius:999px; font-weight:700;">★ ${t('bestBadge')}</span>`:''}</span>
+                <span class="tiny" style="color:var(--ink2);">${fmt(st.spend)}</span>
+              </div>`;
+            }).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function openMonthPicker(){
+  state.monthPickerOpen = true; render();
+  requestAnimationFrame(()=>{ document.getElementById('monthSheetEl')?.classList.add('open'); document.getElementById('monthBackdropEl')?.classList.add('open'); });
+}
+function closeMonthPicker(){
+  document.getElementById('monthSheetEl')?.classList.remove('open');
+  document.getElementById('monthBackdropEl')?.classList.remove('open');
+  setTimeout(()=>{ state.monthPickerOpen=false; render(); }, 220);
+}
+function selectMonth(key){
+  const months = availableMonths();
+  const idx = months.indexOf(key);
+  if(idx>-1) state.history.monthOffset = idx-(months.length-1);
+  closeMonthPicker();
+}
+
+/* ---------- insights ---------- */
+function renderInsights(){
+  const months = availableMonths();
+  const nowKey = ymKey(new Date());
+  const completed = months.filter(k=>k!==nowKey);
+  const stats = months.map(k=>({key:k, ...monthStats(k)}));
+  const maxSpend = Math.max(1, ...stats.map(s=>s.spend));
+  const bestKey = computeBestKey();
+  const curKey = months[months.length-1];
+  const catTotals = {};
+  monthTxns(curKey).filter(t=>t.type==='expense').forEach(tx=>{ catTotals[tx.category]=(catTotals[tx.category]||0)+tx.amount; });
+  const catEntries = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]);
+  const totalCat = catEntries.reduce((s,e)=>s+e[1],0) || 1;
+  let offset = 0;
+  const R=46, C=2*Math.PI*R;
+  const donutSegs = catEntries.map(([id,val])=>{
+    const c = findCat(id,'expense');
+    const frac = val/totalCat;
+    const seg = `<circle cx="60" cy="60" r="${R}" fill="none" stroke="${c.color}" stroke-width="16" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-frac)}" transform="rotate(${offset*360-90} 60 60)"/>`;
+    offset += frac;
+    return seg;
+  }).join('');
+  return `
+    <div class="app-header" style="padding-top:14px;"><h2>${t('insights')}</h2></div>
+    <h3 style="margin-bottom:10px;">${t('monthlyTrend')}</h3>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="month-bar-row" style="height:120px;">
+        ${stats.map(s=>{
+          const h = Math.max(6, Math.round((s.spend/maxSpend)*96));
+          const isCur = s.key===curKey;
+          const isBest = s.key===bestKey;
+          return `<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; justify-content:flex-end;">
+            <div style="width:60%; height:${h}px; border-radius:6px 6px 2px 2px; background:${isBest?'var(--gold)':(isCur?'var(--nile)':'var(--line)')};"></div>
+            <div class="tiny" style="font-weight:${isCur?700:400};">${new Date(s.key+'-01').toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US',{month:'short'})}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+    <h3 style="margin-bottom:10px;">${t('bestMonth')}</h3>
+    <div class="best-toggle">
+      <button class="${state.insights.bestMetric==='spend'?'active':''}" onclick="state.insights.bestMetric='spend'; render();">${t('lowestSpend')}</button>
+      <button class="${state.insights.bestMetric==='net'?'active':''}" onclick="state.insights.bestMetric='net'; render();">${t('highestSavings')}</button>
+    </div>
+    ${bestKey ? `
+      <div class="card" style="margin-bottom:6px; display:flex; align-items:center; gap:12px;">
+        <div class="cat-dot" style="background:var(--gold);">★</div>
+        <div>
+          <div style="font-weight:700;">${new Date(bestKey+'-01').toLocaleDateString(state.lang==='ar'?'ar-EG':'en-US',{month:'long', year:'numeric'})}</div>
+          <div class="tiny">${state.insights.bestMetric==='spend'? fmt(monthStats(bestKey).spend)+' '+t('totalSpent').toLowerCase() : fmt(monthStats(bestKey).net)+' '+t('saved')}</div>
+        </div>
+      </div>` : ''}
+    <div class="tiny" style="margin-bottom:20px;">${t('completedOnly')}</div>
+    <h3 style="margin-bottom:10px;">${t('byCategory')}</h3>
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:18px;">
+        <svg width="120" height="120" viewBox="0 0 120 120">${donutSegs || `<circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--line)" stroke-width="16"/>`}</svg>
+        <div style="flex:1;">
+          ${catEntries.slice(0,5).map(([id,val])=>{
+            const c = findCat(id,'expense');
+            return `<div class="legend-row"><div class="legend-l"><span class="swatch" style="background:${c.color}"></span><span class="tiny" style="color:var(--ink);">${catName(c)}</span></div><span class="tiny" style="font-weight:600; color:var(--ink);">${Math.round(val/totalCat*100)}%</span></div>`;
+          }).join('') || `<div class="tiny">—</div>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- settings ---------- */
+function renderSettings(){
+  return `
+    <div class="app-header" style="padding-top:14px;"><h2>${t('settingsTitle')}</h2></div>
+    <div class="card" style="padding:4px 16px; margin-bottom:16px;">
+      <div class="set-row" style="cursor:default;">
+        <div class="l"><div class="set-ico">${icon(state.theme==='dark'?'moon':'sun',17)}</div><div>${t('appearance')}</div></div>
+        <div class="seg" style="width:132px; padding:3px;">
+          <button style="padding:7px 4px; font-size:12px;" class="${state.theme==='light'?'active':''}" onclick="setTheme('light')">${t('light')}</button>
+          <button style="padding:7px 4px; font-size:12px;" class="${state.theme==='dark'?'active':''}" onclick="setTheme('dark')">${t('dark')}</button>
+        </div>
+      </div>
+      <div class="set-row" style="cursor:default;">
+        <div class="l"><div class="set-ico">${icon('globe',17)}</div><div>${t('language')}</div></div>
+        <div class="seg" style="width:132px; padding:3px;">
+          <button style="padding:7px 4px; font-size:12px;" class="${state.lang==='en'?'active':''}" onclick="setLang('en')">EN</button>
+          <button style="padding:7px 4px; font-size:12px;" class="${state.lang==='ar'?'active':''}" onclick="setLang('ar')">AR</button>
+        </div>
+      </div>
+      <div class="set-row" onclick="openSettingsScreen('currency')">
+        <div class="l"><div class="set-ico">${icon('wallet',17)}</div><div>${t('currency')}</div></div>
+        <div style="display:flex; align-items:center; gap:8px;"><span class="tiny">${state.currency}</span>${icon('chevFwd',16)}</div>
+      </div>
+      <div class="set-row" onclick="openSettingsScreen('cycle')">
+        <div class="l"><div class="set-ico">${icon('chart',17)}</div><div>${t('budgetCycle')}</div></div>
+        <div style="display:flex; align-items:center; gap:8px;"><span class="tiny">${fmt(state.monthlyLimit)}</span>${icon('chevFwd',16)}</div>
+      </div>
+      <div class="set-row" onclick="openSettingsScreen('categories')">
+        <div class="l"><div class="set-ico">${icon('tag',17)}</div><div>${t('categories')}</div></div>
+        ${icon('chevFwd',16)}
+      </div>
+      <div class="set-row" onclick="openSettingsScreen('notifications')">
+        <div class="l"><div class="set-ico">${icon('bell',17)}</div><div>${t('notifications')}</div></div>
+        ${icon('chevFwd',16)}
+      </div>
+    </div>
+    <div class="card" style="padding:4px 16px; margin-bottom:16px;">
+      <div class="set-row" onclick="openSettingsScreen('export')">
+        <div class="l"><div class="set-ico">${icon('download',17)}</div><div>${t('exportRow')}</div></div>
+        ${icon('chevFwd',16)}
+      </div>
+      <div class="set-row" onclick="openSettingsScreen('about')">
+        <div class="l"><div class="set-ico">${icon('info',17)}</div><div>${t('about')}</div></div>
+        ${icon('chevFwd',16)}
+      </div>
+    </div>
+    <div class="tiny" style="margin:4px 4px 8px; text-transform:uppercase; letter-spacing:.04em;">${t('prototypeTools')}</div>
+    <div class="card" style="padding:4px 16px; margin-bottom:16px;">
+      <div class="set-row" onclick="openRollover()">
+        <div class="l"><div class="set-ico">${icon('bell',17)}</div><div>${t('previewRollover')}</div></div>
+        ${icon('chevFwd',16)}
+      </div>
+    </div>
+  `;
+}
+function openSettingsScreen(s){ state.settingsScreen=s; render(); }
+function backToSettings(){ state.settingsScreen=null; render(); }
+function subHead(title){
+  return `<div class="subhead"><div class="back-btn" onclick="backToSettings()">${icon(state.lang==='ar'?'chevR':'chevL',16)}</div><h2>${title}</h2></div>`;
+}
+function renderSettingsSub(){
+  const s = state.settingsScreen;
+  if(s==='currency'){
+    const filtered = CURRENCIES.filter(c=> (c.name+c.code).toLowerCase().includes(state.curSearch.toLowerCase()) );
+    return subHead(t('selectCurrency')) + `
+      <input class="search-input" placeholder="${t('searchCurrency')}" value="${state.curSearch}" oninput="state.curSearch=this.value; render();">
+      <div class="list-pick">
+        ${filtered.map(c=>`
+          <div class="list-pick-item ${state.currency===c.code?'selected':''}" onclick="selectCurrency('${c.code}')">
+            <div style="display:flex; align-items:center; gap:10px;"><span class="cur-code">${c.code}</span><span>${c.name}</span></div>
+            <span class="muted">${c.sym}</span>
+          </div>`).join('')}
+      </div>`;
+  }
+  if(s==='cycle'){
+    return subHead(t('editLimit')) + `
+      <div class="radio-row ${state.cycleType==='calendar'?'selected':''}" onclick="state.cycleType='calendar'; render();">
+        <div class="radio-dot"></div>
+        <div><div style="font-weight:600; font-size:14px;">${t('calendarMonth')}</div><div class="tiny">${t('calendarMonthSub')}</div></div>
+      </div>
+      <div class="radio-row ${state.cycleType==='custom'?'selected':''}" onclick="state.cycleType='custom'; render();">
+        <div class="radio-dot"></div>
+        <div><div style="font-weight:600; font-size:14px;">${t('customCycle')}</div><div class="tiny">${t('customCycleSub')}</div></div>
+      </div>
+      ${state.cycleType==='custom' ? `
+        <div class="field" style="margin-top:14px;"><label>${t('startDay')}</label>
+        <input class="input" type="number" min="1" max="28" value="${state.cycleStartDay}" oninput="state.cycleStartDay=Math.max(1,Math.min(28,+this.value||1))"></div>` : ''}
+      <div class="field" style="margin-top:14px;"><label>${t('monthlyLimit')} (${cur().code})</label>
+      <input class="input" type="number" min="0" value="${state.monthlyLimit}" oninput="state.monthlyLimit=+this.value||0"></div>
+      <button class="btn btn-primary" style="margin-top:8px;" onclick="backToSettings()">${t('done')}</button>`;
+  }
+  if(s==='categories'){
+    return subHead(t('manageCategories')) + `
+      <h3 style="margin:6px 0;">${t('expense')}</h3>
+      ${EXP_CATS.map(c=>`
+        <div class="catmanage-row"><div class="l"><span class="swatch" style="background:${c.color}; width:10px; height:10px;"></span><span>${catName(c)}</span></div>
+        ${c.id!=='other'?`<button class="x-btn" onclick="removeCategory('${c.id}','expense')">${icon('x',12)}</button>`:''}</div>`).join('')}
+      <h3 style="margin:16px 0 6px;">${t('incomeTab')}</h3>
+      ${INC_CATS.map(c=>`
+        <div class="catmanage-row"><div class="l"><span class="swatch" style="background:${c.color}; width:10px; height:10px;"></span><span>${catName(c)}</span></div>
+        ${c.id!=='other_income'?`<button class="x-btn" onclick="removeCategory('${c.id}','income')">${icon('x',12)}</button>`:''}</div>`).join('')}
+      <div class="add-cat-row">
+        <input class="input" id="newCatInput" placeholder="${t('newCategoryPh')}">
+        <button class="btn btn-primary" style="width:auto; padding:12px 18px;" onclick="addCustomCategory()">${t('addCategory')}</button>
+      </div>`;
+  }
+  if(s==='notifications'){
+    const n = state.notif;
+    return subHead(t('notifications')) + `
+      <div class="card" style="padding:4px 16px; margin-bottom:16px;">
+        <div class="check-row"><div><div style="font-weight:600; font-size:14px;">${t('dailyReminder')}</div><div class="tiny">${t('dailyReminderSub')}</div></div>
+          <div class="toggle ${n.daily?'on':''}" onclick="n.daily=!n.daily; render();"><div class="knob"></div></div></div>
+        ${n.daily?`<div class="check-row"><div style="font-size:13px;">${t('reminderTime')}</div>
+          <input class="input" type="time" style="width:auto;" value="${n.dailyTime}" oninput="n.dailyTime=this.value"></div>`:''}
+      </div>
+      <div class="card" style="padding:4px 16px; margin-bottom:16px;">
+        <div class="check-row"><div><div style="font-weight:600; font-size:14px;">${t('limitWarnings')}</div><div class="tiny">${t('limitWarningsSub')}</div></div>
+          <div class="toggle ${n.limitWarn?'on':''}" onclick="n.limitWarn=!n.limitWarn; render();"><div class="knob"></div></div></div>
+        ${n.limitWarn?`<div class="banner" style="margin-top:10px;"><span>${icon('bell',14)} &nbsp;${t('previewLimitTxt')}</span></div>`:''}
+      </div>
+      <div class="card" style="padding:4px 16px;">
+        <div class="check-row"><div><div style="font-weight:600; font-size:14px;">${t('monthlyReport')}</div><div class="tiny">${t('monthlyReportSub')}</div></div>
+          <div class="toggle ${n.monthly?'on':''}" onclick="n.monthly=!n.monthly; render();"><div class="knob"></div></div></div>
+        ${n.monthly?`<div class="banner" style="margin-top:10px;"><span>${icon('bell',14)} &nbsp;${t('previewReportTxt')}</span></div>`:''}
+      </div>`;
+  }
+  if(s==='export'){
+    const ip = state.importPreview;
+    let importBlock;
+    if(ip && ip.error){
+      importBlock = `<div class="banner" style="border-color:var(--coral); background:var(--coral-light);"><span>${t('importError')}</span><button onclick="cancelImportPreview()">${icon('x',13)}</button></div>`;
+    } else if(ip && ip.data){
+      const txns = ip.data.transactions;
+      const dates = txns.map(x=>x.date).filter(Boolean).sort();
+      const from = dates[0]||'—', to = dates[dates.length-1]||'—';
+      importBlock = `
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:4px;">${t('importPreviewTitle')}</div>
+          <div class="tiny" style="margin-bottom:16px;">${txns.length} ${t('importCount')} · ${from} → ${to}${ip.data.currency? ' · '+ip.data.currency : ''}</div>
+          <button class="btn btn-primary" style="margin-bottom:8px;" onclick="applyImport('merge')">${t('importMerge')}</button>
+          <button class="btn btn-ghost" style="margin-bottom:8px; color:var(--coral); border-color:var(--coral-light);" onclick="applyImport('replace')">${t('importReplace')}</button>
+          <button class="btn btn-ghost" onclick="cancelImportPreview()">${t('cancel')}</button>
+        </div>`;
+    } else {
+      importBlock = `
+        <input type="file" id="importFileInput" accept="application/json,.json" style="display:none" onchange="handleImportFile(event)">
+        <button class="btn btn-ghost" onclick="document.getElementById('importFileInput').click()">${icon('upload',16)} ${t('importChoose')}</button>`;
+    }
+    return subHead(t('exportTitle')) + `
+      <p class="muted" style="line-height:1.7; margin-bottom:22px;">${t('exportBody')}</p>
+      <button class="btn btn-primary" style="margin-bottom:10px;" onclick="exportData('json')">${icon('download',16)} ${t('exportJson')}</button>
+      <button class="btn btn-ghost" style="margin-bottom:8px;" onclick="exportData('csv')">${icon('download',16)} ${t('exportCsv')}</button>
+      <div class="tiny" style="margin-bottom:26px; line-height:1.6;">${t('exportNote')}</div>
+      <h3 style="margin-bottom:8px;">${t('importTitle')}</h3>
+      <p class="muted" style="line-height:1.7; margin-bottom:14px;">${t('importBody')}</p>
+      ${importBlock}`;
+  }
+  if(s==='about'){
+    return subHead(t('about')) + `<p class="muted" style="line-height:1.7;">${t('aboutBody')}</p>`;
+  }
+  return '';
+}
+/* ---------- data export ---------- */
+function buildExportPayload(){
+  return {
+    exportedAt: new Date().toISOString(),
+    currency: state.currency, monthlyLimit: state.monthlyLimit,
+    cycleType: state.cycleType, cycleStartDay: state.cycleStartDay,
+    transactions: state.transactions.map(tx=>({
+      type:tx.type, category:tx.category, amount:tx.amount, description:tx.desc, date:tx.date, recurring:!!tx.recurring
+    }))
+  };
+}
+function exportData(format){
+  const payload = buildExportPayload();
+  let blob, filename;
+  if(format==='json'){
+    blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    filename = 'hasabaty-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  } else {
+    const header = ['type','category','amount','description','date','recurring'];
+    const rows = payload.transactions.map(tx=>[
+      tx.type, tx.category, tx.amount, '"'+(tx.description||'').replace(/"/g,'""')+'"', tx.date, tx.recurring
+    ].join(','));
+    blob = new Blob([[header.join(','),...rows].join('\n')], {type:'text/csv'});
+    filename = 'hasabaty-transactions-'+new Date().toISOString().slice(0,10)+'.csv';
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+}
+function handleImportFile(event){
+  const file = event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data || !Array.isArray(data.transactions)) throw new Error('bad shape');
+      state.importPreview = { data, error:false };
+    } catch(err){
+      state.importPreview = { data:null, error:true };
+    }
+    render();
+  };
+  reader.onerror = ()=>{ state.importPreview = { data:null, error:true }; render(); };
+  reader.readAsText(file);
+}
+function cancelImportPreview(){ state.importPreview = null; render(); }
+function applyImport(mode){
+  const data = state.importPreview.data;
+  if(mode==='replace' && !window.confirm(t('importReplaceConfirm'))) return;
+  const importedTxns = data.transactions.map(row=>({
+    id: state.nextId++, type:row.type, category:row.category, amount:+row.amount,
+    desc:row.description||row.desc||'', date:row.date, recurring:!!row.recurring
+  }));
+  if(mode==='replace'){
+    state.transactions = importedTxns;
+    if(data.currency) state.currency = data.currency;
+    if(data.monthlyLimit) state.monthlyLimit = data.monthlyLimit;
+    if(data.cycleType) state.cycleType = data.cycleType;
+    if(data.cycleStartDay) state.cycleStartDay = data.cycleStartDay;
+  } else {
+    const existingKeys = new Set(state.transactions.map(tx=>[tx.type,tx.category,tx.amount,tx.date,tx.desc].join('|')));
+    importedTxns.forEach(tx=>{
+      const key = [tx.type,tx.category,tx.amount,tx.date,tx.desc].join('|');
+      if(!existingKeys.has(key)){ state.transactions.push(tx); existingKeys.add(key); }
+    });
+  }
+  state.demoBannerDismissed = true;
+  state.importPreview = null;
+  backToSettings();
+}
+function removeCategory(id, type){
+  const arr = type==='income'?INC_CATS:EXP_CATS;
+  const i = arr.findIndex(c=>c.id===id);
+  if(i>-1) arr.splice(i,1);
+  render();
+}
+function addCustomCategory(){
+  const input = document.getElementById('newCatInput');
+  const val = input.value.trim();
+  if(!val) return;
+  const id = 'c'+Date.now();
+  const palette = ['#0B6B57','#C89B3C','#D2472E','#3B8AD4','#7C6FE0','#D4527E'];
+  EXP_CATS.splice(EXP_CATS.length-1,0,{id, en:val, ar:val, color:palette[EXP_CATS.length%palette.length]});
+  render();
+}
+
+/* ---------- add/edit transaction sheet ---------- */
+function openAdd(type){
+  state.sheet = { open:true, editingId:null, type:type||'expense', category:null, amount:'', desc:'', date:new Date().toISOString().slice(0,10), repeat:false, fromRollover:false };
+  render();
+  requestAnimationFrame(()=>document.getElementById('sheetEl')?.classList.add('open'));
+}
+function editTransaction(id){
+  const tx = state.transactions.find(x=>x.id===id);
+  if(!tx) return;
+  state.sheet = { open:true, editingId:id, type:tx.type, category:tx.category, amount:String(tx.amount), desc:tx.desc, date:tx.date, repeat:tx.recurring, fromRollover:false };
+  render();
+  requestAnimationFrame(()=>document.getElementById('sheetEl')?.classList.add('open'));
+}
+function closeAdd(){
+  document.getElementById('sheetEl')?.classList.remove('open');
+  document.getElementById('backdropEl')?.classList.remove('open');
+  setTimeout(()=>{ state.sheet.open=false; render(); }, 220);
+}
+function setSheetType(type){ state.sheet.type=type; state.sheet.category=null; render(); syncSheet(); }
+function pickCategory(id){ state.sheet.category=id; render(); syncSheet(); }
+function syncSheet(){ requestAnimationFrame(()=>{ document.getElementById('sheetEl')?.classList.add('open'); document.getElementById('backdropEl')?.classList.add('open'); }); }
+function saveTransaction(){
+  const s = state.sheet;
+  const amt = parseFloat(s.amount);
+  if(!amt || amt<=0 || !s.category) return;
+  if(s.editingId){
+    const tx = state.transactions.find(x=>x.id===s.editingId);
+    Object.assign(tx, {type:s.type, category:s.category, amount:amt, desc:s.desc, date:s.date, recurring:s.repeat});
+  } else {
+    addTxn(s.type, s.category, amt, s.desc, s.date, s.repeat);
+  }
+  if(s.fromRollover){ state.rollover.dismissed.push(s.type+':'+s.category); }
+  closeAdd();
+}
+function deleteTransaction(){
+  const id = state.sheet.editingId;
+  if(id){ state.transactions = state.transactions.filter(x=>x.id!==id); }
+  closeAdd();
+}
+function renderSheetShell(){
+  const s = state.sheet;
+  const {start,end} = getCycleRange(new Date());
+  const minD = start.toISOString().slice(0,10);
+  const today = new Date().toISOString().slice(0,10);
+  const cats = s.type==='income' ? INC_CATS : EXP_CATS;
+  return `
+    <div class="backdrop ${s.open?'open':''}" id="backdropEl" onclick="closeAdd()"></div>
+    <div class="sheet ${s.open?'open':''}" id="sheetEl">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div style="width:34px;"></div>
+        <h3>${s.editingId? t('editTxn') : t('addTxn')}</h3>
+        <div class="icon-btn" style="width:34px; height:34px;" onclick="closeAdd()">${icon('x',15)}</div>
+      </div>
+      <div class="sheet-body">
+        <div class="seg" style="margin-bottom:14px;">
+          <button class="${s.type==='expense'?'active':''}" onclick="setSheetType('expense')">${t('expense')}</button>
+          <button class="${s.type==='income'?'active':''}" onclick="setSheetType('income')">${t('incomeTab')}</button>
+        </div>
+        <div class="amount-wrap">
+          <input class="amount-input" type="number" inputmode="decimal" placeholder="0" value="${s.amount}" oninput="state.sheet.amount=this.value">
+          <div class="amount-cur">${cur().code}</div>
+        </div>
+        <div class="field"><label>${t('category')}</label>
+          <div class="chip-row">
+            ${cats.map(c=>`<div class="chip ${s.category===c.id?'selected':''}" onclick="pickCategory('${c.id}')"><span class="dot" style="background:${c.color}"></span>${catName(c)}</div>`).join('')}
+          </div>
+        </div>
+        <div class="field"><label>${t('description')}</label>
+          <input class="input" placeholder="${t('descriptionPh')}" value="${s.desc}" oninput="state.sheet.desc=this.value">
+        </div>
+        <div class="field"><label>${t('date')}</label>
+          <input class="input" type="date" min="${minD}" max="${today}" value="${s.date}" oninput="state.sheet.date=this.value">
+        </div>
+        <div class="check-row">
+          <div><div style="font-weight:600; font-size:14px;">${t('repeatMonthly')}</div><div class="tiny">${t('repeatSub')}</div></div>
+          <div class="toggle ${s.repeat?'on':''}" onclick="state.sheet.repeat=!state.sheet.repeat; render(); syncSheet();"><div class="knob"></div></div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:14px;">
+          ${s.editingId?`<button class="btn btn-ghost" style="color:var(--coral); border-color:var(--coral-light);" onclick="deleteTransaction()">${t('delete')}</button>`:''}
+          <button class="btn btn-primary" ${(!s.amount||+s.amount<=0||!s.category)?'disabled':''} onclick="saveTransaction()">${t('save')}</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
