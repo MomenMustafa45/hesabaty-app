@@ -52,7 +52,8 @@ src/
     transactions/
       screens/           AddTransactionSheet (dual-purpose: add and edit are the same sheet,
                           driven by an optional editingTransaction prop — not two components)
-      components/        CategoryChips, AmountInput, RepeatToggle
+      components/        CategoryChips, AmountInput, RepeatToggle, TransactionRow (shared by
+                          RecentTransactionsList and History — extracted during M6)
       api/               transactionsApi.ts, transactionsQueryKeys.ts
       hooks/             useTransactions, useAddTransaction, useUpdateTransaction, useDeleteTransaction
     categories/
