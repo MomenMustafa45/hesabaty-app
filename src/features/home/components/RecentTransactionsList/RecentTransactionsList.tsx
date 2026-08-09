@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
-import { Pressable, View } from 'react-native';
-import AppIcon from '@components/AppIcon';
-import AppText from '@components/AppText';
+import { View } from 'react-native';
 import { useCategories } from '@features/categories/hooks/useCategories';
-import { useCurrency } from '@hooks/useCurrency';
+import { TransactionRow } from '@features/transactions/components/TransactionRow';
 import { Category } from '@models/category';
 import { Transaction } from '@models/transaction';
 import { useSettingsStore } from '@store/settingsStore';
@@ -33,7 +31,6 @@ export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const { formatMoney } = useCurrency();
   const language = useSettingsStore(state => state.language);
   const openEdit = useTransactionSheetStore(state => state.openEdit);
   const { data: categories = [] } = useCategories();
@@ -58,48 +55,21 @@ export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
     <View style={styles.card}>
       {recent.map((transaction, index) => {
         const category = categoriesById.get(transaction.categoryId);
-        const label = categoryLabel(category, language);
-        const sign = transaction.type === 'expense' ? '−' : '+';
-        const directionIcon =
-          transaction.type === 'income' ? 'chevUp' : 'chevDown';
         const dateStr = formatRowDate(transaction.date);
         const subline = transaction.description
           ? `${transaction.description} · ${dateStr}`
           : dateStr;
-        const isLast = index === recent.length - 1;
 
         return (
-          <Pressable
+          <TransactionRow
             key={transaction.id}
-            style={[styles.row, isLast && styles.rowLast]}
-            onPress={() => openEdit(transaction)}>
-            <View
-              style={[
-                styles.catDot,
-                { backgroundColor: category?.color ?? theme.colors.ink3 },
-              ]}>
-              <AppIcon
-                name={directionIcon}
-                size={16}
-                color={theme.ringColors.ringSafe}
-              />
-            </View>
-            <View style={styles.mid}>
-              <AppText weight={600} numberOfLines={1}>
-                {label}
-                {transaction.recurring ? ' ↻' : ''}
-              </AppText>
-              <AppText variant="tiny" numberOfLines={1}>
-                {subline}
-              </AppText>
-            </View>
-            <AppText
-              weight={700}
-              color={transaction.type === 'expense' ? 'coral' : 'nile'}>
-              {sign}
-              {formatMoney(transaction.amount)}
-            </AppText>
-          </Pressable>
+            transaction={transaction}
+            categoryLabel={categoryLabel(category, language)}
+            categoryColor={category?.color ?? theme.colors.ink3}
+            subline={subline}
+            isLast={index === recent.length - 1}
+            onPress={() => openEdit(transaction)}
+          />
         );
       })}
     </View>

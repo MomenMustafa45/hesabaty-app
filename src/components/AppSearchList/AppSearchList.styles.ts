@@ -20,13 +20,26 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.sand2,
       color: theme.colors.ink,
     },
+    sections: {
+      gap: 4,
+    },
+    section: {
+      marginBottom: 4,
+    },
+    sectionTitle: {
+      marginTop: 12,
+      marginBottom: 6,
+      marginHorizontal: 2,
+    },
     list: {
-      maxHeight: 340,
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radiusSm,
       overflow: 'hidden',
       backgroundColor: theme.colors.sand2,
+    },
+    listConstrained: {
+      maxHeight: 340,
     },
     row: {
       flexDirection: 'row',

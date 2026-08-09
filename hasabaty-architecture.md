@@ -27,6 +27,8 @@
 
 **RTL implementation, precisely (for M10):** React Native has no `direction` style prop equivalent to HTML's `dir` attribute — the real mechanism is `I18nManager`. On language change: `i18n.changeLanguage(lang)` → persist the choice to MMKV → `I18nManager.allowRTL(isArabic)` + `I18nManager.forceRTL(isArabic)` → `RNRestart.restart()`. On every cold start, read the persisted language and call `I18nManager.forceRTL()` again _before_ the root component mounts (same pattern as the reference project's `i18n.ts` init) so direction is correct from launch, not only after a manual switch.
 
+**Standing pattern, caught during M5:** for anything absolutely-positioned that needs to mirror in RTL (the FAB, and likely others later — Insights, any future floating elements), use RN's locale-aware `end`/`start` properties, not manual `left`/`right` + `I18nManager.isRTL` conditionals. The manual version passed a casual code read but was actually wrong (stayed on the physical right in RTL) until measured with a real screenshot — `end`/`start` lets the layout engine handle the mirroring correctly by construction, rather than relying on a conditional being written correctly every single time.
+
 ---
 
 ## 2. Folder structure
@@ -404,3 +406,32 @@ One component, two modes — driven by an optional `editingTransaction` prop, no
 **First prompt to give Cursor (Milestone 5):**
 
 > Read Section 10 fully, plus Sections 6–9 for the tokens/components/keyboard-handling this builds on. Build the shared hooks in 10.1, currency formatting in 10.2, then Home screen (10.3) and `AddTransactionSheet` (10.4) exactly as specified — this is a big milestone, so tell me your plan broken into clear sub-steps before writing any code, and check in after the data-layer wiring (hooks + `AddTransactionSheet` functional) before polishing Home's visuals, rather than building everything silently in one pass. Don't invent new category icons — the letter-avatar approach in 10.3 is correct prototype behavior, not a placeholder. Verify end-to-end: add a transaction, confirm it appears in Home's recent list and updates the ring/stats correctly, edit it, delete it — on both platforms, with real screenshots.
+
+---
+
+## 11. History (Milestone 6)
+
+### 11.1 New hooks
+
+- **`useAvailableMonths()`** — `src/features/history/hooks/`. Returns sorted month keys (`YYYY-MM`) that have at least one transaction — port the prototype's `availableMonths()` logic.
+- **`useMonthStats(monthKey)`** — spend/income totals for a _specific calendar month_, not cycle-based. **This carries forward a deliberate simplification decided back in the HTML prototype phase: History and Insights bucket by calendar month regardless of the user's chosen cycle type** (calendar vs. custom start day) — only Home's _current_ cycle respects the custom start day. Don't apply cycle boundaries to historical months; that was a conscious scope decision, not an oversight.
+- **`useMonthTransactions(monthKey)`** — transactions within that calendar month, grouped by date for the list.
+
+### 11.2 History screen
+
+- Header: month label (tap opens the month picker) + prev/next arrows, disabled at the boundaries of `useAvailableMonths()`'s list.
+- Stats: reuse `StatCards` for the viewed month's spend/income.
+- List: grouped by date with date headers; rows reuse the exact same visual as `RecentTransactionsList` (category-colored circle + `chevUp`/`chevDown`) — same component if practical, not a re-implementation. Tapping a row opens edit via `transactionSheetStore.openEdit()` — this is exactly what that shared store was built for, should be a trivial call here.
+- `EmptyState` if the viewed month has zero transactions.
+
+### 11.3 Month picker sheet
+
+- **Local state within the History screen** — not `transactionSheetStore`. Only History ever opens this; there's no cross-screen reuse need the way `AddTransactionSheet` had, so a shared global store would be overkill here.
+- Reuses `AppSearchList`'s row-rendering/selection pattern, but needs **year-grouping (section headers)**, which `AppSearchList`'s flat `items` prop doesn't natively support (Currency in M4 didn't need this). Investigate the cleanest way to add it — extending `AppSearchList` with optional grouping, or composing multiple sections around it — and tell me which before implementing, same as the Currency-search-vs-chips question in M4.
+- `searchable={false}` — few enough months that search doesn't add value here, unlike an 18-item currency list.
+- "Jump to current month" quick action at the top.
+- **Defer the "Best" badge to M7.** It depends on Insights' best-month metric toggle (lowest spend vs. highest savings), which doesn't exist yet — don't build a badge with no real metric behind it yet.
+
+**First prompt to give Cursor (Milestone 6):**
+
+> Read Section 11 fully, plus Section 10 for the components/patterns this reuses (`StatCards`, the transaction row visual, `transactionSheetStore`, `AppSearchList`). Build the hooks in 11.1, then History (11.2) and the month picker (11.3). Tell me your plan — specifically how you'd add year-grouping to `AppSearchList` or compose around it — before writing code. Verify with real data across several months (the seeded/test data should span enough months to exercise month navigation and the picker properly), on both platforms, with screenshots.
