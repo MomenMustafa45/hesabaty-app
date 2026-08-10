@@ -1,5 +1,6 @@
 # حساباتي — Technical Architecture
 
+**Version:** 8  
 **Status:** Step 2 in progress. This document is the single source of truth for the React Native build — hand it to Cursor alongside the HTML prototype. It grows section by section as decisions get locked; nothing here should contradict the prototype's validated design and behavior.
 
 ---
@@ -53,7 +54,8 @@ src/
       screens/           AddTransactionSheet (dual-purpose: add and edit are the same sheet,
                           driven by an optional editingTransaction prop — not two components)
       components/        CategoryChips, AmountInput, RepeatToggle, TransactionRow (shared by
-                          RecentTransactionsList and History — extracted during M6)
+                          RecentTransactionsList and History — extracted during M6),
+                          TransactionSheetHost (app-shell mount for AddTransactionSheet)
       api/               transactionsApi.ts, transactionsQueryKeys.ts
       hooks/             useTransactions, useAddTransaction, useUpdateTransaction, useDeleteTransaction
     categories/
@@ -69,7 +71,9 @@ src/
       hooks/             useMonthlyStats, useBestMonth
     rollover/
       screens/           NewMonthScreen
-      hooks/             usePendingRecurring
+      components/        RolloverHost (app-shell Modal host — same placement
+                          pattern as TransactionSheetHost)
+      hooks/             usePendingRecurring, useCycleRolloverCheck
     settings/
       screens/           SettingsScreen, CurrencyScreen, CycleLimitScreen, CategoriesScreen,
                           NotificationSettingsScreen, ExportImportScreen, AboutScreen
@@ -470,3 +474,56 @@ Monthly trend chart → best-month toggle + result card → category donut + leg
 **First prompt to give Cursor (Milestone 7):**
 
 > Read Section 12 fully, plus how `SpendRing` was built in Section 10/M5 — the bar chart and donut both reuse that same SVG approach, don't reinvent charting from scratch. Build `useBestMonth()` and the shared metric state in 12.1 first, then retroactively wire History's deferred "Best" badge (Section 11.3) using it, then build the trend chart (12.2), donut (12.3), and screen composition (12.4). Tell me your plan before writing code. Verify: numbers on Insights must match what History shows for the same months exactly — cross-check them side by side, not just eyeball each screen independently. Both platforms, real screenshots.
+
+---
+
+## 13. Settings + Rollover (Milestone 8)
+
+This is the last big milestone — comparable in size to M5, arguably larger. Treat it the same way: sub-stepped plan, check in before moving between major pieces, not one silent pass.
+
+### 13.1 Scope split with later milestones
+
+Two sub-screens get built now but stay intentionally incomplete, matching the pattern already used for `AddTransactionSheet` in M2 (placeholder shell, real content later):
+
+- **Export & Import row/screen** — real logic (file share, import-with-preview) is M11's job. Build the row and a lightweight placeholder screen now so Settings' list is visually complete, not the real export/import flow.
+- **Notification Settings screen** — build the real UI (toggles, time picker) and persist choices to `settingsStore` now. Actually _scheduling_ reminders via `react-native-notify-kit` is M9's job — same "build the control surface now, wire real behavior later" split already used for the onboarding notification-permission step.
+
+### 13.2 `settingsStore` additions
+
+New fields beyond what 8.1 already has: `dailyReminderEnabled`, `dailyReminderTime`, `limitWarningsEnabled`, `monthlyReportEnabled` (all UI-only until M9), and `lastSeenCycleKey: string | null` (drives rollover detection, 13.6).
+
+### 13.3 Settings screen list
+
+Rows: Currency, Budget cycle & limit, Categories, Notifications, Appearance, Language, Export & Import, About — matching the prototype's grouping.
+
+**Appearance & Language, main-app context:** `AppSegmentedControl` (already built) drives both, same as planned when that component was justified back in Section 7. Language switching here is simpler than onboarding's — there's no draft to resume, just persist `settingsStore.language`, trigger the same `forceRTL`/restart sequence from Section 1, and let `RootNavigator` land back on the default tab (Home) afterward. **Don't build a full tab/scroll-position resume mechanism for this** — losing "which tab you were on" is an acceptable, minor cost here, unlike onboarding where losing entered data would have been a real regression.
+
+### 13.4 Currency screen
+
+Reuses `AppSearchList`, same list as onboarding. **This needs the warning decided back in Step 1's business analysis, not a casual change:** since there's no currency conversion, changing it mid-use makes past totals silently nonsensical. Don't hard-lock it, but require an explicit confirmation step (a warning dialog/screen) before applying the change — "bury deep with a warning," per that original decision.
+
+### 13.5 Cycle & limit screen
+
+Same UI patterns as onboarding's `CycleAndLimitStepScreen` (cycle type via `AppChip`, custom start day, limit in major units converting ×100 on save). Changing the limit mid-cycle should apply immediately to Home's ring — this should fall out naturally from `settingsStore` reactivity (Home already reads `monthlyLimit` reactively), not require special-case code; confirm this rather than assume it.
+
+### 13.6 Categories screen
+
+M3 built `categoriesApi`/`useCategories` **read-only**. This milestone adds write operations: `useAddCategory`, `useRemoveCategory` mutations. **Correction to this doc's earlier wording:** protection isn't "the last remaining default category" — checked against the prototype's actual code, the real rule is narrower and simpler: the specific `other`/`other_income` sentinel categories can never be deleted, by ID, always — not a dynamic "whichever happens to be last" rule. This is also the safer version: transactions need a guaranteed-always-present fallback category, which a "protect whichever is currently last" rule doesn't cleanly guarantee. Implement the prototype's literal rule, not the paraphrase above.
+
+### 13.7 Notification settings screen
+
+Daily reminder (toggle + time picker, using `AppDate` with `mode="time"`), limit warnings (single toggle), monthly report (single toggle) — matching the prototype's three controls exactly. Persists to the `settingsStore` fields from 13.2. No scheduling logic yet (M9).
+
+### 13.8 Rollover flow — real detection, not just the screen
+
+This was fully designed in the original business-analysis phase and prototyped — port that logic, don't re-derive it.
+
+**Detection:** `useCycleRolloverCheck()`, checked at app-shell level (same placement pattern as `TransactionSheetHost`). Computes the current cycle's key via `useCycleRange()`, compares against `settingsStore.lastSeenCycleKey`. If they differ _and_ `lastSeenCycleKey` isn't null (skip on the very first launch right after onboarding — nothing to roll over from yet), a rollover is pending. On dismissing the rollover screen, update `lastSeenCycleKey` to the current cycle's key.
+
+**Rollover screen:** full-screen (not a `BottomSheet` — this is a more substantial moment than a quick sheet), presented modally when a rollover is pending. Shows: last completed cycle's summary (spent X of Y, over/under indicator), then any recurring transactions from that cycle not yet re-logged in the current one — each with Confirm (insert same amount immediately, `recurring: true`) and Edit (open `AddTransactionSheet` prefilled, `recurring: true`) actions, matching the prototype's `pendingRecurring()`/`confirmRecurring()`/`editRecurring()` logic exactly. "Continue to Home" dismisses.
+
+**Manual test entry point:** since a real cycle boundary won't naturally occur during development/QA, add a dev-only row (clearly labeled as a test tool, not a real feature — same honesty as the prototype's own "Prototype preview" labeling) to trigger the rollover screen on demand. This is required by the milestone's own verify criterion ("run the rollover flow manually"), not optional scaffolding.
+
+**First prompt to give Cursor (Milestone 8):**
+
+> Read Section 13 fully — this is a big milestone, so give me a sub-stepped plan with at least one check-in before moving from the settings sub-screens into the rollover flow, same discipline as M5's Phase A/B/C. Build the `settingsStore` additions (13.2) first, then the Settings list + Appearance/Language (13.3), Currency with its confirmation warning (13.4), Cycle & limit (13.5), Categories read/write (13.6), Notification settings UI (13.7) — check in here — then the rollover detection and screen (13.8), including the manual test entry point. Confirm the limit-changes-apply-immediately behavior rather than assuming it. Verify every setting actually persists and takes effect, and run the rollover flow manually end to end, on both platforms, with real screenshots.

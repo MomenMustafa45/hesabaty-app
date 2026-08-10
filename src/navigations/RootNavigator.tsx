@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RolloverHost } from '@features/rollover/components/RolloverHost';
 import { TransactionSheetHost } from '@features/transactions/components/TransactionSheetHost';
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
@@ -49,6 +50,7 @@ export const RootNavigator: React.FC = () => {
           )}
         </Stack.Navigator>
         {onboarded ? <TransactionSheetHost /> : null}
+        {onboarded ? <RolloverHost /> : null}
       </>
     </NavigationContainer>
   );

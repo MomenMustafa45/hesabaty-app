@@ -14,6 +14,8 @@ import { majorToMinor, minorToMajor } from '@lib/currencyUtils';
 import { parseIsoDate, startOfLocalDay, toIsoDate } from '@lib/dateUtils';
 import { Transaction, TransactionType } from '@models/transaction';
 import { useTheme } from '@providers/ThemeProvider';
+import { useRolloverStore } from '@store/rolloverStore';
+import { TransactionSheetPrefill } from '@store/transactionSheetStore';
 import { AmountInput } from '../../components/AmountInput';
 import { CategoryChips } from '../../components/CategoryChips';
 import { RepeatToggle } from '../../components/RepeatToggle';
@@ -26,6 +28,7 @@ export interface AddTransactionSheetProps {
   visible: boolean;
   onClose: () => void;
   editingTransaction?: Transaction | null;
+  prefill?: TransactionSheetPrefill | null;
 }
 
 const TYPE_OPTIONS: [
@@ -45,6 +48,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
   visible,
   onClose,
   editingTransaction = null,
+  prefill = null,
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
@@ -56,6 +60,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
   const addMutation = useAddTransaction();
   const updateMutation = useUpdateTransaction();
   const deleteMutation = useDeleteTransaction();
+  const dismissPendingKey = useRolloverStore(state => state.dismissPendingKey);
 
   const isEditing = editingTransaction != null;
 
@@ -81,13 +86,23 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
       return;
     }
 
+    if (prefill) {
+      setType(prefill.type);
+      setAmountText(amountToInputValue(prefill.amount));
+      setCategoryId(prefill.categoryId);
+      setDescription(prefill.description ?? '');
+      setDate(today);
+      setRecurring(prefill.recurring);
+      return;
+    }
+
     setType('expense');
     setAmountText('');
     setCategoryId(null);
     setDescription('');
     setDate(today);
     setRecurring(false);
-  }, [visible, editingTransaction, today]);
+  }, [visible, editingTransaction, prefill, today]);
 
   const parsedMajor = useMemo(() => {
     const parsed = Number.parseFloat(amountText.replace(',', '.'));
@@ -129,6 +144,9 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
       });
     } else {
       await addMutation.mutateAsync(payload);
+      if (prefill?.rolloverKey) {
+        dismissPendingKey(prefill.rolloverKey);
+      }
     }
     onClose();
   };

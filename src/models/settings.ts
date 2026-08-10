@@ -2,6 +2,9 @@ export type CycleType = 'calendar' | 'custom';
 
 export type AppLanguage = 'en' | 'ar';
 
+/** null = follow system Appearance; explicit value = user override (§1, §13.3). */
+export type ThemeOverride = 'light' | 'dark' | null;
+
 export type OnboardingStep =
   | 'Welcome'
   | 'CurrencyStep'
@@ -27,4 +30,12 @@ export interface SettingsState {
   onboarded: boolean;
   language: AppLanguage;
   onboardingDraft: OnboardingDraft | null;
+  themeOverride: ThemeOverride;
+  dailyReminderEnabled: boolean;
+  /** "HH:MM", 24-hour — matches the prototype's <input type="time"> format. */
+  dailyReminderTime: string;
+  limitWarningsEnabled: boolean;
+  monthlyReportEnabled: boolean;
+  /** Drives rollover detection (§13.8) — null until the first cycle is seen. */
+  lastSeenCycleKey: string | null;
 }

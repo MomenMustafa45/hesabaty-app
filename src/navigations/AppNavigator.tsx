@@ -3,8 +3,8 @@ import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/un
 import HistoryScreen from '@features/history/screens/HistoryScreen';
 import HomeScreen from '@features/home/screens/HomeScreen';
 import InsightsScreen from '@features/insights/screens/InsightsScreen';
-import SettingsScreen from '@features/settings/screens/SettingsScreen';
 import { useTheme } from '@providers/ThemeProvider';
+import { SettingsNavigator } from './SettingsNavigator';
 import { tabBarIcons } from './tabBarIcons';
 import { AppTabParamList } from './types';
 
@@ -36,7 +36,7 @@ export const AppNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={SettingsNavigator}
         options={{ tabBarIcon: tabBarIcons.settings }}
       />
     </Tab.Navigator>

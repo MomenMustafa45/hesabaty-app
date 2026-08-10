@@ -36,6 +36,20 @@ export function getCycleRange(
   return { start, end };
 }
 
+/** Cycle that ended the day before `current.start`. */
+export function getPreviousCycleRange(
+  currentStart: Date,
+  cycleType: 'calendar' | 'custom' | null,
+  cycleStartDay: number | null,
+): CycleRange {
+  const dayBefore = new Date(
+    currentStart.getFullYear(),
+    currentStart.getMonth(),
+    currentStart.getDate() - 1,
+  );
+  return getCycleRange(dayBefore, cycleType, cycleStartDay);
+}
+
 export function useCycleRange(): CycleRange {
   const cycleType = useSettingsStore(state => state.cycleType);
   const cycleStartDay = useSettingsStore(state => state.cycleStartDay);

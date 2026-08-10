@@ -5,7 +5,17 @@ export type AppTabParamList = {
   Home: undefined;
   History: undefined;
   Insights: undefined;
-  Settings: undefined;
+  Settings: NavigatorScreenParams<SettingsStackParamList>;
+};
+
+export type SettingsStackParamList = {
+  SettingsHome: undefined;
+  Currency: undefined;
+  CycleLimit: undefined;
+  Categories: undefined;
+  NotificationSettings: undefined;
+  ExportImport: undefined;
+  About: undefined;
 };
 
 export type OnboardingStackParamList = {
