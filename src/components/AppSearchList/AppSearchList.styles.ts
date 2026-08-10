@@ -61,6 +61,11 @@ export const createStyles = (theme: Theme) =>
       flex: 1,
       gap: 2,
     },
+    rowLabelLine: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
     rowPressed: {
       backgroundColor: theme.colors.sand,
     },

@@ -6,6 +6,16 @@ export const createStyles = (theme: Theme) =>
     screen: {
       flex: 1,
       backgroundColor: theme.colors.sand,
-      padding: theme.spacing.cardPadding,
+    },
+    content: {
+      paddingHorizontal: theme.spacing.cardPadding,
+      paddingBottom: 120,
+    },
+    title: {
+      paddingTop: 14,
+      paddingBottom: 16,
+    },
+    sectionTitle: {
+      marginBottom: 10,
     },
   });

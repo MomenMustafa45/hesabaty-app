@@ -6,6 +6,7 @@ import AppSearchList, {
 } from '@components/AppSearchList';
 import AppText from '@components/AppText';
 import BottomSheet from '@components/BottomSheet';
+import { useBestMonth } from '@features/insights/hooks/useBestMonth';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
 import { useCurrency } from '@hooks/useCurrency';
 import { formatMonthName, toYearMonthKey } from '@lib/dateUtils';
@@ -31,6 +32,7 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
   const styles = createStyles(theme);
   const { formatMoney } = useCurrency();
   const { data: transactions = [] } = useTransactions();
+  const { bestKey } = useBestMonth();
   const currentMonthKey = toYearMonthKey(new Date());
 
   const spendByMonth = useMemo(() => {
@@ -66,10 +68,11 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
           id: monthKey,
           label: formatMonthName(monthKey),
           meta: formatMoney(spendByMonth.get(monthKey) ?? 0),
+          badgeLabel: monthKey === bestKey ? '★ Best' : undefined,
         })),
       };
     });
-  }, [months, spendByMonth, formatMoney]);
+  }, [months, spendByMonth, formatMoney, bestKey]);
 
   const handleSelect = (monthKey: string) => {
     onSelectMonth(monthKey);

@@ -50,3 +50,11 @@ export function formatMonthName(monthKey: string, locale = 'en-US'): string {
     month: 'long',
   });
 }
+
+/** Abbreviated month label for chart axes, e.g. "Mar". */
+export function formatMonthShort(monthKey: string, locale = 'en-US'): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString(locale, {
+    month: 'short',
+  });
+}

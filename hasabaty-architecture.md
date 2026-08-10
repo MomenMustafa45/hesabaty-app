@@ -436,3 +436,37 @@ One component, two modes — driven by an optional `editingTransaction` prop, no
 **First prompt to give Cursor (Milestone 6):**
 
 > Read Section 11 fully, plus Section 10 for the components/patterns this reuses (`StatCards`, the transaction row visual, `transactionSheetStore`, `AppSearchList`). Build the hooks in 11.1, then History (11.2) and the month picker (11.3). Tell me your plan — specifically how you'd add year-grouping to `AppSearchList` or compose around it — before writing code. Verify with real data across several months (the seeded/test data should span enough months to exercise month navigation and the picker properly), on both platforms, with screenshots.
+
+---
+
+## 12. Insights (Milestone 7)
+
+### 12.1 Best-month metric — shared, not local
+
+The metric toggle (lowest spend vs. highest savings) was deferred from History's month-picker badge back in Section 11 — this is where it gets built for real, and it needs to be **shared state, not local to `InsightsScreen`**. History's badge has to reflect whichever metric was last picked in Insights, not silently default to something else. Same reasoning as `transactionSheetStore`: a small, **non-persisted** Zustand slice (doesn't need to survive a restart — matches the prototype's in-memory-only behavior) holding `bestMonthMetric: 'spend' | 'savings'`.
+
+**`useBestMonth()`** — `src/features/insights/hooks/`. Computes the winning month among _completed_ months only (excludes the current, in-progress month — same "based on completed months only" rule as the prototype), by whichever metric is currently selected. Port the prototype's `computeBestKey()` logic exactly.
+
+**Retroactive wiring:** once this exists, go back and wire the "Best" badge into History's month picker (Section 11.3 deferred it specifically for this) — same `useBestMonth()` hook, same metric state, both screens reading the identical source of truth.
+
+### 12.2 Monthly trend (bar chart)
+
+Bar per available month (`useAvailableMonths()`), height proportional to that month's spend ÷ the max spend across all shown months (min 6px, max 96px). Current month and the best month get distinct treatment (current: `nile`; best: `gold`) — matching the prototype's three-way color logic. **Bars are plain `View`s, not SVG** — the prototype itself uses a CSS `div` with `border-radius: 6px 6px 2px 2px` (flat bottom, rounded top), bottom-anchored to a shared baseline (`justifyContent: 'flex-end'`). Only the donut (12.3) reuses `SpendRing`'s SVG technique — the bar chart never did, in the prototype or here; that was a mistake in the original version of this section, not something to preserve.
+
+**Why plain `View`, not SVG (resolved after a real bug):** SVG's `rect rx` is inherently uniform across all four corners — there's no way to get independent per-corner radii the way CSS `border-radius` allows. The first build tried to approximate the prototype's asymmetric shape with SVG anyway, which is structurally incapable of producing it — that's why it rendered as uniform rounded squares rather than bars. A plain `View` (with `borderTopLeftRadius`/`borderTopRightRadius`/`borderBottomLeftRadius`/`borderBottomRightRadius` set independently) matches CSS's actual capability and the prototype's real implementation.
+
+**Ordering:** always chronological, oldest → newest, left → right — standard time-series convention, **deliberately not mirrored by RTL**. Reverse the data array in JS when `I18nManager.isRTL`, canceling out RN's automatic `flexDirection: row` mirroring, rather than letting it apply. This is a real, generalizable lesson, not a one-off fix: automatic RTL mirroring is correct for navigation/UI-chrome (that's why we rely on it everywhere else), but wrong for data with inherent temporal meaning — time doesn't reverse direction because the UI does. Watch for this in any future timeline-style visualization, not just this chart.
+
+**Scalability:** rendered in a horizontal `ScrollView` showing ~6 months at a time (column width = measured viewport ÷ 6), defaulting scrolled to the current month via `scrollToEnd()` on layout — this works correctly under RTL specifically because scroll offset is always measured from the content's physical left edge, and the current month is always rendered at the physical right edge by construction (the ordering fix above). All available months still render (never hard-capped), so someone with two years of history scrolls back through all of it rather than hitting a wall or seeing an illegible pile of bars.
+
+### 12.3 Category donut
+
+Segmented circle (`react-native-svg`, stroke-dasharray per segment — again, the same primitive `SpendRing` already uses, just multiple segments instead of one arc) for the **most recent month's** expense categories only — not a month the user can pick, matching the prototype exactly. Legend: top 5 categories by amount, each with its color swatch and percentage.
+
+### 12.4 Screen composition
+
+Monthly trend chart → best-month toggle + result card → category donut + legend, matching the prototype's section order. Hardcoded English copy for now (M10 territory, same as everywhere else).
+
+**First prompt to give Cursor (Milestone 7):**
+
+> Read Section 12 fully, plus how `SpendRing` was built in Section 10/M5 — the bar chart and donut both reuse that same SVG approach, don't reinvent charting from scratch. Build `useBestMonth()` and the shared metric state in 12.1 first, then retroactively wire History's deferred "Best" badge (Section 11.3) using it, then build the trend chart (12.2), donut (12.3), and screen composition (12.4). Tell me your plan before writing code. Verify: numbers on Insights must match what History shows for the same months exactly — cross-check them side by side, not just eyeball each screen independently. Both platforms, real screenshots.

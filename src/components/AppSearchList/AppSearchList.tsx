@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, TextInput, View } from 'react-native';
+import AppBadge from '@components/AppBadge';
 import AppText from '@components/AppText';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppSearchList.styles';
@@ -9,6 +10,7 @@ export interface AppSearchListItem {
   label: string;
   sublabel?: string;
   meta?: string;
+  badgeLabel?: string;
 }
 
 export interface AppSearchListSection {
@@ -89,9 +91,14 @@ export const AppSearchList: React.FC<AppSearchListProps> = props => {
           pressed && !isSelected && styles.rowPressed,
         ]}>
         <View style={styles.rowLeading}>
-          <AppText variant="h3" color={isSelected ? 'nile' : 'ink'}>
-            {item.label}
-          </AppText>
+          <View style={styles.rowLabelLine}>
+            <AppText variant="h3" color={isSelected ? 'nile' : 'ink'}>
+              {item.label}
+            </AppText>
+            {item.badgeLabel ? (
+              <AppBadge tone="gold">{item.badgeLabel}</AppBadge>
+            ) : null}
+          </View>
           {item.sublabel ? (
             <AppText variant="tiny">{item.sublabel}</AppText>
           ) : null}
