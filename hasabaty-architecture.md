@@ -1,6 +1,5 @@
 # حساباتي — Technical Architecture
 
-**Version:** 8  
 **Status:** Step 2 in progress. This document is the single source of truth for the React Native build — hand it to Cursor alongside the HTML prototype. It grows section by section as decisions get locked; nothing here should contradict the prototype's validated design and behavior.
 
 ---
@@ -54,8 +53,7 @@ src/
       screens/           AddTransactionSheet (dual-purpose: add and edit are the same sheet,
                           driven by an optional editingTransaction prop — not two components)
       components/        CategoryChips, AmountInput, RepeatToggle, TransactionRow (shared by
-                          RecentTransactionsList and History — extracted during M6),
-                          TransactionSheetHost (app-shell mount for AddTransactionSheet)
+                          RecentTransactionsList and History — extracted during M6)
       api/               transactionsApi.ts, transactionsQueryKeys.ts
       hooks/             useTransactions, useAddTransaction, useUpdateTransaction, useDeleteTransaction
     categories/
@@ -71,9 +69,7 @@ src/
       hooks/             useMonthlyStats, useBestMonth
     rollover/
       screens/           NewMonthScreen
-      components/        RolloverHost (app-shell Modal host — same placement
-                          pattern as TransactionSheetHost)
-      hooks/             usePendingRecurring, useCycleRolloverCheck
+      hooks/             usePendingRecurring
     settings/
       screens/           SettingsScreen, CurrencyScreen, CycleLimitScreen, CategoriesScreen,
                           NotificationSettingsScreen, ExportImportScreen, AboutScreen
@@ -158,6 +154,8 @@ Matches the reference project's pattern exactly, just pointed at local SQLite in
 Each milestone is a single, scoped prompt to Cursor's Agent — never "build the whole app." After each one: run the app yourself against the "verify" column, read Cursor's changelog, then bring both back for review before greenlighting the next milestone.
 
 **Standing note on Android verification:** the headless Android emulator in this environment has repeatedly crashed (GPU/display-surface errors) partway through automated screenshot capture (first seen M3, recurred M4). Treat this as expected, not a one-off — Cursor should still attempt automated Android verification where reasonable (build success, logcat checks), but a local `bun run android` pass by the human is the reliable way to confirm anything visual on Android, every milestone, not just when the automated attempt happens to fail.
+
+**Standing note on automated tap verification (found during M8's iOS audit):** a screenshot existing after a scripted tap is not proof the tap landed on its intended target. M8's first iOS pass had two silent failures — `G2-after-confirm.png` was byte-identical to the pre-confirm screenshot (the tap had hit a section header, not the Confirm button) and the same happened to a notification toggle — both looked like passing verification because a PNG was produced, while proving nothing. Going forward: automated tap-based verification requires a `TAP_OK`-style confirmation and an accessibility assert _before_ the screenshot is taken, not just "tap, wait, capture." Where practical, also state which screenshots are expected to be identical (same destination reached via different paths) versus expected to differ (before/after an action) — an unexpected identical pair is itself a signal something didn't register.
 
 | #   | Milestone              | Cursor builds                                                                                          | You verify                                                                                    |
 | --- | ---------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
