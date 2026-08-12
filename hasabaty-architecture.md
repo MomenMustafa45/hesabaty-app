@@ -53,7 +53,8 @@ src/
       screens/           AddTransactionSheet (dual-purpose: add and edit are the same sheet,
                           driven by an optional editingTransaction prop — not two components)
       components/        CategoryChips, AmountInput, RepeatToggle, TransactionRow (shared by
-                          RecentTransactionsList and History — extracted during M6)
+                          RecentTransactionsList and History — extracted during M6),
+                          TransactionSheetHost (app-shell mount for AddTransactionSheet)
       api/               transactionsApi.ts, transactionsQueryKeys.ts
       hooks/             useTransactions, useAddTransaction, useUpdateTransaction, useDeleteTransaction
     categories/
@@ -69,7 +70,9 @@ src/
       hooks/             useMonthlyStats, useBestMonth
     rollover/
       screens/           NewMonthScreen
-      hooks/             usePendingRecurring
+      components/        RolloverHost (app-shell Modal host — same placement pattern as
+                          TransactionSheetHost)
+      hooks/             usePendingRecurring, useCycleRolloverCheck
     settings/
       screens/           SettingsScreen, CurrencyScreen, CycleLimitScreen, CategoriesScreen,
                           NotificationSettingsScreen, ExportImportScreen, AboutScreen
