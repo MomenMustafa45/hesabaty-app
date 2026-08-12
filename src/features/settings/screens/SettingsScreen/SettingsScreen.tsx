@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import AppSegmentedControl from '@components/AppSegmentedControl';
 import AppText from '@components/AppText';
 import { SettingsRow } from '@features/settings/components/SettingsRow';
 import { useCurrency } from '@hooks/useCurrency';
+import { scheduleDevTestNotification } from '@lib/notifications';
 import { switchAppLanguage } from '@locales/switchLanguage';
 import { AppLanguage } from '@models/settings';
 import { SettingsStackParamList } from '@navigations/types';
@@ -40,6 +41,20 @@ export const SettingsScreen: React.FC = () => {
       return;
     }
     void switchAppLanguage(next);
+  };
+
+  const handleDevTestNotification = async () => {
+    try {
+      const fireAt = await scheduleDevTestNotification();
+      Alert.alert(
+        'Dev test armed',
+        `OS notification should fire around ${fireAt.toLocaleTimeString()}. Verify on a real device.`,
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Could not schedule test';
+      Alert.alert('Dev test failed', message);
+    }
   };
 
   return (
@@ -132,8 +147,15 @@ export const SettingsScreen: React.FC = () => {
               <SettingsRow
                 icon="bell"
                 label="Preview: new month rollover"
-                isLast
                 onPress={openManualPreview}
+              />
+              <SettingsRow
+                icon="bell"
+                label="Schedule test notification (~90s)"
+                isLast
+                onPress={() => {
+                  void handleDevTestNotification();
+                }}
               />
             </View>
           </>

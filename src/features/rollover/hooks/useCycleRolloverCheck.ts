@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useCycleRange } from '@hooks/useCycleRange';
 import { toIsoDate } from '@lib/dateUtils';
+import { fireMonthlyReport } from '@lib/notifications';
 import { useRolloverStore } from '@store/rolloverStore';
 import { useSettingsStore } from '@store/settingsStore';
 
@@ -34,6 +35,13 @@ export function useCycleRolloverCheck(): {
   const isNaturalPending =
     lastSeenCycleKey != null && lastSeenCycleKey !== currentCycleKey;
   const isVisible = isNaturalPending || manualPreview;
+
+  useEffect(() => {
+    if (!isNaturalPending) {
+      return;
+    }
+    void fireMonthlyReport(currentCycleKey);
+  }, [isNaturalPending, currentCycleKey]);
 
   const dismiss = () => {
     if (isNaturalPending) {

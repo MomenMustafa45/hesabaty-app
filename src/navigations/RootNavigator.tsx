@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RolloverHost } from '@features/rollover/components/RolloverHost';
 import { TransactionSheetHost } from '@features/transactions/components/TransactionSheetHost';
+import NotificationsLifecycle from '@providers/NotificationsLifecycle';
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
 import { AppNavigator } from './AppNavigator';
@@ -51,6 +52,7 @@ export const RootNavigator: React.FC = () => {
         </Stack.Navigator>
         {onboarded ? <TransactionSheetHost /> : null}
         {onboarded ? <RolloverHost /> : null}
+        {onboarded ? <NotificationsLifecycle /> : null}
       </>
     </NavigationContainer>
   );

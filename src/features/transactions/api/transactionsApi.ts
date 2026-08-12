@@ -73,6 +73,20 @@ export async function getTransactions(
   return (result.rows as TransactionRow[]).map(mapTransactionRow);
 }
 
+export async function getTransactionById(
+  id: string,
+): Promise<Transaction | null> {
+  const result = await db.execute(
+    'SELECT * FROM transactions WHERE id = ?;',
+    [id],
+  );
+  const row = result.rows[0] as TransactionRow | undefined;
+  if (!row) {
+    return null;
+  }
+  return mapTransactionRow(row);
+}
+
 export async function addTransaction(
   input: NewTransactionInput,
 ): Promise<Transaction> {

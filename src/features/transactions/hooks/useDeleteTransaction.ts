@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { reevaluateDailyReminderAfterMutation } from '@lib/limitWarningFromMutation';
 import { deleteTransaction } from '../api/transactionsApi';
 import { transactionsQueryKeys } from '../api/transactionsQueryKeys';
 
@@ -14,6 +15,7 @@ export function useDeleteTransaction() {
       await queryClient.invalidateQueries({
         queryKey: transactionsQueryKeys.detail(id),
       });
+      await reevaluateDailyReminderAfterMutation();
     },
   });
 }

@@ -528,3 +528,33 @@ This was fully designed in the original business-analysis phase and prototyped �
 **First prompt to give Cursor (Milestone 8):**
 
 > Read Section 13 fully — this is a big milestone, so give me a sub-stepped plan with at least one check-in before moving from the settings sub-screens into the rollover flow, same discipline as M5's Phase A/B/C. Build the `settingsStore` additions (13.2) first, then the Settings list + Appearance/Language (13.3), Currency with its confirmation warning (13.4), Cycle & limit (13.5), Categories read/write (13.6), Notification settings UI (13.7) — check in here — then the rollover detection and screen (13.8), including the manual test entry point. Confirm the limit-changes-apply-immediately behavior rather than assuming it. Verify every setting actually persists and takes effect, and run the rollover flow manually end to end, on both platforms, with real screenshots.
+
+---
+
+## 14. Notifications (Milestone 9)
+
+M8 already built the UI and preferences (`settingsStore.dailyReminderEnabled/dailyReminderTime/limitWarningsEnabled/monthlyReportEnabled`) and installed `react-native-notify-kit`. This milestone wires real scheduling — the three notification types are mechanically different from each other, not one pattern repeated three times, so treat them separately.
+
+### 14.1 Daily reminder — conditional, needs re-evaluation, not a static schedule
+
+The requirement ("only if nothing was logged today") can't be expressed as a single static trigger — local notifications can't check a live condition at delivery time. The standard, practical approach: re-evaluate and reschedule on app-lifecycle events (an `AppState` listener firing on background/foreground), not just once when the toggle is turned on. Each time: check whether a transaction exists for today; if yes, cancel today's trigger and arm tomorrow's; if no, ensure today's trigger (or tomorrow's, if the configured time already passed) is armed. Toggling the setting off must actually **cancel** any already-scheduled trigger, not just stop scheduling new ones — an armed notification doesn't un-arm itself just because the preference changed.
+
+### 14.2 Limit warnings — event-triggered, not scheduled
+
+This fires immediately from a data mutation, not from a time-based schedule. Wire into `useAddTransaction`/`useUpdateTransaction`'s success handlers: after a successful save, compute the new cumulative spend against `monthlyLimit`, and fire an immediate local notification only when _newly_ crossing the 80% or 100% threshold — not every save once already past it (checking previous-cumulative vs. new-cumulative against the threshold, not just new-cumulative alone, avoids re-notifying on every subsequent transaction of an already-over-limit month).
+
+### 14.3 Monthly report — reuses M8's rollover detection, don't build new detection
+
+`useCycleRolloverCheck()` (Section 13.8) already detects the exact moment a new cycle starts — that's the same moment the monthly report notification should fire, pointing at the report that just became available. Don't build a second detection mechanism; hook the notification into the existing one.
+
+### 14.4 Cross-cutting requirements
+
+- **Check permission status before scheduling anything**, every time, not just once at onboarding — it could have been denied then or revoked since in OS settings. Skip gracefully (no crash, no silent failure that looks like success) if not granted.
+- Centralize scheduling logic in `src/lib/notifications.ts` (functions like `scheduleDailyReminder`/`cancelDailyReminder`/`checkLimitWarning`/`fireMonthlyReport`), wired into `settingsStore` changes, transaction mutations, and `useCycleRolloverCheck` respectively — not scattered inline across those call sites.
+- **Verification needs a fast path.** Waiting until an actual 8 PM or an actual cycle boundary isn't practical for QA. Add a dev-only (`__DEV__`-gated, same pattern as M8's rollover preview) way to schedule a test notification a minute or two out, so a real fired OS notification can actually be observed on a real device, not just "the scheduling call didn't throw."
+
+**First prompt to give Cursor (Milestone 9):**
+
+> Read Section 14 fully, plus Section 8.3 for the notify-kit context and Section 13.8 for `useCycleRolloverCheck()` this reuses. Confirm `react-native-notify-kit`'s current scheduling API before implementing (compatibility was checked for permission-request in M4, but scheduling triggers is different API surface — verify it, don't assume). Build 14.1–14.3 as three genuinely different mechanisms (recurring-with-reevaluation, event-triggered, reusing existing detection), not one pattern copy-pasted three times. Tell me your plan before writing code. Verify on a **real device**, not just a simulator/emulator — local notification delivery is one of the areas simulators are least reliable for — using the dev-only fast-path trigger, actually observing a fired OS notification, not just confirming the scheduling call succeeded without error.
+
+**⚠ Pending real-device verification (deferred, not skipped):** M9's code is complete and committed, but the four real-device checks — the fast-path test fire, daily reminder arm/cancel across background/foreground, an immediate limit-warning fire with no re-spam on subsequent saves, and the monthly report firing only on a natural rollover (not the manual preview) — were deliberately deferred to later in the project rather than done at milestone close. **Before this app is considered actually finished, come back to this and run all four on a real device.** This is the one milestone where "the code looks right" and "it actually works" are most likely to diverge, since local notification behavior is OS-level and timing-dependent in ways code review can't fully catch.
