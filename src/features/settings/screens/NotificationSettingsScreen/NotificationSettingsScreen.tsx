@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +10,7 @@ import AppText from '@components/AppText';
 import AppToggle from '@components/AppToggle';
 import { SettingsSubHeader } from '@features/settings/components/SettingsSubHeader';
 import { dateToTimeString, timeStringToDate } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { SettingsStackParamList } from '@navigations/types';
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
@@ -23,6 +25,7 @@ export const NotificationSettingsScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
 
   const dailyReminderEnabled = useSettingsStore(state => state.dailyReminderEnabled);
   const dailyReminderTime = useSettingsStore(state => state.dailyReminderTime);
@@ -50,7 +53,7 @@ export const NotificationSettingsScreen: React.FC = () => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}>
         <SettingsSubHeader
-          title="Notifications"
+          title={t(localizationKeys.notifications)}
           onBack={() => navigation.goBack()}
         />
 
@@ -58,23 +61,23 @@ export const NotificationSettingsScreen: React.FC = () => {
           <View style={styles.row}>
             <View style={styles.rowText}>
               <AppText variant="body" weight={600}>
-                Daily reminder
+                {t(localizationKeys.dailyReminder)}
               </AppText>
               <AppText variant="tiny">
-                A gentle nudge to log today's spending.
+                {t(localizationKeys.dailyReminderSub)}
               </AppText>
             </View>
             <AppToggle
               value={dailyReminderEnabled}
               onValueChange={setDailyReminderEnabled}
-              accessibilityLabel="Daily reminder"
+              accessibilityLabel={t(localizationKeys.dailyReminder)}
             />
           </View>
           {dailyReminderEnabled ? (
             <View style={styles.timeRow}>
               <AppDate
                 mode="time"
-                label="Reminder time"
+                label={t(localizationKeys.reminderTime)}
                 value={timeStringToDate(dailyReminderTime)}
                 onChange={handleTimeChange}
               />
@@ -86,16 +89,16 @@ export const NotificationSettingsScreen: React.FC = () => {
           <View style={styles.row}>
             <View style={styles.rowText}>
               <AppText variant="body" weight={600}>
-                Limit warnings
+                {t(localizationKeys.limitWarnings)}
               </AppText>
               <AppText variant="tiny">
-                Get notified when you're close to your monthly limit.
+                {t(localizationKeys.limitWarningsSub)}
               </AppText>
             </View>
             <AppToggle
               value={limitWarningsEnabled}
               onValueChange={setLimitWarningsEnabled}
-              accessibilityLabel="Limit warnings"
+              accessibilityLabel={t(localizationKeys.limitWarnings)}
             />
           </View>
         </AppCard>
@@ -104,16 +107,16 @@ export const NotificationSettingsScreen: React.FC = () => {
           <View style={styles.row}>
             <View style={styles.rowText}>
               <AppText variant="body" weight={600}>
-                Monthly report
+                {t(localizationKeys.monthlyReport)}
               </AppText>
               <AppText variant="tiny">
-                A summary of your spending at the end of each cycle.
+                {t(localizationKeys.monthlyReportSub)}
               </AppText>
             </View>
             <AppToggle
               value={monthlyReportEnabled}
               onValueChange={setMonthlyReportEnabled}
-              accessibilityLabel="Monthly report"
+              accessibilityLabel={t(localizationKeys.monthlyReport)}
             />
           </View>
         </AppCard>

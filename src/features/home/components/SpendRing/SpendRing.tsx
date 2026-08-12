@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import AppText from '@components/AppText';
 import { useCurrency } from '@hooks/useCurrency';
+import { localizationKeys } from '@locales/localizationKeys';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './SpendRing.styles';
 
@@ -39,6 +41,7 @@ export const SpendRing: React.FC<SpendRingProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { formatMoney } = useCurrency();
   const stroke = spendRingColor(limitPct, theme.ringColors);
   const pctLabel = Math.round(limitPct * 100);
@@ -108,27 +111,30 @@ export const SpendRing: React.FC<SpendRingProps> = ({
             fontSize={9}
             fontFamily={theme.fontFamilyByWeight[400]}
           >
-            of your limit
+            {t(localizationKeys.ofLimit)}
           </SvgText>
         </Svg>
         <View style={styles.figures}>
           <Text style={styles.big}>{formatMoney(totalSpend)}</Text>
           <Text style={styles.cap}>
-            spent · {formatMoney(limitMinor)} of your limit
+            {t(localizationKeys.spent)} · {formatMoney(limitMinor)}{' '}
+            {t(localizationKeys.ofLimit)}
           </Text>
         </View>
       </View>
       <View style={styles.legend}>
         <View style={styles.legendItem}>
           <View style={[styles.swatch, { backgroundColor: stroke }]} />
-          <AppText style={styles.legendText}>spent</AppText>
+          <AppText style={styles.legendText}>
+            {t(localizationKeys.spent)}
+          </AppText>
         </View>
         <View style={styles.legendItem}>
           <View
             style={[styles.swatch, { backgroundColor: theme.colors.gold }]}
           />
           <AppText style={styles.legendText}>
-            {cycleLabel}% of cycle elapsed
+            {cycleLabel}% {t(localizationKeys.cycleElapsed)}
           </AppText>
         </View>
       </View>

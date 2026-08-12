@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { I18nManager, LayoutChangeEvent, ScrollView, View } from 'react-native';
 import AppText from '@components/AppText';
-import { formatMonthShort } from '@lib/dateUtils';
+import { formatMonthShort, localeForLanguage } from '@lib/dateUtils';
 import { MonthStat } from '@features/insights/hooks/useMonthlyStats';
+import { useSettingsStore } from '@store/settingsStore';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './MonthlyBarChart.styles';
 
@@ -25,6 +26,8 @@ export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const scrollRef = useRef<ScrollView>(null);
   const [viewportWidth, setViewportWidth] = useState(0);
   const maxSpend = Math.max(1, ...stats.map(stat => stat.totalSpend));
@@ -86,7 +89,7 @@ export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
                 variant="tiny"
                 weight={isCurrent ? 700 : 400}
                 style={styles.monthLabel}>
-                {formatMonthShort(stat.key)}
+                {formatMonthShort(stat.key, locale)}
               </AppText>
             </View>
           );

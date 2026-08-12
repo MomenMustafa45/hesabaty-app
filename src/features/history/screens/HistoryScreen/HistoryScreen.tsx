@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { I18nManager, Pressable, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppIcon from '@components/AppIcon';
 import AppText from '@components/AppText';
@@ -10,7 +11,12 @@ import { useMonthStats } from '@features/history/hooks/useMonthStats';
 import { useMonthTransactions } from '@features/history/hooks/useMonthTransactions';
 import { StatCards } from '@features/home/components/StatCards';
 import { TransactionRow } from '@features/transactions/components/TransactionRow';
-import { formatMonthLabel, toYearMonthKey } from '@lib/dateUtils';
+import {
+  formatMonthLabel,
+  localeForLanguage,
+  toYearMonthKey,
+} from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { Category } from '@models/category';
 import { useSettingsStore } from '@store/settingsStore';
 import { useTransactionSheetStore } from '@store/transactionSheetStore';
@@ -18,16 +24,20 @@ import { useTheme } from '@providers/ThemeProvider';
 import { MonthPickerSheet } from '../MonthPickerSheet';
 import { createStyles } from './HistoryScreen.styles';
 
-function categoryLabel(category: Category | undefined, language: string): string {
+function categoryLabel(
+  category: Category | undefined,
+  language: string,
+  unknownLabel: string,
+): string {
   if (!category) {
-    return 'Unknown';
+    return unknownLabel;
   }
   return language === 'ar' ? category.labelAr : category.labelEn;
 }
 
-function formatRowDate(isoDate: string): string {
+function formatRowDate(isoDate: string, locale: string): string {
   const [year, month, day] = isoDate.split('-').map(Number);
-  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+  return new Date(year, month - 1, day).toLocaleDateString(locale, {
     month: 'short',
     day: 'numeric',
   });
@@ -37,7 +47,9 @@ export const HistoryScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const openEdit = useTransactionSheetStore(state => state.openEdit);
   const { data: categories = [] } = useCategories();
   const { months, isLoading: monthsLoading } = useAvailableMonths();
@@ -69,7 +81,7 @@ export const HistoryScreen: React.FC = () => {
     return map;
   }, [categories]);
 
-  const monthLabel = formatMonthLabel(monthKey);
+  const monthLabel = formatMonthLabel(monthKey, locale);
   const isRtl = I18nManager.isRTL;
   const prevIcon = isRtl ? 'chevronRight' : 'chevronLeft';
   const nextIcon = isRtl ? 'chevronLeft' : 'chevronRight';
@@ -114,7 +126,7 @@ export const HistoryScreen: React.FC = () => {
             onPress={handlePrev}
             disabled={!canGoPrev}
             accessibilityRole="button"
-            accessibilityLabel="Previous month">
+            accessibilityLabel={t(localizationKeys.prevMonth)}>
             <AppIcon name={prevIcon} size={16} color={theme.colors.ink} />
           </Pressable>
 
@@ -122,7 +134,7 @@ export const HistoryScreen: React.FC = () => {
             style={styles.monthBtn}
             onPress={handleOpenPicker}
             accessibilityRole="button"
-            accessibilityLabel="Select month">
+            accessibilityLabel={t(localizationKeys.selectMonth)}>
             <AppText variant="h2">{monthLabel}</AppText>
             <AppIcon name="chevDown" size={15} color={theme.colors.ink} />
           </Pressable>
@@ -132,7 +144,7 @@ export const HistoryScreen: React.FC = () => {
             onPress={handleNext}
             disabled={!canGoNext}
             accessibilityRole="button"
-            accessibilityLabel="Next month">
+            accessibilityLabel={t(localizationKeys.nextMonth)}>
             <AppIcon name={nextIcon} size={16} color={theme.colors.ink} />
           </Pressable>
         </View>
@@ -146,8 +158,8 @@ export const HistoryScreen: React.FC = () => {
         {transactions.length === 0 ? (
           <EmptyState
             icon="wallet"
-            title="Nothing logged yet"
-            subtitle="Tap the + button to add your first transaction."
+            title={t(localizationKeys.noTxnsTitle)}
+            subtitle={t(localizationKeys.noTxnsSub)}
           />
         ) : (
           groups.map(group => (
@@ -158,7 +170,7 @@ export const HistoryScreen: React.FC = () => {
               <View style={styles.dayCard}>
                 {group.transactions.map((transaction, index) => {
                   const category = categoriesById.get(transaction.categoryId);
-                  const dateStr = formatRowDate(transaction.date);
+                  const dateStr = formatRowDate(transaction.date, locale);
                   const subline = transaction.description
                     ? `${transaction.description} · ${dateStr}`
                     : dateStr;
@@ -167,7 +179,11 @@ export const HistoryScreen: React.FC = () => {
                     <TransactionRow
                       key={transaction.id}
                       transaction={transaction}
-                      categoryLabel={categoryLabel(category, language)}
+                      categoryLabel={categoryLabel(
+                        category,
+                        language,
+                        t(localizationKeys.unknown),
+                      )}
                       categoryColor={category?.color ?? theme.colors.ink3}
                       subline={subline}
                       isLast={index === group.transactions.length - 1}

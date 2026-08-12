@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppText from '@components/AppText';
 import { useCategories } from '@features/categories/hooks/useCategories';
@@ -9,6 +10,7 @@ import { MonthlyBarChart } from '@features/insights/components/MonthlyBarChart';
 import { useBestMonth } from '@features/insights/hooks/useBestMonth';
 import { useMonthlyStats } from '@features/insights/hooks/useMonthlyStats';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
+import { localizationKeys } from '@locales/localizationKeys';
 import { useSettingsStore } from '@store/settingsStore';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './InsightsScreen.styles';
@@ -17,6 +19,7 @@ export const InsightsScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const language = useSettingsStore(state => state.language);
 
   const { stats, currentMonthKey } = useMonthlyStats();
@@ -61,13 +64,20 @@ export const InsightsScreen: React.FC = () => {
             ? language === 'ar'
               ? category.labelAr
               : category.labelEn
-            : 'Unknown',
+            : t(localizationKeys.unknown),
           color: category?.color ?? theme.colors.ink3,
           amount,
           pct: amount / total,
         };
       });
-  }, [transactions, categories, latestMonthKey, language, theme.colors.ink3]);
+  }, [
+    transactions,
+    categories,
+    latestMonthKey,
+    language,
+    theme.colors.ink3,
+    t,
+  ]);
 
   return (
     <View style={styles.screen}>
@@ -75,11 +85,11 @@ export const InsightsScreen: React.FC = () => {
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 4 }]}
         showsVerticalScrollIndicator={false}>
         <AppText variant="h1" style={styles.title}>
-          Insights
+          {t(localizationKeys.insights)}
         </AppText>
 
         <AppText variant="h3" style={styles.sectionTitle}>
-          Monthly trend
+          {t(localizationKeys.monthlyTrend)}
         </AppText>
         <MonthlyBarChart
           stats={stats}
@@ -88,7 +98,7 @@ export const InsightsScreen: React.FC = () => {
         />
 
         <AppText variant="h3" style={styles.sectionTitle}>
-          Best month
+          {t(localizationKeys.bestMonth)}
         </AppText>
         <BestMonthToggle
           metric={metric}
@@ -97,7 +107,7 @@ export const InsightsScreen: React.FC = () => {
         />
 
         <AppText variant="h3" style={styles.sectionTitle}>
-          By category
+          {t(localizationKeys.byCategory)}
         </AppText>
         <CategoryDonut segments={categorySegments} />
       </ScrollView>

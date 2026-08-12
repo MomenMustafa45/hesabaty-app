@@ -1,5 +1,7 @@
 import React from 'react';
 import { Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { localizationKeys } from '@locales/localizationKeys';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AmountInput.styles';
 
@@ -16,6 +18,7 @@ export const AmountInput: React.FC<AmountInputProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
 
   return (
     <View style={styles.wrap}>
@@ -26,7 +29,7 @@ export const AmountInput: React.FC<AmountInputProps> = ({
         keyboardType="decimal-pad"
         placeholder="0"
         placeholderTextColor={theme.colors.ink3}
-        accessibilityLabel="Amount"
+        accessibilityLabel={t(localizationKeys.amount)}
       />
       <Text style={styles.currencyCode}>{currencyCode}</Text>
     </View>

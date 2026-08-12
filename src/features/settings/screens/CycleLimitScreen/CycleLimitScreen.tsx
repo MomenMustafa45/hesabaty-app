@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +10,7 @@ import AppInput from '@components/AppInput';
 import AppText from '@components/AppText';
 import { SettingsSubHeader } from '@features/settings/components/SettingsSubHeader';
 import { majorToMinor, minorToMajor } from '@lib/currencyUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { CycleType } from '@models/settings';
 import { SettingsStackParamList } from '@navigations/types';
 import { useTheme } from '@providers/ThemeProvider';
@@ -21,6 +23,7 @@ export const CycleLimitScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
 
   const currency = useSettingsStore(state => state.currency);
   const cycleType = useSettingsStore(state => state.cycleType);
@@ -69,7 +72,7 @@ export const CycleLimitScreen: React.FC = () => {
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
         <SettingsSubHeader
-          title="Budget cycle & limit"
+          title={t(localizationKeys.budgetCycle)}
           onBack={() => navigation.goBack()}
         />
 
@@ -77,23 +80,23 @@ export const CycleLimitScreen: React.FC = () => {
           <AppChip
             selected={draftCycleType === 'calendar'}
             onPress={() => handleCycleTypeChange('calendar')}>
-            Calendar month
+            {t(localizationKeys.calendarMonth)}
           </AppChip>
           <AppChip
             selected={draftCycleType === 'custom'}
             onPress={() => handleCycleTypeChange('custom')}>
-            Custom cycle
+            {t(localizationKeys.customCycle)}
           </AppChip>
         </View>
         <AppText variant="tiny" style={styles.chipHint}>
           {draftCycleType === 'calendar'
-            ? 'Tracks the 1st through the last day of each month.'
-            : 'Tracks a repeating cycle starting on a day you choose.'}
+            ? t(localizationKeys.calendarMonthSub)
+            : t(localizationKeys.customCycleSub)}
         </AppText>
 
         {draftCycleType === 'custom' ? (
           <AppInput
-            label="Start day"
+            label={t(localizationKeys.startDayShort)}
             type="number"
             value={startDayText}
             onChangeText={handleStartDayChange}
@@ -103,7 +106,10 @@ export const CycleLimitScreen: React.FC = () => {
         ) : null}
 
         <AppInput
-          label={`Monthly limit (${currency ?? ''})`}
+          label={t(localizationKeys.monthlyLimitWithCurrency, {
+            label: t(localizationKeys.monthlyLimit),
+            currency: currency ?? '',
+          })}
           type="number"
           value={limitText}
           onChangeText={handleLimitChange}
@@ -116,7 +122,7 @@ export const CycleLimitScreen: React.FC = () => {
           style={styles.doneButton}
           disabled={!(Number(limitText) > 0)}
           onPress={handleDone}>
-          Done
+          {t(localizationKeys.done)}
         </AppButton>
       </View>
     </SafeAreaView>

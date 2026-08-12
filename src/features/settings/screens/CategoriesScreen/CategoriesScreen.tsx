@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ import { useAddCategory } from '@features/categories/hooks/useAddCategory';
 import { useCategories } from '@features/categories/hooks/useCategories';
 import { useRemoveCategory } from '@features/categories/hooks/useRemoveCategory';
 import { SettingsSubHeader } from '@features/settings/components/SettingsSubHeader';
+import { localizationKeys } from '@locales/localizationKeys';
 import { Category } from '@models/category';
 import { TransactionType } from '@models/transaction';
 import { SettingsStackParamList } from '@navigations/types';
@@ -38,6 +40,7 @@ const CategoryTypeSection: React.FC<CategoryTypeSectionProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { mutate: addCategory, isPending } = useAddCategory();
   const [label, setLabel] = useState('');
 
@@ -61,22 +64,24 @@ const CategoryTypeSection: React.FC<CategoryTypeSectionProps> = ({
         {categories.map((category, index) => {
           const isProtected = PROTECTED_CATEGORY_IDS.includes(category.id);
           const isLastRow = index === categories.length - 1;
+          const displayLabel =
+            language === 'ar' ? category.labelAr : category.labelEn;
           return (
             <View
               key={category.id}
               style={[styles.row, !isLastRow && styles.rowDivider]}>
               <View style={styles.rowLeading}>
                 <View style={[styles.swatch, { backgroundColor: category.color }]} />
-                <AppText variant="body">
-                  {language === 'ar' ? category.labelAr : category.labelEn}
-                </AppText>
+                <AppText variant="body">{displayLabel}</AppText>
               </View>
               {isProtected ? null : (
                 <Pressable
                   style={styles.removeBtn}
                   onPress={() => onRemove(category.id)}
                   accessibilityRole="button"
-                  accessibilityLabel={`Remove ${category.labelEn}`}>
+                  accessibilityLabel={t(localizationKeys.removeCategory, {
+                    name: displayLabel,
+                  })}>
                   <AppIcon name="x" size={12} color={theme.colors.ink2} />
                 </Pressable>
               )}
@@ -87,7 +92,7 @@ const CategoryTypeSection: React.FC<CategoryTypeSectionProps> = ({
       <View style={styles.addRow}>
         <AppInput
           containerStyle={styles.addInput}
-          placeholder="New category name"
+          placeholder={t(localizationKeys.newCategoryPh)}
           value={label}
           onChangeText={setLabel}
         />
@@ -97,7 +102,7 @@ const CategoryTypeSection: React.FC<CategoryTypeSectionProps> = ({
           disabled={isPending || !label.trim()}
           style={styles.addButton}
           onPress={handleAdd}>
-          Add
+          {t(localizationKeys.addCategory)}
         </AppButton>
       </View>
     </View>
@@ -108,6 +113,7 @@ export const CategoriesScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
   const language = useSettingsStore(state => state.language);
   const { data: categories = [] } = useCategories();
   const { mutate: removeCategory } = useRemoveCategory();
@@ -122,18 +128,18 @@ export const CategoriesScreen: React.FC = () => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}>
         <SettingsSubHeader
-          title="Manage categories"
+          title={t(localizationKeys.manageCategories)}
           onBack={() => navigation.goBack()}
         />
         <CategoryTypeSection
-          title="Expense"
+          title={t(localizationKeys.expense)}
           type="expense"
           categories={expenseCategories}
           language={language}
           onRemove={removeCategory}
         />
         <CategoryTypeSection
-          title="Income"
+          title={t(localizationKeys.income)}
           type="income"
           categories={incomeCategories}
           language={language}

@@ -1,10 +1,13 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AppText from '@components/AppText';
 import { BestMonthMetric } from '@store/bestMonthMetricStore';
 import { useCurrency } from '@hooks/useCurrency';
-import { formatMonthLabel } from '@lib/dateUtils';
+import { formatMonthLabel, localeForLanguage } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { MonthStat } from '@features/insights/hooks/useMonthlyStats';
+import { useSettingsStore } from '@store/settingsStore';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './BestMonthToggle.styles';
 
@@ -21,15 +24,22 @@ export const BestMonthToggle: React.FC<BestMonthToggleProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { formatMoney } = useCurrency();
+  const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
 
   const handleSelectSpend = () => onChangeMetric('spend');
   const handleSelectSavings = () => onChangeMetric('savings');
 
   const resultCaption = bestStat
     ? metric === 'spend'
-      ? `${formatMoney(bestStat.totalSpend)} total spent`
-      : `${formatMoney(bestStat.net)} saved`
+      ? t(localizationKeys.bestSpendResult, {
+          amount: formatMoney(bestStat.totalSpend),
+        })
+      : t(localizationKeys.bestSavedResult, {
+          amount: formatMoney(bestStat.net),
+        })
     : null;
 
   return (
@@ -39,24 +49,24 @@ export const BestMonthToggle: React.FC<BestMonthToggleProps> = ({
           style={[styles.toggleBtn, metric === 'spend' && styles.toggleBtnActive]}
           onPress={handleSelectSpend}
           accessibilityRole="button"
-          accessibilityLabel="Lowest spend">
+          accessibilityLabel={t(localizationKeys.lowestSpend)}>
           <AppText
             variant="tiny"
             weight={600}
             color={metric === 'spend' ? 'goldText' : 'ink2'}>
-            Lowest spend
+            {t(localizationKeys.lowestSpend)}
           </AppText>
         </Pressable>
         <Pressable
           style={[styles.toggleBtn, metric === 'savings' && styles.toggleBtnActive]}
           onPress={handleSelectSavings}
           accessibilityRole="button"
-          accessibilityLabel="Highest savings">
+          accessibilityLabel={t(localizationKeys.highestSavings)}>
           <AppText
             variant="tiny"
             weight={600}
             color={metric === 'savings' ? 'goldText' : 'ink2'}>
-            Highest savings
+            {t(localizationKeys.highestSavings)}
           </AppText>
         </Pressable>
       </View>
@@ -69,14 +79,16 @@ export const BestMonthToggle: React.FC<BestMonthToggleProps> = ({
             </AppText>
           </View>
           <View>
-            <AppText weight={700}>{formatMonthLabel(bestStat.key)}</AppText>
+            <AppText weight={700}>
+              {formatMonthLabel(bestStat.key, locale)}
+            </AppText>
             <AppText variant="tiny">{resultCaption}</AppText>
           </View>
         </View>
       ) : null}
 
       <AppText variant="tiny" style={styles.caption}>
-        Based on completed months only
+        {t(localizationKeys.completedOnly)}
       </AppText>
     </View>
   );

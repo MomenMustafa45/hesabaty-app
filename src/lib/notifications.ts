@@ -7,6 +7,8 @@ import notifee, {
 import { Platform } from 'react-native';
 import { getTransactions } from '@features/transactions/api/transactionsApi';
 import { toIsoDate } from '@lib/dateUtils';
+import i18n from '@locales/i18n';
+import { localizationKeys } from '@locales/localizationKeys';
 import { mmkv } from '@storage/mmkv';
 import { storageKeys } from '@storage/keys';
 import { useSettingsStore } from '@store/settingsStore';
@@ -146,8 +148,8 @@ export async function scheduleDailyReminder(): Promise<void> {
   await notifee.createTriggerNotification(
     {
       id: NOTIFICATION_IDS.dailyReminder,
-      title: 'Hasabaty',
-      body: "Don't forget to log today's spending.",
+      title: i18n.t(localizationKeys.appName),
+      body: i18n.t(localizationKeys.notifDailyBody),
       ...androidPayload(),
     },
     trigger,
@@ -205,12 +207,12 @@ export async function checkLimitWarning(input: {
 
   const body =
     crossed === 100
-      ? "You've reached your budget limit."
-      : "You've used 80% of your budget.";
+      ? i18n.t(localizationKeys.notifLimit100Body)
+      : i18n.t(localizationKeys.notifLimit80Body);
 
   await notifee.displayNotification({
     id: NOTIFICATION_IDS.limitWarning,
-    title: 'Hasabaty',
+    title: i18n.t(localizationKeys.appName),
     body,
     ...androidPayload(),
   });
@@ -238,8 +240,8 @@ export async function fireMonthlyReport(cycleKey: string): Promise<void> {
   await ensureAndroidChannel();
   await notifee.displayNotification({
     id: NOTIFICATION_IDS.monthlyReport,
-    title: 'Hasabaty',
-    body: 'Your new cycle report is ready.',
+    title: i18n.t(localizationKeys.appName),
+    body: i18n.t(localizationKeys.notifMonthlyBody),
     ...androidPayload(),
   });
 
@@ -254,7 +256,7 @@ export async function scheduleDevTestNotification(
   delayMs: number = 90_000,
 ): Promise<Date> {
   if (!(await hasNotificationPermission())) {
-    throw new Error('Notification permission not granted');
+    throw new Error(i18n.t(localizationKeys.notifPermissionDenied));
   }
 
   await ensureAndroidChannel();
@@ -269,8 +271,8 @@ export async function scheduleDevTestNotification(
   await notifee.createTriggerNotification(
     {
       id: NOTIFICATION_IDS.devTest,
-      title: 'Hasabaty',
-      body: 'Dev test notification — scheduling works.',
+      title: i18n.t(localizationKeys.appName),
+      body: i18n.t(localizationKeys.notifDevTestBody),
       ...androidPayload(),
     },
     trigger,

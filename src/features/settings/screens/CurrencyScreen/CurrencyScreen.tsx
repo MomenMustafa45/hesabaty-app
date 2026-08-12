@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +10,7 @@ import AppSearchList from '@components/AppSearchList';
 import AppText from '@components/AppText';
 import { CURRENCIES } from '@config/currencies';
 import { SettingsSubHeader } from '@features/settings/components/SettingsSubHeader';
+import { localizationKeys } from '@locales/localizationKeys';
 import { SettingsStackParamList } from '@navigations/types';
 import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
@@ -20,6 +22,7 @@ export const CurrencyScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
   const currency = useSettingsStore(state => state.currency);
   const setCurrency = useSettingsStore(state => state.setCurrency);
   const [pendingCode, setPendingCode] = useState<string | null>(null);
@@ -61,20 +64,21 @@ export const CurrencyScreen: React.FC = () => {
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
         <SettingsSubHeader
-          title="Select currency"
+          title={t(localizationKeys.selectCurrency)}
           onBack={() => navigation.goBack()}
         />
 
         {pendingOption ? (
           <AppCard style={styles.warningCard}>
             <AppText variant="h3" color="ink" style={styles.warningTitle}>
-              Change currency to {pendingOption.code}?
+              {t(localizationKeys.currencyChangeTitle, {
+                code: pendingOption.code,
+              })}
             </AppText>
             <AppText variant="tiny" color="ink" style={styles.warningBody}>
-              There's no conversion — everything you've already logged will
-              keep displaying with its original amounts, just shown with the{' '}
-              {pendingOption.symbol} symbol from now on. Past totals may no
-              longer make sense next to new ones.
+              {t(localizationKeys.currencyChangeBody, {
+                symbol: pendingOption.symbol,
+              })}
             </AppText>
             <View style={styles.warningActions}>
               <AppButton
@@ -82,14 +86,14 @@ export const CurrencyScreen: React.FC = () => {
                 fullWidth={false}
                 style={styles.warningButton}
                 onPress={handleCancel}>
-                Cancel
+                {t(localizationKeys.cancel)}
               </AppButton>
               <AppButton
                 variant="primary"
                 fullWidth={false}
                 style={styles.warningButton}
                 onPress={handleConfirm}>
-                Change anyway
+                {t(localizationKeys.changeAnyway)}
               </AppButton>
             </View>
           </AppCard>
@@ -100,7 +104,7 @@ export const CurrencyScreen: React.FC = () => {
           selectedId={currency}
           onSelect={handleSelect}
           searchable
-          searchPlaceholder="Search currency"
+          searchPlaceholder={t(localizationKeys.searchCurrency)}
         />
       </View>
     </SafeAreaView>

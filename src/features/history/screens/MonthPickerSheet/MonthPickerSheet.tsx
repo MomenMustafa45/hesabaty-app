@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AppIcon from '@components/AppIcon';
 import AppSearchList, {
   AppSearchListSection,
@@ -9,7 +10,13 @@ import BottomSheet from '@components/BottomSheet';
 import { useBestMonth } from '@features/insights/hooks/useBestMonth';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
 import { useCurrency } from '@hooks/useCurrency';
-import { formatMonthName, toYearMonthKey } from '@lib/dateUtils';
+import {
+  formatMonthName,
+  localeForLanguage,
+  toYearMonthKey,
+} from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
+import { useSettingsStore } from '@store/settingsStore';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './MonthPickerSheet.styles';
 
@@ -30,10 +37,16 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { formatMoney } = useCurrency();
+  const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const { data: transactions = [] } = useTransactions();
   const { bestKey } = useBestMonth();
   const currentMonthKey = toYearMonthKey(new Date());
+  const bestBadge = t(localizationKeys.bestBadgeStar, {
+    badge: t(localizationKeys.bestBadge),
+  });
 
   const spendByMonth = useMemo(() => {
     const map = new Map<string, number>();
@@ -66,13 +79,13 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
         title: year,
         items: yearMonths.map(monthKey => ({
           id: monthKey,
-          label: formatMonthName(monthKey),
+          label: formatMonthName(monthKey, locale),
           meta: formatMoney(spendByMonth.get(monthKey) ?? 0),
-          badgeLabel: monthKey === bestKey ? '★ Best' : undefined,
+          badgeLabel: monthKey === bestKey ? bestBadge : undefined,
         })),
       };
     });
-  }, [months, spendByMonth, formatMoney, bestKey]);
+  }, [months, spendByMonth, formatMoney, bestKey, locale, bestBadge]);
 
   const handleSelect = (monthKey: string) => {
     onSelectMonth(monthKey);
@@ -87,12 +100,12 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
     <BottomSheet visible={visible} onClose={onClose}>
       <View style={styles.head}>
         <View style={styles.headSpacer} />
-        <AppText variant="h3">Select a month</AppText>
+        <AppText variant="h3">{t(localizationKeys.selectMonthTitle)}</AppText>
         <Pressable
           style={styles.closeBtn}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel="Close">
+          accessibilityLabel={t(localizationKeys.close)}>
           <AppIcon name="x" size={15} color={theme.colors.ink} />
         </Pressable>
       </View>
@@ -101,9 +114,9 @@ export const MonthPickerSheet: React.FC<MonthPickerSheetProps> = ({
         style={styles.jumpRow}
         onPress={handleJumpToCurrent}
         accessibilityRole="button"
-        accessibilityLabel="Jump to current month">
+        accessibilityLabel={t(localizationKeys.currentMonth)}>
         <AppText weight={600} color="nile">
-          Jump to current month
+          {t(localizationKeys.currentMonth)}
         </AppText>
         <AppIcon name="chevronForward" size={15} color={theme.colors.nile} />
       </Pressable>

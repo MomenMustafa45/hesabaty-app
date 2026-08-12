@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useCategories } from '@features/categories/hooks/useCategories';
 import { TransactionRow } from '@features/transactions/components/TransactionRow';
+import { localeForLanguage } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { Category } from '@models/category';
 import { Transaction } from '@models/transaction';
 import { useSettingsStore } from '@store/settingsStore';
@@ -13,17 +16,21 @@ export interface RecentTransactionsListProps {
   transactions: Transaction[];
 }
 
-function categoryLabel(category: Category | undefined, language: string): string {
+function categoryLabel(
+  category: Category | undefined,
+  language: string,
+  unknownLabel: string,
+): string {
   if (!category) {
-    return 'Unknown';
+    return unknownLabel;
   }
   return language === 'ar' ? category.labelAr : category.labelEn;
 }
 
-function formatRowDate(isoDate: string): string {
+function formatRowDate(isoDate: string, locale: string): string {
   const [year, month, day] = isoDate.split('-').map(Number);
   const date = new Date(year, month - 1, day);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
 }
 
 export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
@@ -31,7 +38,9 @@ export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const openEdit = useTransactionSheetStore(state => state.openEdit);
   const { data: categories = [] } = useCategories();
 
@@ -55,7 +64,7 @@ export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
     <View style={styles.card}>
       {recent.map((transaction, index) => {
         const category = categoriesById.get(transaction.categoryId);
-        const dateStr = formatRowDate(transaction.date);
+        const dateStr = formatRowDate(transaction.date, locale);
         const subline = transaction.description
           ? `${transaction.description} · ${dateStr}`
           : dateStr;
@@ -64,7 +73,11 @@ export const RecentTransactionsList: React.FC<RecentTransactionsListProps> = ({
           <TransactionRow
             key={transaction.id}
             transaction={transaction}
-            categoryLabel={categoryLabel(category, language)}
+            categoryLabel={categoryLabel(
+              category,
+              language,
+              t(localizationKeys.unknown),
+            )}
             categoryColor={category?.color ?? theme.colors.ink3}
             subline={subline}
             isLast={index === recent.length - 1}

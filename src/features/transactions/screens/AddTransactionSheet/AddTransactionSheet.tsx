@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import AppButton from '@components/AppButton';
 import AppDate from '@components/AppDate';
 import AppInput from '@components/AppInput';
@@ -12,6 +13,7 @@ import { useCycleRange } from '@hooks/useCycleRange';
 import { useCurrency } from '@hooks/useCurrency';
 import { majorToMinor, minorToMajor } from '@lib/currencyUtils';
 import { parseIsoDate, startOfLocalDay, toIsoDate } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { Transaction, TransactionType } from '@models/transaction';
 import { useTheme } from '@providers/ThemeProvider';
 import { useRolloverStore } from '@store/rolloverStore';
@@ -31,14 +33,6 @@ export interface AddTransactionSheetProps {
   prefill?: TransactionSheetPrefill | null;
 }
 
-const TYPE_OPTIONS: [
-  { value: TransactionType; label: string },
-  { value: TransactionType; label: string },
-] = [
-  { value: 'expense', label: 'Expense' },
-  { value: 'income', label: 'Income' },
-];
-
 function amountToInputValue(minorUnits: number): string {
   const major = minorToMajor(minorUnits);
   return Number.isInteger(major) ? String(major) : String(major);
@@ -52,6 +46,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
   const { currencyCode } = useCurrency();
   const { start: cycleStart } = useCycleRange();
   const todayIso = toIsoDate(new Date());
@@ -63,6 +58,14 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
   const dismissPendingKey = useRolloverStore(state => state.dismissPendingKey);
 
   const isEditing = editingTransaction != null;
+
+  const typeOptions: [
+    { value: TransactionType; label: string },
+    { value: TransactionType; label: string },
+  ] = [
+    { value: 'expense', label: t(localizationKeys.expense) },
+    { value: 'income', label: t(localizationKeys.incomeTab) },
+  ];
 
   const [type, setType] = useState<TransactionType>('expense');
   const [amountText, setAmountText] = useState('');
@@ -163,18 +166,22 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
     <BottomSheet visible={visible} onClose={onClose}>
       <View style={styles.head}>
         <View style={styles.headSpacer} />
-        <AppText variant="h3">{isEditing ? 'Edit transaction' : 'Add transaction'}</AppText>
+        <AppText variant="h3">
+          {isEditing
+            ? t(localizationKeys.editTxn)
+            : t(localizationKeys.addTxn)}
+        </AppText>
         <Pressable
           style={styles.closeBtn}
           onPress={onClose}
           accessibilityRole="button"
-          accessibilityLabel="Close">
+          accessibilityLabel={t(localizationKeys.close)}>
           <AppIcon name="x" size={15} color={theme.colors.ink2} />
         </Pressable>
       </View>
 
       <AppSegmentedControl
-        options={TYPE_OPTIONS}
+        options={typeOptions}
         value={type}
         onChange={handleTypeChange}
       />
@@ -187,7 +194,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
 
       <View style={styles.field}>
         <AppText variant="muted" weight={600} style={styles.fieldLabel}>
-          Category
+          {t(localizationKeys.category)}
         </AppText>
         <CategoryChips
           categories={categories}
@@ -199,8 +206,8 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
 
       <View style={styles.field}>
         <AppInput
-          label="Description"
-          placeholder="Add a note (optional)"
+          label={t(localizationKeys.description)}
+          placeholder={t(localizationKeys.descriptionPh)}
           value={description}
           onChangeText={setDescription}
         />
@@ -208,7 +215,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
 
       <View style={styles.field}>
         <AppDate
-          label="Date"
+          label={t(localizationKeys.date)}
           mode="date"
           value={date}
           onChange={setDate}
@@ -228,7 +235,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
             labelColor="coral"
             disabled={isBusy}
             onPress={handleDelete}>
-            Delete
+            {t(localizationKeys.delete)}
           </AppButton>
         ) : null}
         <AppButton
@@ -236,7 +243,7 @@ export const AddTransactionSheet: React.FC<AddTransactionSheetProps> = ({
           style={isEditing ? styles.actionFlex : undefined}
           disabled={!canSave || isBusy}
           onPress={handleSave}>
-          Save
+          {t(localizationKeys.save)}
         </AppButton>
       </View>
     </BottomSheet>

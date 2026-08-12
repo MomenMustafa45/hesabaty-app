@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { I18nManager, Pressable, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from '@components/AppButton';
 import AppCard from '@components/AppCard';
@@ -13,7 +14,13 @@ import {
 import { useAddTransaction } from '@features/transactions/hooks/useAddTransaction';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
 import { useCurrency } from '@hooks/useCurrency';
-import { formatMonthLabel, toIsoDate, toYearMonthKey } from '@lib/dateUtils';
+import {
+  formatMonthLabel,
+  localeForLanguage,
+  toIsoDate,
+  toYearMonthKey,
+} from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { Transaction } from '@models/transaction';
 import { useTheme } from '@providers/ThemeProvider';
 import { useRolloverStore } from '@store/rolloverStore';
@@ -29,6 +36,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
   const theme = useTheme();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { formatMoney } = useCurrency();
   const language = useSettingsStore(state => state.language);
   const monthlyLimit = useSettingsStore(state => state.monthlyLimit);
@@ -59,7 +67,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
     monthlyLimit != null && monthlyLimit > 0 && previousSpend > monthlyLimit;
   const previousLabel = formatMonthLabel(
     toYearMonthKey(previousCycle.start),
-    language === 'ar' ? 'ar-EG' : 'en-US',
+    localeForLanguage(language),
   );
 
   const handleConfirm = async (transaction: Transaction) => {
@@ -96,14 +104,14 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
             style={styles.backBtn}
             onPress={onDismiss}
             accessibilityRole="button"
-            accessibilityLabel="Back">
+            accessibilityLabel={t(localizationKeys.back)}>
             <AppIcon
               name={I18nManager.isRTL ? 'chevronRight' : 'chevronLeft'}
               size={16}
               color={theme.colors.ink}
             />
           </Pressable>
-          <AppText variant="h2">New month</AppText>
+          <AppText variant="h2">{t(localizationKeys.newMonthTitle)}</AppText>
         </View>
 
         <AppCard style={styles.summaryCard}>
@@ -117,18 +125,20 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
             {formatMoney(previousSpend)}
           </AppText>
           <AppText variant="tiny">
-            {overLimit ? 'over your limit' : 'within your limit'}
+            {overLimit
+              ? t(localizationKeys.overLimitLast)
+              : t(localizationKeys.underLimitLast)}
           </AppText>
         </AppCard>
 
         <AppText variant="h3" style={styles.sectionTitle}>
-          Confirm your recurring bills
+          {t(localizationKeys.confirmRecurringTitle)}
         </AppText>
 
         {pending.length === 0 ? (
           <View style={styles.emptyPending}>
             <AppText variant="tiny">
-              No recurring bills waiting for confirmation.
+              {t(localizationKeys.noRecurringPending)}
             </AppText>
           </View>
         ) : (
@@ -139,7 +149,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
                 ? language === 'ar'
                   ? category.labelAr
                   : category.labelEn
-                : 'Unknown';
+                : t(localizationKeys.unknown);
               const color = category?.color ?? theme.colors.ink3;
               const isLast = index === pending.length - 1;
 
@@ -161,7 +171,10 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
                       {label}
                     </AppText>
                     <AppText variant="tiny">
-                      Last amount: {formatMoney(transaction.amount)}
+                      {t(localizationKeys.lastAmountValue, {
+                        label: t(localizationKeys.lastAmount),
+                        amount: formatMoney(transaction.amount),
+                      })}
                     </AppText>
                   </View>
                   <View style={styles.pendingActions}>
@@ -169,7 +182,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
                       style={styles.iconBtn}
                       onPress={() => handleEdit(transaction)}
                       accessibilityRole="button"
-                      accessibilityLabel="Edit recurring">
+                      accessibilityLabel={t(localizationKeys.editRecurring)}>
                       <AppIcon name="edit" size={14} color={theme.colors.ink} />
                     </Pressable>
                     <Pressable
@@ -178,7 +191,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
                         void handleConfirm(transaction);
                       }}
                       accessibilityRole="button"
-                      accessibilityLabel="Confirm recurring"
+                      accessibilityLabel={t(localizationKeys.confirmRecurring)}
                       disabled={addMutation.isPending}>
                       <AppIcon name="check" size={15} color={theme.colors.nile} />
                     </Pressable>
@@ -193,7 +206,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
           variant="primary"
           style={styles.continueButton}
           onPress={onDismiss}>
-          Continue to home
+          {t(localizationKeys.continueToHome)}
         </AppButton>
       </ScrollView>
     </View>

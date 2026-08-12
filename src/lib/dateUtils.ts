@@ -73,3 +73,8 @@ export function dateToTimeString(date: Date): string {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 }
+
+/** BCP-47 locale for date formatting from app language. */
+export function localeForLanguage(language: 'en' | 'ar'): string {
+  return language === 'ar' ? 'ar-EG' : 'en-US';
+}

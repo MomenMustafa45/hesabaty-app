@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
-import { monthDateRange, parseIsoDate } from '@lib/dateUtils';
+import { localeForLanguage, monthDateRange, parseIsoDate } from '@lib/dateUtils';
 import { Transaction } from '@models/transaction';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
+import { useSettingsStore } from '@store/settingsStore';
 
 export interface TransactionDateGroup {
   date: string;
@@ -9,7 +10,7 @@ export interface TransactionDateGroup {
   transactions: Transaction[];
 }
 
-function formatGroupLabel(isoDate: string, locale = 'en-US'): string {
+function formatGroupLabel(isoDate: string, locale: string): string {
   return parseIsoDate(isoDate).toLocaleDateString(locale, {
     weekday: 'short',
     month: 'short',
@@ -23,6 +24,8 @@ export function useMonthTransactions(monthKey: string): {
   transactions: Transaction[];
   isLoading: boolean;
 } {
+  const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const { dateFrom, dateTo } = monthDateRange(monthKey);
   const { data: transactions = [], isLoading } = useTransactions({
     dateFrom,
@@ -43,10 +46,10 @@ export function useMonthTransactions(monthKey: string): {
 
     return Array.from(byDate.entries()).map(([date, dayTransactions]) => ({
       date,
-      label: formatGroupLabel(date),
+      label: formatGroupLabel(date, locale),
       transactions: dayTransactions,
     }));
-  }, [transactions]);
+  }, [transactions, locale]);
 
   return { groups, transactions, isLoading };
 }

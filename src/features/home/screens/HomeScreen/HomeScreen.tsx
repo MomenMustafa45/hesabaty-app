@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +13,8 @@ import { RecentTransactionsList } from '@features/home/components/RecentTransact
 import { useCurrentCycleStats } from '@features/home/hooks/useCurrentCycleStats';
 import { useTransactions } from '@features/transactions/hooks/useTransactions';
 import { useCycleRange } from '@hooks/useCycleRange';
-import { toIsoDate } from '@lib/dateUtils';
+import { localeForLanguage, toIsoDate } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
 import { AppTabParamList } from '@navigations/types';
 import { useSettingsStore } from '@store/settingsStore';
 import { useTransactionSheetStore } from '@store/transactionSheetStore';
@@ -23,10 +25,12 @@ export const HomeScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const navigation =
     useNavigation<BottomTabNavigationProp<AppTabParamList>>();
   const stats = useCurrentCycleStats();
   const monthlyLimit = useSettingsStore(state => state.monthlyLimit);
+  const language = useSettingsStore(state => state.language);
   const { start, end } = useCycleRange();
   const openAdd = useTransactionSheetStore(state => state.openAdd);
   const { data: cycleTransactions = [] } = useTransactions({
@@ -36,11 +40,11 @@ export const HomeScreen: React.FC = () => {
 
   const monthTitle = useMemo(
     () =>
-      new Date().toLocaleDateString('en-US', {
+      new Date().toLocaleDateString(localeForLanguage(language), {
         month: 'long',
         year: 'numeric',
       }),
-    [],
+    [language],
   );
 
   const handleSeeAll = () => {
@@ -59,7 +63,7 @@ export const HomeScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.greet}>
-            <AppText variant="tiny">Welcome back</AppText>
+            <AppText variant="tiny">{t(localizationKeys.hi)}</AppText>
             <AppText variant="h1">{monthTitle}</AppText>
           </View>
         </View>
@@ -74,9 +78,9 @@ export const HomeScreen: React.FC = () => {
         <StatCards totalIncome={stats.totalIncome} net={stats.net} />
 
         <View style={styles.sectionHead}>
-          <AppText variant="h3">Recent</AppText>
+          <AppText variant="h3">{t(localizationKeys.recent)}</AppText>
           <Pressable onPress={handleSeeAll} hitSlop={8}>
-            <Text style={styles.seeAll}>See all</Text>
+            <Text style={styles.seeAll}>{t(localizationKeys.seeAll)}</Text>
           </Pressable>
         </View>
 
@@ -85,8 +89,8 @@ export const HomeScreen: React.FC = () => {
         ) : (
           <EmptyState
             icon="wallet"
-            title="Nothing logged yet"
-            subtitle="Tap the + button to add your first transaction."
+            title={t(localizationKeys.noTxnsTitle)}
+            subtitle={t(localizationKeys.noTxnsSub)}
           />
         )}
       </ScrollView>
@@ -95,7 +99,7 @@ export const HomeScreen: React.FC = () => {
         style={styles.fab}
         onPress={openAdd}
         accessibilityRole="button"
-        accessibilityLabel="Add transaction">
+        accessibilityLabel={t(localizationKeys.addTxn)}>
         <AppIcon name="plus" size={24} color={theme.ringColors.ringSafe} />
       </Pressable>
     </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +8,7 @@ import AppButton from '@components/AppButton';
 import AppIcon from '@components/AppIcon';
 import AppText from '@components/AppText';
 import { SettingsSubHeader } from '@features/settings/components/SettingsSubHeader';
+import { localizationKeys } from '@locales/localizationKeys';
 import { SettingsStackParamList } from '@navigations/types';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './ExportImportScreen.styles';
@@ -17,22 +19,20 @@ export const ExportImportScreen: React.FC = () => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
         <SettingsSubHeader
-          title="Export & Import"
+          title={t(localizationKeys.exportRow)}
           onBack={() => navigation.goBack()}
         />
         <AppText variant="h3" style={styles.sectionTitle}>
-          Export your data
+          {t(localizationKeys.exportTitle)}
         </AppText>
         <AppText variant="body" style={styles.body}>
-          Save a copy of everything you've logged. Nothing uploads
-          automatically — pick a backup file to keep everything safe, or a
-          spreadsheet if you just want to browse your spending in Excel or
-          Sheets.
+          {t(localizationKeys.exportBody)}
         </AppText>
         <AppButton
           variant="ghost"
@@ -41,7 +41,7 @@ export const ExportImportScreen: React.FC = () => {
           leadingIcon={
             <AppIcon name="download" size={16} color={theme.colors.ink3} />
           }>
-          Backup file (JSON)
+          {t(localizationKeys.exportJson)}
         </AppButton>
         <AppButton
           variant="ghost"
@@ -49,15 +49,14 @@ export const ExportImportScreen: React.FC = () => {
           leadingIcon={
             <AppIcon name="download" size={16} color={theme.colors.ink3} />
           }>
-          Spreadsheet (CSV)
+          {t(localizationKeys.exportCsv)}
         </AppButton>
 
         <AppText variant="h3" style={styles.sectionTitle}>
-          Import
+          {t(localizationKeys.importTitle)}
         </AppText>
         <AppText variant="body" style={styles.body}>
-          Bring your data back from a backup file — you'll see a preview
-          before anything is applied.
+          {t(localizationKeys.importSectionBody)}
         </AppText>
         <AppButton
           variant="ghost"
@@ -65,11 +64,11 @@ export const ExportImportScreen: React.FC = () => {
           leadingIcon={
             <AppIcon name="upload" size={16} color={theme.colors.ink3} />
           }>
-          Choose a file
+          {t(localizationKeys.chooseFile)}
         </AppButton>
 
         <AppText variant="tiny" color="ink2" style={styles.comingSoon}>
-          Coming in a future update.
+          {t(localizationKeys.comingSoon)}
         </AppText>
       </View>
     </SafeAreaView>

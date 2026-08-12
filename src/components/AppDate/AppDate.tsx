@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Platform, Pressable, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import DateTimePicker, {
   DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
+import { localeForLanguage } from '@lib/dateUtils';
+import { localizationKeys } from '@locales/localizationKeys';
+import { useSettingsStore } from '@store/settingsStore';
 import { useTheme } from '@providers/ThemeProvider';
 import AppButton from '../AppButton';
 import AppText from '../AppText';
@@ -19,10 +23,19 @@ export interface AppDateProps {
   maximumDate?: Date;
 }
 
-const formatValue = (value: Date, mode: AppDateMode): string =>
-  mode === 'date'
-    ? value.toLocaleDateString()
-    : value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+function formatValue(
+  value: Date,
+  mode: AppDateMode,
+  locale: string,
+): string {
+  if (mode === 'date') {
+    return value.toLocaleDateString(locale);
+  }
+  return value.toLocaleTimeString(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
 
 export const AppDate: React.FC<AppDateProps> = ({
   value,
@@ -34,6 +47,9 @@ export const AppDate: React.FC<AppDateProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
+  const { t } = useTranslation();
+  const language = useSettingsStore(state => state.language);
+  const locale = localeForLanguage(language);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [draftValue, setDraftValue] = useState(value);
 
@@ -81,7 +97,9 @@ export const AppDate: React.FC<AppDateProps> = ({
         style={[styles.field, isPickerOpen && styles.fieldOpen]}
         onPress={handlePress}
       >
-        <AppText variant="body">{formatValue(value, mode)}</AppText>
+        <AppText variant="body">
+          {formatValue(value, mode, locale)}
+        </AppText>
       </Pressable>
       {isPickerOpen && Platform.OS === 'android' ? (
         <DateTimePicker
@@ -111,7 +129,7 @@ export const AppDate: React.FC<AppDateProps> = ({
               style={styles.iosPickerButton}
               onPress={handleCancel}
             >
-              Cancel
+              {t(localizationKeys.cancel)}
             </AppButton>
             <AppButton
               variant="primary"
@@ -119,7 +137,7 @@ export const AppDate: React.FC<AppDateProps> = ({
               style={styles.iosPickerButton}
               onPress={handleDone}
             >
-              Done
+              {t(localizationKeys.done)}
             </AppButton>
           </View>
         </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Alert, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,6 +9,7 @@ import AppText from '@components/AppText';
 import { SettingsRow } from '@features/settings/components/SettingsRow';
 import { useCurrency } from '@hooks/useCurrency';
 import { scheduleDevTestNotification } from '@lib/notifications';
+import { localizationKeys } from '@locales/localizationKeys';
 import { switchAppLanguage } from '@locales/switchLanguage';
 import { AppLanguage } from '@models/settings';
 import { SettingsStackParamList } from '@navigations/types';
@@ -24,6 +26,7 @@ export const SettingsScreen: React.FC = () => {
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Navigation>();
+  const { t } = useTranslation();
 
   const currency = useSettingsStore(state => state.currency);
   const monthlyLimit = useSettingsStore(state => state.monthlyLimit);
@@ -47,13 +50,17 @@ export const SettingsScreen: React.FC = () => {
     try {
       const fireAt = await scheduleDevTestNotification();
       Alert.alert(
-        'Dev test armed',
-        `OS notification should fire around ${fireAt.toLocaleTimeString()}. Verify on a real device.`,
+        t(localizationKeys.devTestArmedTitle),
+        t(localizationKeys.devTestArmedBody, {
+          time: fireAt.toLocaleTimeString(),
+        }),
       );
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Could not schedule test';
-      Alert.alert('Dev test failed', message);
+        error instanceof Error
+          ? error.message
+          : t(localizationKeys.devTestFailedFallback);
+      Alert.alert(t(localizationKeys.devTestFailedTitle), message);
     }
   };
 
@@ -63,19 +70,19 @@ export const SettingsScreen: React.FC = () => {
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 4 }]}
         showsVerticalScrollIndicator={false}>
         <AppText variant="h1" style={styles.title}>
-          Settings
+          {t(localizationKeys.settingsTitle)}
         </AppText>
 
         <View style={styles.card}>
           <SettingsRow
             icon={theme.mode === 'dark' ? 'moon' : 'sun'}
-            label="Appearance"
+            label={t(localizationKeys.appearance)}
             trailing={
               <View style={styles.segmentWrap}>
                 <AppSegmentedControl<ThemeMode>
                   options={[
-                    { value: 'light', label: 'Light' },
-                    { value: 'dark', label: 'Dark' },
+                    { value: 'light', label: t(localizationKeys.light) },
+                    { value: 'dark', label: t(localizationKeys.dark) },
                   ]}
                   value={theme.mode}
                   onChange={handleThemeChange}
@@ -85,13 +92,13 @@ export const SettingsScreen: React.FC = () => {
           />
           <SettingsRow
             icon="globe"
-            label="Language"
+            label={t(localizationKeys.language)}
             trailing={
               <View style={styles.segmentWrap}>
                 <AppSegmentedControl<AppLanguage>
                   options={[
-                    { value: 'en', label: 'EN' },
-                    { value: 'ar', label: 'AR' },
+                    { value: 'en', label: t(localizationKeys.langEn) },
+                    { value: 'ar', label: t(localizationKeys.langAr) },
                   ]}
                   value={language}
                   onChange={handleLanguageChange}
@@ -101,24 +108,24 @@ export const SettingsScreen: React.FC = () => {
           />
           <SettingsRow
             icon="wallet"
-            label="Currency"
+            label={t(localizationKeys.currency)}
             meta={currency ?? ''}
             onPress={() => navigation.navigate('Currency')}
           />
           <SettingsRow
             icon="chart"
-            label="Budget cycle & limit"
+            label={t(localizationKeys.budgetCycle)}
             meta={monthlyLimit != null ? formatMoney(monthlyLimit) : ''}
             onPress={() => navigation.navigate('CycleLimit')}
           />
           <SettingsRow
             icon="tag"
-            label="Categories"
+            label={t(localizationKeys.categories)}
             onPress={() => navigation.navigate('Categories')}
           />
           <SettingsRow
             icon="bell"
-            label="Notifications"
+            label={t(localizationKeys.notifications)}
             isLast
             onPress={() => navigation.navigate('NotificationSettings')}
           />
@@ -127,12 +134,12 @@ export const SettingsScreen: React.FC = () => {
         <View style={styles.card}>
           <SettingsRow
             icon="download"
-            label="Export & Import"
+            label={t(localizationKeys.exportRow)}
             onPress={() => navigation.navigate('ExportImport')}
           />
           <SettingsRow
             icon="info"
-            label="About"
+            label={t(localizationKeys.about)}
             isLast
             onPress={() => navigation.navigate('About')}
           />
@@ -141,17 +148,17 @@ export const SettingsScreen: React.FC = () => {
         {__DEV__ ? (
           <>
             <AppText variant="tiny" style={styles.prototypeLabel}>
-              Prototype preview
+              {t(localizationKeys.prototypeTools)}
             </AppText>
             <View style={styles.card}>
               <SettingsRow
                 icon="bell"
-                label="Preview: new month rollover"
+                label={t(localizationKeys.previewRollover)}
                 onPress={openManualPreview}
               />
               <SettingsRow
                 icon="bell"
-                label="Schedule test notification (~90s)"
+                label={t(localizationKeys.scheduleTestNotification)}
                 isLast
                 onPress={() => {
                   void handleDevTestNotification();
