@@ -3,22 +3,37 @@ import type { NativeBottomTabIcon } from '@react-navigation/bottom-tabs/unstable
 
 const homeIcon = Platform.select<NativeBottomTabIcon | undefined>({
   ios: { type: 'sfSymbol', name: 'house' },
-  default: require('@assets/icons/home.png'),
+  android: {
+    type: 'image',
+    source: require('../assets/icons/houseSymbol.png'),
+  },
 });
 
 const historyIcon = Platform.select<NativeBottomTabIcon | undefined>({
-  ios: { type: 'sfSymbol', name: 'newspaper' },
-  default: require('@assets/icons/history.png'),
+  ios: {
+    type: 'sfSymbol',
+    name: 'clock.arrow.trianglehead.counterclockwise.rotate.90',
+  },
+  android: {
+    type: 'image',
+    source: require('../assets/icons/historySymbol.png'),
+  },
 });
 
 const chart = Platform.select<NativeBottomTabIcon | undefined>({
-  ios: { type: 'sfSymbol', name: 'magnifyingglass' },
-  default: require('@assets/icons/chart.png'),
+  ios: { type: 'sfSymbol', name: 'chart.bar' },
+  android: {
+    type: 'image',
+    source: require('../assets/icons/chartSymbol.png'),
+  },
 });
 
 const gear = Platform.select<NativeBottomTabIcon | undefined>({
-  ios: { type: 'sfSymbol', name: 'person' },
-  default: require('@assets/icons/gear.png'),
+  ios: { type: 'sfSymbol', name: 'gear' },
+  android: {
+    type: 'image',
+    source: require('../assets/icons/gearSymbol.png'),
+  },
 });
 
 export const tabBarIcons = {

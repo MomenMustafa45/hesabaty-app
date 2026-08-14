@@ -26,8 +26,7 @@ export const HomeScreen: React.FC = () => {
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const navigation =
-    useNavigation<BottomTabNavigationProp<AppTabParamList>>();
+  const navigation = useNavigation<BottomTabNavigationProp<AppTabParamList>>();
   const stats = useCurrentCycleStats();
   const monthlyLimit = useSettingsStore(state => state.monthlyLimit);
   const language = useSettingsStore(state => state.language);
@@ -56,11 +55,9 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={styles.screen}>
       <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingTop: insets.top + 4 },
-        ]}
-        showsVerticalScrollIndicator={false}>
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 4 }]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.greet}>
             <AppText variant="tiny">{t(localizationKeys.hi)}</AppText>
@@ -99,7 +96,8 @@ export const HomeScreen: React.FC = () => {
         style={styles.fab}
         onPress={openAdd}
         accessibilityRole="button"
-        accessibilityLabel={t(localizationKeys.addTxn)}>
+        accessibilityLabel={t(localizationKeys.addTxn)}
+      >
         <AppIcon name="plus" size={24} color={theme.ringColors.ringSafe} />
       </Pressable>
     </View>

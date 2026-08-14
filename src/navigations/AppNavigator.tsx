@@ -21,7 +21,11 @@ export const AppNavigator: React.FC = () => {
       screenOptions={{
         tabBarActiveTintColor: theme.colors.nile,
         tabBarInactiveTintColor: theme.colors.ink3,
-      }}>
+        tabBarStyle: {
+          backgroundColor: theme.colors.glass,
+        },
+      }}
+    >
       <Tab.Screen
         name="Home"
         component={HomeScreen}

@@ -16,6 +16,8 @@ export interface ColorTokens {
   ink3: string;
   line: string;
   glass: string;
+  white: string;
+  black: string;
 }
 
 const lightColors: ColorTokens = {
@@ -34,6 +36,8 @@ const lightColors: ColorTokens = {
   ink3: '#A8A39B',
   line: '#E7E2D8',
   glass: 'rgba(255,255,255,.94)',
+  white: '#FFFFFF',
+  black: '#000000',
 };
 
 const darkColors: ColorTokens = {
@@ -52,6 +56,8 @@ const darkColors: ColorTokens = {
   ink3: '#6B675F',
   line: '#2C2F33',
   glass: 'rgba(24,26,29,.86)',
+  white: '#000000',
+  black: '#FFFFFF',
 };
 
 export const colorsByMode: Record<ThemeMode, ColorTokens> = {
@@ -80,12 +86,42 @@ export interface TypographyStyle {
 }
 
 export const typography: Record<TextVariant, TypographyStyle> = {
-  h1: { fontSize: 22, fontWeight: 700, fontFamily: fontFamilyByWeight[700], color: 'ink' },
-  h2: { fontSize: 18, fontWeight: 700, fontFamily: fontFamilyByWeight[700], color: 'ink' },
-  h3: { fontSize: 15, fontWeight: 600, fontFamily: fontFamilyByWeight[600], color: 'ink' },
-  body: { fontSize: 15, fontWeight: 400, fontFamily: fontFamilyByWeight[400], color: 'ink' },
-  muted: { fontSize: 13, fontWeight: 400, fontFamily: fontFamilyByWeight[400], color: 'ink2' },
-  tiny: { fontSize: 11, fontWeight: 400, fontFamily: fontFamilyByWeight[400], color: 'ink3' },
+  h1: {
+    fontSize: 22,
+    fontWeight: 700,
+    fontFamily: fontFamilyByWeight[700],
+    color: 'ink',
+  },
+  h2: {
+    fontSize: 18,
+    fontWeight: 700,
+    fontFamily: fontFamilyByWeight[700],
+    color: 'ink',
+  },
+  h3: {
+    fontSize: 15,
+    fontWeight: 600,
+    fontFamily: fontFamilyByWeight[600],
+    color: 'ink',
+  },
+  body: {
+    fontSize: 15,
+    fontWeight: 400,
+    fontFamily: fontFamilyByWeight[400],
+    color: 'ink',
+  },
+  muted: {
+    fontSize: 13,
+    fontWeight: 400,
+    fontFamily: fontFamilyByWeight[400],
+    color: 'ink2',
+  },
+  tiny: {
+    fontSize: 11,
+    fontWeight: 400,
+    fontFamily: fontFamilyByWeight[400],
+    color: 'ink3',
+  },
 };
 
 export const radii = {

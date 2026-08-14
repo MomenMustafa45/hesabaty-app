@@ -36,7 +36,7 @@ export const createStyles = (theme: Theme) =>
     },
     fab: {
       position: 'absolute',
-      bottom: 92,
+      bottom: 120,
       // `end` flips with RTL (physical right in LTR, physical left in RTL).
       // Do not use left/right + I18nManager.isRTL — that combination stayed
       // stuck on the physical right during M5 RTL verification.
