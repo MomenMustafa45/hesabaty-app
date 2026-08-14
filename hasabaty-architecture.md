@@ -558,3 +558,53 @@ This fires immediately from a data mutation, not from a time-based schedule. Wir
 > Read Section 14 fully, plus Section 8.3 for the notify-kit context and Section 13.8 for `useCycleRolloverCheck()` this reuses. Confirm `react-native-notify-kit`'s current scheduling API before implementing (compatibility was checked for permission-request in M4, but scheduling triggers is different API surface — verify it, don't assume). Build 14.1–14.3 as three genuinely different mechanisms (recurring-with-reevaluation, event-triggered, reusing existing detection), not one pattern copy-pasted three times. Tell me your plan before writing code. Verify on a **real device**, not just a simulator/emulator — local notification delivery is one of the areas simulators are least reliable for — using the dev-only fast-path trigger, actually observing a fired OS notification, not just confirming the scheduling call succeeded without error.
 
 **⚠ Pending real-device verification (deferred, not skipped):** M9's code is complete and committed, but the four real-device checks — the fast-path test fire, daily reminder arm/cancel across background/foreground, an immediate limit-warning fire with no re-spam on subsequent saves, and the monthly report firing only on a natural rollover (not the manual preview) — were deliberately deferred to later in the project rather than done at milestone close. **Before this app is considered actually finished, come back to this and run all four on a real device.** This is the one milestone where "the code looks right" and "it actually works" are most likely to diverge, since local notification behavior is OS-level and timing-dependent in ways code review can't fully catch.
+
+---
+
+## 15. i18n + Dark Mode (Milestone 10)
+
+The hard infrastructure already exists — i18next, the RTL-restart mechanism, MMKV language persistence, and the theme system were all built starting in M1/8.4. This milestone is "translate everything else + verify systematically," not "build i18n from scratch."
+
+### 15.1 Scope
+
+Extend `en.json`/`ar.json` (currently only the 4 onboarding screens) to cover every screen built since: Home, History + month picker, Insights, all 7 Settings sub-screens, `NewMonthScreen`, `AddTransactionSheet`, and notification-settings copy. Replace every hardcoded English string with `t(...)` — a systematic sweep per screen, not spot-fixing whatever's noticed.
+
+### 15.2 Dark mode wiring — verify, don't assume
+
+**Real gap worth confirming first, before doing the translation sweep:** `ThemeProvider` was originally built in M1 resolving _only_ from system `Appearance`, with manual override explicitly deferred ("whichever milestone wires real settings/storage"). M8 built Settings' Appearance UI and persisted `settingsStore.themeOverride` — but confirm `ThemeProvider` was actually updated to _read_ that override (falling back to system `Appearance` when unset), not just that the UI exists and persists a value nobody consumes. If it wasn't wired, that's a real bug to fix as part of this milestone, not a separate one.
+
+### 15.3 Verification — risk-based, not full combinatorial coverage
+
+With ~13 screens now built, testing every screen × both languages × both themes × both platforms is over 100 combinations — not a reasonable bar. Instead:
+
+- **Full coverage** (both languages, both themes) on the highest-risk screens: Home (the FAB's RTL positioning already had one real bug here — re-confirm it still holds), `AddTransactionSheet` (the most complex form), the Settings list, and Currency (uses `AppSearchList`).
+- **Spot-check** every remaining screen in at least one non-default combination (Arabic _or_ dark, not necessarily both) — enough to catch an obviously-missed translation or a hardcoded color slipping through, without demanding exhaustive coverage everywhere.
+- Both platforms for the full-coverage set; the spot-check set can lean on whichever platform is more convenient at the time.
+
+**First prompt to give Cursor (Milestone 10):**
+
+> Read Section 15 fully. First confirm the dark-mode wiring gap in 15.2 — is `ThemeProvider` actually consuming `settingsStore.themeOverride`, or only system `Appearance`? Fix if it's not wired. Then do the translation sweep per 15.1 — tell me your plan for organizing the `en.json`/`ar.json` keys per screen before writing them, not just diving in screen by screen with no structure. Verify per the risk-based plan in 15.3, not exhaustive combinatorial coverage — but be explicit about which screens got full coverage versus a spot-check, so I know exactly what was and wasn't tested.
+
+---
+
+## 16. App Icon + Native Splash Screen
+
+Store-prep phase, not one of the original numbered code milestones — but same rigor applies.
+
+### 16.1 App icon
+
+Wire the final 1024×1024 master (and separate Android adaptive foreground/background layers, if produced) into both native projects. Verify current tooling before using it — icon-generation library landscape shifts, don't assume a specific package without checking. Confirm success by actually launching the app and seeing the new icon on both a home screen and in the OS app switcher, not just that files were generated and placed.
+
+### 16.2 Splash screen — true native, not a JS loading screen
+
+**The requirement, precisely:** a native launch screen visible the instant the OS opens the app (before the JS bundle even loads), staying up seamlessly through JS initialization, then handing off directly into the real first screen with no visible flash, blank frame, or intermediate loading spinner. **Not** a React component that renders after the bridge initializes — that's the exact anti-pattern being avoided here.
+
+This needs the hide-timing coordinated with _actual_ app readiness, not just "React mounted." We already have the right readiness signal: `RootNavigator` already gates on `onboarded` and waits for MMKV rehydration (built in M4). Hide the splash exactly when that resolution completes and the first real screen (onboarding's `WelcomeScreen` or the main tabs) is ready to render — not before (database migrations from M3 should also be complete by then) and not with an extra artificial delay after.
+
+**Approach:** investigate current best-practice tooling for this exact native-splash-with-JS-ready-signal pattern before implementing — don't assume a specific library's current state without checking, same discipline as every dependency in this project. Whatever's chosen, confirm it actually solves the coordination problem (a proper JS-callable "hide now" API tied to real readiness) rather than a fixed timer/delay, which would just be a slower version of the same anti-pattern.
+
+Background matches the icon: `nile` teal, with the mark from the icon (or a simplified version of it) centered — one continuous visual identity from OS launch through the icon through the app itself, not three disconnected looks.
+
+**First prompt to give Cursor:**
+
+> Read Section 16. For 16.1: wire the final app icon files into both native projects, verifying current tooling rather than assuming a package. Confirm by actually launching and seeing the icon on-device, both platforms. For 16.2: investigate current best-practice tooling for a true native splash screen with JS-ready-signal coordination (not a fixed timer, not a JS-rendered loading component) — tell me what you find and your plan before implementing. Hide timing should key off the same `onboarded`/MMKV-rehydration readiness signal `RootNavigator` already uses from M4. Verify end to end on both platforms: cold-launch the app and confirm there's no visible flash, blank frame, or gap between the native splash disappearing and real content appearing.
