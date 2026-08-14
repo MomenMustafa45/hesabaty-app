@@ -146,6 +146,7 @@ export const localizationKeys = {
   monthlyLimitWithCurrency: 'monthlyLimitWithCurrency',
   startDayShort: 'startDayShort',
   amount: 'amount',
+  splashTagline: 'splashTagline',
 } as const;
 
 export type LocalizationKey =

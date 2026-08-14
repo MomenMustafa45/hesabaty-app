@@ -5,14 +5,14 @@
  */
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import RootNavigator from '@navigations/RootNavigator';
+import SplashGate from '@features/splash/SplashGate';
 import AppProviders from '@providers/AppProviders';
 
 function App(): React.JSX.Element {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProviders>
-        <RootNavigator />
+        <SplashGate />
       </AppProviders>
     </GestureHandlerRootView>
   );

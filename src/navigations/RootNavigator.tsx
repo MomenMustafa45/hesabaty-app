@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RolloverHost } from '@features/rollover/components/RolloverHost';
 import { TransactionSheetHost } from '@features/transactions/components/TransactionSheetHost';
 import NotificationsLifecycle from '@providers/NotificationsLifecycle';
-import { useTheme } from '@providers/ThemeProvider';
 import { useSettingsStore } from '@store/settingsStore';
 import { AppNavigator } from './AppNavigator';
 import { buildRootOnboardingInitialState } from './onboardingResumeState';
@@ -14,25 +12,10 @@ import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+/** Assumes MMKV hydration completed (see SplashGate). */
 export const RootNavigator: React.FC = () => {
-  const theme = useTheme();
   const onboarded = useSettingsStore(state => state.onboarded);
   const onboardingDraft = useSettingsStore(state => state.onboardingDraft);
-  const [hasHydrated, setHasHydrated] = useState(
-    useSettingsStore.persist.hasHydrated(),
-  );
-
-  useEffect(() => {
-    const unsubscribe = useSettingsStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-    setHasHydrated(useSettingsStore.persist.hasHydrated());
-    return unsubscribe;
-  }, []);
-
-  if (!hasHydrated) {
-    return <View style={{ flex: 1, backgroundColor: theme.colors.sand }} />;
-  }
 
   const navigationInitialState = onboarded
     ? undefined

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B6B57">
+<title>Hasabaty — Splash: Mint strike</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #04332A; }
+  body { font-family: 'Archivo', system-ui, sans-serif; }
+  #splash {
+    position: fixed; inset: 0;
+    background: radial-gradient(110% 80% at 50% 34%, #0E7861 0%, #085647 46%, #04332A 100%);
+    overflow: hidden;
+    /* loop for review — for production add:
+       animation-iteration-count: 1 on every animated element,
+       animation-fill-mode: forwards, and scale durations to ~1.8s */
+  }
+
+  
+  
+  
+  @property --p { syntax: '<integer>'; inherits: false; initial-value: 0; }
+
+  /* A — ring draw-on */
+  @keyframes a-outer { 0% { stroke-dashoffset: 1508; } 42%, 100% { stroke-dashoffset: 0; } }
+  @keyframes a-inner { 0%, 14% { stroke-dashoffset: 880; } 56%, 100% { stroke-dashoffset: 0; } }
+  @keyframes a-gold  { 0%, 30% { stroke-dashoffset: 340; opacity: 0; } 40% { opacity: 1; } 68%, 100% { stroke-dashoffset: 0; opacity: 1; } }
+  @keyframes a-spin  { 0% { transform: rotate(-96deg); } 70%, 100% { transform: rotate(0deg); } }
+  @keyframes a-word  { 0%, 58% { opacity: 0; transform: translateY(16px); } 76%, 100% { opacity: 1; transform: translateY(0); } }
+  @keyframes a-sub   { 0%, 70% { opacity: 0; letter-spacing: 0.5em; } 88%, 100% { opacity: 1; letter-spacing: 0.34em; } }
+
+  /* B — coin mint */
+  @keyframes b-flip  { 0% { transform: rotateY(-190deg) scale(0.82); } 62% { transform: rotateY(6deg) scale(1.04); } 78% { transform: rotateY(-2deg) scale(0.985); } 90%, 100% { transform: rotateY(0deg) scale(1); } }
+  @keyframes b-shine { 0%, 55% { transform: translateX(-190px) rotate(18deg); opacity: 0; } 66% { opacity: 0.85; } 84%, 100% { transform: translateX(190px) rotate(18deg); opacity: 0; } }
+  @keyframes b-glow  { 0%, 55% { opacity: 0; transform: scale(0.7); } 72% { opacity: 0.55; transform: scale(1.25); } 92%, 100% { opacity: 0; transform: scale(1.5); } }
+  @keyframes b-word  { 0%, 66% { opacity: 0; transform: translateY(14px); } 82%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* C — count to 100 */
+  @keyframes c-arc   { 0%, 8% { stroke-dashoffset: 1131; } 62%, 100% { stroke-dashoffset: 0; } }
+  @keyframes c-count { 0%, 8% { --p: 0; } 62%, 100% { --p: 100; } }
+  @keyframes c-num   { 0% { opacity: 0; } 10%, 66% { opacity: 1; } 76%, 100% { opacity: 0; } }
+  @keyframes c-mark  { 0%, 68% { opacity: 0; transform: scale(0.6); } 84%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes c-shrink{ 0%, 66% { transform: scale(1); } 84%, 100% { transform: scale(0.62); } }
+  @keyframes c-word  { 0%, 76% { opacity: 0; transform: translateY(14px); } 92%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* D — arc launch */
+  @keyframes d-ring  { 0% { transform: rotate(-40deg) scale(0.88); opacity: 0; } 26%, 100% { transform: rotate(0deg) scale(1); opacity: 1; } }
+  @keyframes d-arc   { 0%, 18% { stroke-dashoffset: 800; } 52%, 100% { stroke-dashoffset: 0; } }
+  @keyframes d-shoot { 0%, 50% { stroke-dashoffset: 260; opacity: 0; } 58% { opacity: 1; } 76%, 100% { stroke-dashoffset: 0; opacity: 1; } }
+  @keyframes d-pulse { 0%, 46% { opacity: 0; transform: scale(0.5); } 64% { opacity: 0.4; transform: scale(1.1); } 88%, 100% { opacity: 0; transform: scale(1.6); } }
+  @keyframes d-word  { 0%, 70% { opacity: 0; transform: translateY(18px); } 86%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* 2a mint strike */
+  @keyframes m1-drop  { 0% { transform: translateY(-150px) scale(0.58); opacity: 0; } 30% { transform: translateY(0) scale(1.08); opacity: 1; } 40% { transform: translateY(0) scale(0.96); } 52%, 100% { transform: translateY(0) scale(1); } }
+  @keyframes m1-flash { 0%, 27% { opacity: 0; transform: scale(0.35); } 33% { opacity: 0.95; transform: scale(1); } 56%, 100% { opacity: 0; transform: scale(1.8); } }
+  @keyframes m1-shock { 0%, 29% { opacity: 0; transform: scale(0.45); } 37% { opacity: 0.75; } 70%, 100% { opacity: 0; transform: scale(2); } }
+  @keyframes m1-word  { 0%, 44% { opacity: 0; transform: translateY(16px); } 62%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* 2b edge-lit */
+  @keyframes m2-in    { 0% { opacity: 0; transform: scale(0.82); } 20%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes m2-tilt  { 0%, 100% { transform: rotateX(9deg) rotateY(-11deg); } 50% { transform: rotateX(-7deg) rotateY(11deg); } }
+  @keyframes m2-sheen { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  @keyframes m2-word  { 0%, 30% { opacity: 0; transform: translateY(12px); } 48%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* 2c stack */
+  @keyframes m3-back  { 0% { opacity: 0; transform: translate(-40px, 40px) scale(0.88); } 28%, 100% { opacity: 0.5; transform: translate(-34px, 34px) scale(1); } }
+  @keyframes m3-mid   { 0%, 8% { opacity: 0; transform: translate(-24px, 24px) scale(0.9); } 36%, 100% { opacity: 0.78; transform: translate(-17px, 17px) scale(1); } }
+  @keyframes m3-front { 0%, 16% { opacity: 0; transform: rotateY(-165deg) scale(0.86); } 54% { opacity: 1; transform: rotateY(9deg) scale(1.04); } 68%, 100% { opacity: 1; transform: rotateY(0deg) scale(1); } }
+  @keyframes m3-word  { 0%, 60% { opacity: 0; transform: translateY(14px); } 78%, 100% { opacity: 1; transform: translateY(0); } }
+
+  /* 2d engraved reveal */
+  @keyframes m4-face  { 0% { opacity: 0; transform: scale(0.93); } 26%, 100% { opacity: 1; transform: scale(1); } }
+  @keyframes m4-rim   { 0%, 10% { stroke-dashoffset: 3120; } 52%, 100% { stroke-dashoffset: 0; } }
+  @keyframes m4-eng   { 0%, 46% { opacity: 0; } 68%, 100% { opacity: 1; } }
+  @keyframes m4-word  { 0%, 66% { opacity: 0; transform: translateY(12px); } 84%, 100% { opacity: 1; transform: translateY(0); } }
+
+  @keyframes shine-sweep { 0%, 52% { transform: translateX(-200px) rotate(18deg); opacity: 0; } 63% { opacity: 0.8; } 82%, 100% { transform: translateX(200px) rotate(18deg); opacity: 0; } }
+
+  @keyframes dots { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+</style>
+</head>
+<body>
+<div id="splash">
+
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:56px;">
+          <div style="position:relative; width:220px; height:220px; display:flex; align-items:center; justify-content:center;">
+            <div style="position:absolute; width:220px; height:220px; border-radius:50%; border:2px solid #C89B3C; animation:m1-shock 5s cubic-bezier(0.2,0.8,0.3,1) infinite;"></div>
+            <div style="position:absolute; width:220px; height:220px; border-radius:50%; background:radial-gradient(circle, rgba(246,226,166,0.75) 0%, rgba(200,155,60,0) 68%); animation:m1-flash 5s ease-out infinite;"></div>
+            <div style="position:relative; width:182px; height:182px; border-radius:50%; overflow:hidden; box-shadow:0 20px 46px rgba(0,0,0,0.4); animation:m1-drop 5s cubic-bezier(0.3,1.4,0.4,1) infinite;">
+              <svg width="100%" height="100%" viewBox="0 0 1024 1024" style="display:block;">
+                <defs>
+                  <linearGradient id="rim-a2" x1="15%" y1="0%" x2="85%" y2="100%">
+                    <stop offset="0" stop-color="#F6E2A6"></stop>
+                    <stop offset="0.35" stop-color="#C89B3C"></stop>
+                    <stop offset="0.7" stop-color="#8B6520"></stop>
+                    <stop offset="1" stop-color="#E0BE72"></stop>
+                  </linearGradient>
+                  <linearGradient id="face-a2" x1="25%" y1="5%" x2="75%" y2="100%">
+                    <stop offset="0" stop-color="#17957A"></stop>
+                    <stop offset="1" stop-color="#064A3C"></stop>
+                  </linearGradient>
+                </defs>
+                <circle cx="512" cy="512" r="512" fill="url(#rim-a2)"></circle>
+                <circle cx="512" cy="512" r="444" fill="url(#face-a2)"></circle>
+                <circle cx="512" cy="512" r="444" fill="none" stroke="#02241D" stroke-opacity="0.35" stroke-width="24"></circle>
+                <circle cx="512" cy="512" r="286" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="30"></circle>
+                <path d="M 512 226 A 286 286 0 0 1 735 683" fill="none" stroke="url(#rim-a2)" stroke-width="30" stroke-linecap="round"></path>
+                <path d="M 190 300 A 440 440 0 0 1 640 120" fill="none" stroke="#FFFFFF" stroke-opacity="0.4" stroke-width="12" stroke-linecap="round"></path>
+              </svg>
+              <div style="position:absolute; top:-50px; left:0; width:74px; height:320px; background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0) 100%); animation:shine-sweep 5s ease-in-out infinite;"></div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:16px; animation:m1-word 5s cubic-bezier(0.22,1,0.36,1) infinite;">
+            <div style="color:#ffffff; font-size:44px; font-weight:600;">حساباتي</div>
+            <div style="width:44px; height:2px; background:#C89B3C;"></div>
+            <div style="color:rgba(255,255,255,0.6); font-size:11px; font-weight:600; letter-spacing:0.3em; text-transform:uppercase;">Track what counts</div>
+          </div>
+        </div>
+</div>
+</body>
+</html>

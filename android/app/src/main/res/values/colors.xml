@@ -1,3 +1,5 @@
 <resources>
-    <color name="bootsplash_background">#f5fcff</color>
+    <!-- Match Layer 2 handoff so Android never flashes a mismatched native frame -->
+    <color name="bootsplash_background">#04332A</color>
+    <color name="app_window_background">#F5F3EE</color>
 </resources>

@@ -145,5 +145,6 @@
   "lastAmountValue": "{{label}}: {{amount}}",
   "monthlyLimitWithCurrency": "{{label}} ({{currency}})",
   "startDayShort": "Start day",
-  "amount": "Amount"
+  "amount": "Amount",
+  "splashTagline": "Track what counts"
 }

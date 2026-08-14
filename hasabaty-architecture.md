@@ -605,6 +605,19 @@ This needs the hide-timing coordinated with _actual_ app readiness, not just "Re
 
 Background matches the icon: `nile` teal, with the mark from the icon (or a simplified version of it) centered — one continuous visual identity from OS launch through the icon through the app itself, not three disconnected looks.
 
-**First prompt to give Cursor:**
+**First prompt to give Cursor (16.2):**
 
 > Read Section 16. For 16.1: wire the final app icon files into both native projects, verifying current tooling rather than assuming a package. Confirm by actually launching and seeing the icon on-device, both platforms. For 16.2: investigate current best-practice tooling for a true native splash screen with JS-ready-signal coordination (not a fixed timer, not a JS-rendered loading component) — tell me what you find and your plan before implementing. Hide timing should key off the same `onboarded`/MMKV-rehydration readiness signal `RootNavigator` already uses from M4. Verify end to end on both platforms: cold-launch the app and confirm there's no visible flash, blank frame, or gap between the native splash disappearing and real content appearing.
+
+### 16.3 Custom animated splash continuation + skip preference
+
+A custom design (built in Claude Design, delivered as an HTML reference file) needs to render as **real native views/animation, not a WebView** — HTML can't be the true native layer in 16.2 (no interactivity or rendering exists before JS loads), so this is a second, distinct layer:
+
+- **Layer 1 (16.2):** true native static screen — instant, unskippable, near-zero duration. Unchanged by this section.
+- **Layer 2 (this section):** a brief native-_rendered_ splash continuation shown immediately after JS loads, faithfully recreating the HTML reference's visual design (colors, layout, any motion) using real RN components/`react-native-reanimated` — not a `WebView`. This is where the "don't show this again" checkbox actually can live, since real JS is running by this point (it couldn't exist on Layer 1).
+
+**Skip behavior:** a checkbox on this screen, persisted to MMKV (non-critical preference, doesn't need `settingsStore`'s reactive/typed shape — a simple stored flag is enough). Once checked, every future launch goes straight from Layer 1 into real content, skipping Layer 2 entirely. Unchecked (default): Layer 2 shows every launch.
+
+**First prompt to give Cursor (16.3):**
+
+> Read Section 16.3, plus 16.2 for how it fits together. I'm attaching an HTML file from Claude Design as the visual reference for a splash continuation — extract its exact colors, layout, and any animation/motion, then rebuild it as real native views (`react-native-reanimated` if there's real motion to reproduce), not a `WebView`. This renders _after_ Layer 1's true native screen (already built per 16.2), not instead of it. Add a "don't show this again" checkbox; persist the choice to MMKV; on future launches, skip straight from Layer 1 into real content when it's checked. Tell me your plan — specifically how you'll translate the HTML's visual details into native components — before writing code. Verify on both platforms: first launch shows Layer 1 → Layer 2 → real content; after checking skip, a fresh launch shows Layer 1 → real content only, with the checkbox choice surviving an app restart.

@@ -145,5 +145,6 @@
   "lastAmountValue": "{{label}}: {{amount}}",
   "monthlyLimitWithCurrency": "{{label}} ({{currency}})",
   "startDayShort": "يوم البداية",
-  "amount": "المبلغ"
+  "amount": "المبلغ",
+  "splashTagline": "تابع ما يهم"
 }
