@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import {
-  cancelDailyReminder,
-  scheduleDailyReminder,
-} from '@lib/notifications';
+import { cancelDailyReminder, scheduleDailyReminder } from '@lib/notifications';
 import { useSettingsStore } from '@store/settingsStore';
 
 /**
@@ -19,25 +16,22 @@ export const NotificationsLifecycle: React.FC = () => {
 
   useEffect(() => {
     if (!dailyReminderEnabled) {
-      void cancelDailyReminder();
+      cancelDailyReminder();
       return;
     }
-    void scheduleDailyReminder();
+    scheduleDailyReminder();
   }, [dailyReminderEnabled, dailyReminderTime]);
 
   useEffect(() => {
     const handleChange = (next: AppStateStatus) => {
       const prev = appState.current;
       appState.current = next;
-      if (
-        (prev === 'background' || prev === 'inactive') &&
-        next === 'active'
-      ) {
-        void scheduleDailyReminder();
+      if ((prev === 'background' || prev === 'inactive') && next === 'active') {
+        scheduleDailyReminder();
         return;
       }
       if (next === 'background' || next === 'inactive') {
-        void scheduleDailyReminder();
+        scheduleDailyReminder();
       }
     };
 

@@ -49,7 +49,7 @@ export function getBootstrapLanguage(): AppLanguage {
 
 applyRtlForLanguage(bootstrapLanguage);
 
-void i18n.use(initReactI18next).init({
+i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
   resources: {
     en: { translation: en },

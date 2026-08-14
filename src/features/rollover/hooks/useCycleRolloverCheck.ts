@@ -40,7 +40,7 @@ export function useCycleRolloverCheck(): {
     if (!isNaturalPending) {
       return;
     }
-    void fireMonthlyReport(currentCycleKey);
+    fireMonthlyReport(currentCycleKey);
   }, [isNaturalPending, currentCycleKey]);
 
   const dismiss = () => {

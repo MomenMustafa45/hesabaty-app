@@ -26,7 +26,7 @@ export const OnboardingLanguageSwitcher: React.FC<
       return;
     }
     setIsSwitching(true);
-    void switchOnboardingLanguage(next, draft).finally(() => {
+    switchOnboardingLanguage(next, draft).finally(() => {
       setIsSwitching(false);
     });
   };
@@ -36,24 +36,28 @@ export const OnboardingLanguageSwitcher: React.FC<
       <Pressable
         style={[styles.option, language === 'en' ? styles.optionActive : null]}
         disabled={isSwitching}
-        onPress={() => handleSelect('en')}>
+        onPress={() => handleSelect('en')}
+      >
         <Text
           style={[
             styles.optionText,
             language === 'en' ? styles.optionTextActive : null,
-          ]}>
+          ]}
+        >
           {t(localizationKeys.langEn)}
         </Text>
       </Pressable>
       <Pressable
         style={[styles.option, language === 'ar' ? styles.optionActive : null]}
         disabled={isSwitching}
-        onPress={() => handleSelect('ar')}>
+        onPress={() => handleSelect('ar')}
+      >
         <Text
           style={[
             styles.optionText,
             language === 'ar' ? styles.optionTextActive : null,
-          ]}>
+          ]}
+        >
           {t(localizationKeys.langAr)}
         </Text>
       </Pressable>

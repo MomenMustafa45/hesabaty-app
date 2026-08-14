@@ -30,7 +30,9 @@ export const NotificationPermissionStepScreen: React.FC<Props> = ({
   const styles = createStyles(theme);
   const { t } = useTranslation();
   const onboardingDraft = useSettingsStore(state => state.onboardingDraft);
-  const completeOnboarding = useSettingsStore(state => state.completeOnboarding);
+  const completeOnboarding = useSettingsStore(
+    state => state.completeOnboarding,
+  );
   const [isRequesting, setIsRequesting] = useState(false);
   const { currency, monthlyLimit, cycleType, cycleStartDay } = route.params;
 
@@ -42,8 +44,7 @@ export const NotificationPermissionStepScreen: React.FC<Props> = ({
       cycleType,
       cycleStartDay,
       draftLimitMajor:
-        onboardingDraft?.draftLimitMajor ??
-        String(monthlyLimit / 100),
+        onboardingDraft?.draftLimitMajor ?? String(monthlyLimit / 100),
     }),
     [onboardingDraft, currency, cycleType, cycleStartDay, monthlyLimit],
   );
@@ -90,16 +91,18 @@ export const NotificationPermissionStepScreen: React.FC<Props> = ({
           variant="primary"
           disabled={isRequesting}
           onPress={() => {
-            void handleFinish(true);
-          }}>
+            handleFinish(true);
+          }}
+        >
           {t(localizationKeys.enableReminders)}
         </AppButton>
         <AppButton
           variant="ghost"
           disabled={isRequesting}
           onPress={() => {
-            void handleFinish(false);
-          }}>
+            handleFinish(false);
+          }}
+        >
           {t(localizationKeys.skipForNow)}
         </AppButton>
       </View>

@@ -19,7 +19,10 @@ import { useSettingsStore } from '@store/settingsStore';
 import { ThemeMode } from '@config/theme';
 import { createStyles } from './SettingsScreen.styles';
 
-type Navigation = NativeStackNavigationProp<SettingsStackParamList, 'SettingsHome'>;
+type Navigation = NativeStackNavigationProp<
+  SettingsStackParamList,
+  'SettingsHome'
+>;
 
 export const SettingsScreen: React.FC = () => {
   const theme = useTheme();
@@ -43,7 +46,7 @@ export const SettingsScreen: React.FC = () => {
     if (next === language) {
       return;
     }
-    void switchAppLanguage(next);
+    switchAppLanguage(next);
   };
 
   const handleDevTestNotification = async () => {
@@ -68,7 +71,8 @@ export const SettingsScreen: React.FC = () => {
     <View style={styles.screen}>
       <ScrollView
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 4 }]}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <AppText variant="h1" style={styles.title}>
           {t(localizationKeys.settingsTitle)}
         </AppText>
@@ -161,7 +165,7 @@ export const SettingsScreen: React.FC = () => {
                 label={t(localizationKeys.scheduleTestNotification)}
                 isLast
                 onPress={() => {
-                  void handleDevTestNotification();
+                  handleDevTestNotification();
                 }}
               />
             </View>

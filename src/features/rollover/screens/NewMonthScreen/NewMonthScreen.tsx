@@ -32,7 +32,9 @@ export interface NewMonthScreenProps {
   onDismiss: () => void;
 }
 
-export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => {
+export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({
+  onDismiss,
+}) => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const insets = useSafeAreaInsets();
@@ -98,13 +100,15 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
     <View style={[styles.screen, { paddingTop: insets.top + 8 }]}>
       <ScrollView
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Pressable
             style={styles.backBtn}
             onPress={onDismiss}
             accessibilityRole="button"
-            accessibilityLabel={t(localizationKeys.back)}>
+            accessibilityLabel={t(localizationKeys.back)}
+          >
             <AppIcon
               name={I18nManager.isRTL ? 'chevronRight' : 'chevronLeft'}
               size={16}
@@ -121,7 +125,8 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
           <AppText
             weight={700}
             color={overLimit ? 'coral' : 'nile'}
-            style={styles.summaryAmount}>
+            style={styles.summaryAmount}
+          >
             {formatMoney(previousSpend)}
           </AppText>
           <AppText variant="tiny">
@@ -156,7 +161,8 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
               return (
                 <View
                   key={pendingRecurringKey(transaction)}
-                  style={[styles.pendingRow, isLast && styles.pendingRowLast]}>
+                  style={[styles.pendingRow, isLast && styles.pendingRowLast]}
+                >
                   <View style={[styles.catDot, { backgroundColor: color }]}>
                     <AppIcon
                       name={
@@ -182,18 +188,24 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
                       style={styles.iconBtn}
                       onPress={() => handleEdit(transaction)}
                       accessibilityRole="button"
-                      accessibilityLabel={t(localizationKeys.editRecurring)}>
+                      accessibilityLabel={t(localizationKeys.editRecurring)}
+                    >
                       <AppIcon name="edit" size={14} color={theme.colors.ink} />
                     </Pressable>
                     <Pressable
                       style={styles.iconBtn}
                       onPress={() => {
-                        void handleConfirm(transaction);
+                        handleConfirm(transaction);
                       }}
                       accessibilityRole="button"
                       accessibilityLabel={t(localizationKeys.confirmRecurring)}
-                      disabled={addMutation.isPending}>
-                      <AppIcon name="check" size={15} color={theme.colors.nile} />
+                      disabled={addMutation.isPending}
+                    >
+                      <AppIcon
+                        name="check"
+                        size={15}
+                        color={theme.colors.nile}
+                      />
                     </Pressable>
                   </View>
                 </View>
@@ -205,7 +217,8 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({ onDismiss }) => 
         <AppButton
           variant="primary"
           style={styles.continueButton}
-          onPress={onDismiss}>
+          onPress={onDismiss}
+        >
           {t(localizationKeys.continueToHome)}
         </AppButton>
       </ScrollView>
