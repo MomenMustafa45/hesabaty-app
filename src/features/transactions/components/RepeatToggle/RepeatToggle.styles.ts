@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (_theme: Theme) =>
   StyleSheet.create({
@@ -7,11 +8,11 @@ export const createStyles = (_theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      gap: 12,
-      marginTop: 4,
+      gap: moderateScale(12),
+      marginTop: verticalScale(4),
     },
     copy: {
       flex: 1,
-      gap: 2,
+      gap: moderateScale(2),
     },
   });

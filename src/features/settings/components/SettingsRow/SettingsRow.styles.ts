@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -7,7 +8,7 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 14,
+      paddingVertical: verticalScale(14),
     },
     rowDivider: {
       borderBottomWidth: 1,
@@ -16,11 +17,11 @@ export const createStyles = (theme: Theme) =>
     leading: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 12,
+      gap: moderateScale(12),
     },
     iconWrap: {
-      width: 30,
-      height: 30,
+      width: scale(30),
+      height: scale(30),
       borderRadius: theme.radii.radiusSm,
       backgroundColor: theme.colors.sand,
       alignItems: 'center',
@@ -29,6 +30,6 @@ export const createStyles = (theme: Theme) =>
     trailing: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: moderateScale(8),
     },
   });

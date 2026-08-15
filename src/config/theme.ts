@@ -1,3 +1,10 @@
+import {
+  scale,
+  verticalScale,
+  moderateScale,
+  moderateVerticalScale,
+} from '@config/scaling';
+
 export type ThemeMode = 'light' | 'dark';
 
 export interface ColorTokens {
@@ -87,37 +94,37 @@ export interface TypographyStyle {
 
 export const typography: Record<TextVariant, TypographyStyle> = {
   h1: {
-    fontSize: 22,
+    fontSize: moderateScale(22),
     fontWeight: 700,
     fontFamily: fontFamilyByWeight[700],
     color: 'ink',
   },
   h2: {
-    fontSize: 18,
+    fontSize: moderateScale(18),
     fontWeight: 700,
     fontFamily: fontFamilyByWeight[700],
     color: 'ink',
   },
   h3: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: 600,
     fontFamily: fontFamilyByWeight[600],
     color: 'ink',
   },
   body: {
-    fontSize: 15,
+    fontSize: moderateScale(15),
     fontWeight: 400,
     fontFamily: fontFamilyByWeight[400],
     color: 'ink',
   },
   muted: {
-    fontSize: 13,
+    fontSize: moderateScale(13),
     fontWeight: 400,
     fontFamily: fontFamilyByWeight[400],
     color: 'ink2',
   },
   tiny: {
-    fontSize: 11,
+    fontSize: moderateScale(11),
     fontWeight: 400,
     fontFamily: fontFamilyByWeight[400],
     color: 'ink3',
@@ -125,20 +132,33 @@ export const typography: Record<TextVariant, TypographyStyle> = {
 };
 
 export const radii = {
-  radius: 18,
-  radiusSm: 12,
-  sheetRadius: 26,
+  radius: moderateScale(18),
+  radiusSm: moderateScale(12),
+  sheetRadius: moderateScale(26),
+  /** Full pill — keep unscaled so it always fully rounds. */
   pill: 999,
 };
 
 export const spacing = {
-  cardPadding: 18,
-  buttonPaddingVertical: 15,
-  buttonPaddingHorizontal: 18,
-  inputPaddingVertical: 13,
-  inputPaddingHorizontal: 14,
-  chipPaddingVertical: 9,
-  chipPaddingHorizontal: 14,
+  cardPadding: scale(18),
+  buttonPaddingVertical: verticalScale(15),
+  buttonPaddingHorizontal: scale(18),
+  inputPaddingVertical: verticalScale(13),
+  inputPaddingHorizontal: scale(14),
+  chipPaddingVertical: verticalScale(9),
+  chipPaddingHorizontal: scale(14),
+  /** Common screen edge inset from the prototype. */
+  screenHorizontal: scale(18),
+  /** Clearance above the native tab bar for scroll content. */
+  tabBarClearance: verticalScale(90),
+  /** Standard section gap. */
+  sectionGap: moderateScale(16),
+};
+
+/** Line heights paired with body/muted copy. */
+export const lineHeights = {
+  body: moderateVerticalScale(22),
+  compact: moderateVerticalScale(17),
 };
 
 export const overlay = 'rgba(20,20,18,.42)';
@@ -190,6 +210,7 @@ export interface Theme {
   fontFamilyByWeight: typeof fontFamilyByWeight;
   radii: typeof radii;
   spacing: typeof spacing;
+  lineHeights: typeof lineHeights;
   overlay: string;
   ringColors: typeof ringColors;
   categoryColors: typeof categoryColors;
@@ -203,6 +224,7 @@ export function getTheme(mode: ThemeMode): Theme {
     fontFamilyByWeight,
     radii,
     spacing,
+    lineHeights,
     overlay,
     ringColors,
     categoryColors,

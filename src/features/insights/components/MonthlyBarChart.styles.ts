@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,25 +10,25 @@ export const createStyles = (theme: Theme) =>
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
       padding: theme.spacing.cardPadding,
-      marginBottom: 18,
+      marginBottom: verticalScale(18),
     },
     row: {
       flexDirection: 'row',
       alignItems: 'flex-end',
-      height: 120,
-      gap: 8,
+      height: verticalScale(120),
+      gap: moderateScale(8),
     },
     column: {
       alignItems: 'center',
       justifyContent: 'flex-end',
-      gap: 6,
+      gap: moderateScale(6),
     },
     bar: {
       width: '60%',
-      borderTopLeftRadius: 6,
-      borderTopRightRadius: 6,
-      borderBottomLeftRadius: 2,
-      borderBottomRightRadius: 2,
+      borderTopLeftRadius: moderateScale(6),
+      borderTopRightRadius: moderateScale(6),
+      borderBottomLeftRadius: moderateScale(2),
+      borderBottomRightRadius: moderateScale(2),
     },
     monthLabel: {
       marginTop: 0,

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,13 +10,13 @@ export const createStyles = (theme: Theme) =>
     },
     content: {
       paddingHorizontal: theme.spacing.cardPadding,
-      paddingBottom: 120,
+      paddingBottom: theme.spacing.tabBarClearance,
     },
     title: {
-      paddingTop: 14,
-      paddingBottom: 16,
+      paddingTop: verticalScale(14),
+      paddingBottom: verticalScale(16),
     },
     sectionTitle: {
-      marginBottom: 10,
+      marginBottom: verticalScale(10),
     },
   });

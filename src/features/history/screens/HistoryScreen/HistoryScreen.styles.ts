@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,19 +10,19 @@ export const createStyles = (theme: Theme) =>
     },
     content: {
       paddingHorizontal: theme.spacing.cardPadding,
-      paddingBottom: 120,
+      paddingBottom: theme.spacing.tabBarClearance,
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 14,
-      paddingBottom: 16,
+      paddingTop: verticalScale(14),
+      paddingBottom: verticalScale(16),
     },
     iconBtn: {
-      width: 38,
-      height: 38,
-      borderRadius: 19,
+      width: scale(38),
+      height: scale(38),
+      borderRadius: moderateScale(19),
       backgroundColor: theme.colors.sand2,
       borderWidth: 1,
       borderColor: theme.colors.line,
@@ -34,21 +35,21 @@ export const createStyles = (theme: Theme) =>
     monthBtn: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 5,
+      gap: moderateScale(5),
     },
     dayGroup: {
-      marginBottom: 4,
+      marginBottom: verticalScale(4),
     },
     dayLabel: {
-      marginTop: 14,
-      marginBottom: 4,
+      marginTop: verticalScale(14),
+      marginBottom: verticalScale(4),
     },
     dayCard: {
       backgroundColor: theme.colors.sand2,
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
-      paddingHorizontal: 16,
-      paddingVertical: 4,
+      paddingHorizontal: scale(16),
+      paddingVertical: verticalScale(4),
     },
   });

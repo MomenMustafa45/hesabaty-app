@@ -1,16 +1,17 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      marginBottom: 16,
+      marginBottom: verticalScale(16),
     },
     label: {
-      fontSize: 12,
+      fontSize: moderateScale(12),
       fontFamily: theme.fontFamilyByWeight[600],
       color: theme.colors.ink2,
-      marginBottom: 8,
+      marginBottom: verticalScale(8),
     },
     input: {
       width: '100%',
@@ -20,7 +21,7 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: theme.spacing.inputPaddingVertical,
       paddingHorizontal: theme.spacing.inputPaddingHorizontal,
       fontFamily: theme.fontFamilyByWeight[400],
-      fontSize: 15,
+      fontSize: moderateScale(15),
       backgroundColor: theme.colors.sand2,
       color: theme.colors.ink,
     },

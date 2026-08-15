@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     row: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 12,
-      paddingVertical: 12,
+      gap: moderateScale(12),
+      paddingVertical: verticalScale(12),
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.line,
     },
@@ -15,15 +16,15 @@ export const createStyles = (theme: Theme) =>
       borderBottomWidth: 0,
     },
     catDot: {
-      width: 38,
-      height: 38,
-      borderRadius: 12,
+      width: scale(38),
+      height: scale(38),
+      borderRadius: moderateScale(12),
       alignItems: 'center',
       justifyContent: 'center',
     },
     mid: {
       flex: 1,
       minWidth: 0,
-      gap: 1,
+      gap: moderateScale(1),
     },
   });

@@ -5,12 +5,13 @@ import Animated, {
   SharedValue,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import { scale as scaleSize, verticalScale, moderateScale } from '@config/scaling';
 import CoinMarkSvg from './CoinMarkSvg';
 
-const HERO = 220;
-const COIN = 182;
-const SHINE_WIDTH = 74;
-const SHINE_HEIGHT = 320;
+const HERO = moderateScale(220);
+const COIN = moderateScale(182);
+const SHINE_WIDTH = scaleSize(74);
+const SHINE_HEIGHT = verticalScale(320);
 
 export interface MintStrikeHeroProps {
   progress: SharedValue<number>;
@@ -122,14 +123,14 @@ const styles = StyleSheet.create({
     borderRadius: COIN / 2,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 20 },
+    shadowOffset: { width: 0, height: verticalScale(20) },
     shadowOpacity: 0.4,
-    shadowRadius: 46,
+    shadowRadius: moderateScale(46),
     elevation: 12,
   },
   shine: {
     position: 'absolute',
-    top: -50,
+    top: verticalScale(-50),
     left: 0,
     width: SHINE_WIDTH,
     height: SHINE_HEIGHT,
@@ -137,10 +138,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   shineBand: {
-    width: 28,
+    width: scaleSize(28),
     height: '100%',
     backgroundColor: 'rgba(255,255,255,0.75)',
-    borderRadius: 4,
+    borderRadius: moderateScale(4),
   },
 });
 

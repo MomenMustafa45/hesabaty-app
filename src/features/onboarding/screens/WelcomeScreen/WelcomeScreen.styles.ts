@@ -1,19 +1,20 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     screen: {
       flex: 1,
       backgroundColor: theme.colors.sand,
-      paddingHorizontal: 24,
-      paddingBottom: 32,
+      paddingHorizontal: scale(24),
+      paddingBottom: verticalScale(32),
     },
     topBar: {
       position: 'relative',
-      minHeight: 36,
+      minHeight: verticalScale(36),
       justifyContent: 'center',
-      marginBottom: 22,
+      marginBottom: verticalScale(22),
     },
     langSlot: {
       position: 'absolute',
@@ -25,23 +26,23 @@ export const createStyles = (theme: Theme) =>
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 18,
+      gap: moderateScale(18),
     },
     mark: {
-      width: 76,
-      height: 76,
-      borderRadius: 22,
+      width: scale(76),
+      height: scale(76),
+      borderRadius: moderateScale(22),
       backgroundColor: theme.colors.nile,
       alignItems: 'center',
       justifyContent: 'center',
     },
     titleBlock: {
       alignItems: 'center',
-      gap: 4,
+      gap: moderateScale(4),
     },
     subtitle: {
-      maxWidth: 280,
+      maxWidth: scale(280),
       textAlign: 'center',
-      lineHeight: 22,
+      lineHeight: theme.lineHeights.body,
     },
   });

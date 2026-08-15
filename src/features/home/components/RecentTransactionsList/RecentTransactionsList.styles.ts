@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -8,7 +9,7 @@ export const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
-      paddingHorizontal: 16,
-      paddingVertical: 4,
+      paddingHorizontal: scale(16),
+      paddingVertical: verticalScale(4),
     },
   });

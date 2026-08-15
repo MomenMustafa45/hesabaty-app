@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -12,24 +13,24 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.cardPadding,
     },
     contentContainer: {
-      paddingBottom: 40,
+      paddingBottom: verticalScale(40),
     },
     card: {
-      marginBottom: 16,
+      marginBottom: verticalScale(16),
     },
     row: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      gap: 12,
+      gap: moderateScale(12),
     },
     rowText: {
       flex: 1,
-      gap: 2,
+      gap: moderateScale(2),
     },
     timeRow: {
-      marginTop: 14,
-      paddingTop: 14,
+      marginTop: verticalScale(14),
+      paddingTop: verticalScale(14),
       borderTopWidth: 1,
       borderTopColor: theme.colors.line,
     },

@@ -1,19 +1,20 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     screen: {
       flex: 1,
       backgroundColor: theme.colors.sand,
-      paddingHorizontal: 24,
-      paddingBottom: 32,
+      paddingHorizontal: scale(24),
+      paddingBottom: verticalScale(32),
     },
     topBar: {
       position: 'relative',
-      minHeight: 36,
+      minHeight: verticalScale(36),
       justifyContent: 'center',
-      marginBottom: 22,
+      marginBottom: verticalScale(22),
     },
     langSlot: {
       position: 'absolute',
@@ -23,29 +24,29 @@ export const createStyles = (theme: Theme) =>
     },
     content: {
       flex: 1,
-      paddingTop: 12,
-      gap: 10,
+      paddingTop: verticalScale(12),
+      gap: moderateScale(10),
     },
     subtitle: {
-      marginBottom: 6,
+      marginBottom: verticalScale(6),
     },
     chipsRow: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 10,
-      marginBottom: 4,
+      gap: moderateScale(10),
+      marginBottom: verticalScale(4),
     },
     chipHint: {
-      marginBottom: 8,
+      marginBottom: verticalScale(8),
     },
     actions: {
       flexDirection: 'row',
-      gap: 10,
-      marginTop: 16,
+      gap: moderateScale(10),
+      marginTop: verticalScale(16),
     },
     backButton: {
       width: 'auto',
-      paddingHorizontal: 20,
+      paddingHorizontal: scale(20),
       flexGrow: 0,
     },
     continueButton: {

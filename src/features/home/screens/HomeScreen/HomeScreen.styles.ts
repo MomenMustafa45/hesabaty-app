@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,48 +10,48 @@ export const createStyles = (theme: Theme) =>
     },
     content: {
       paddingHorizontal: theme.spacing.cardPadding,
-      paddingBottom: 120,
+      paddingBottom: verticalScale(145),
       gap: 0,
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 10,
-      paddingBottom: 16,
+      paddingTop: verticalScale(10),
+      paddingBottom: verticalScale(16),
     },
     greet: {
-      gap: 2,
+      gap: moderateScale(2),
     },
     sectionHead: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginTop: 6,
-      marginBottom: 10,
+      marginTop: verticalScale(6),
+      marginBottom: verticalScale(10),
     },
     seeAll: {
-      fontSize: 12.5,
+      fontSize: moderateScale(12.5),
       fontFamily: theme.fontFamilyByWeight[600],
       color: theme.colors.nile,
     },
     fab: {
       position: 'absolute',
-      bottom: 120,
+      bottom: theme.spacing.tabBarClearance,
       // `end` flips with RTL (physical right in LTR, physical left in RTL).
       // Do not use left/right + I18nManager.isRTL — that combination stayed
       // stuck on the physical right during M5 RTL verification.
-      end: 20,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      end: scale(20),
+      width: scale(56),
+      height: scale(56),
+      borderRadius: moderateScale(28),
       backgroundColor: theme.colors.gold,
       alignItems: 'center',
       justifyContent: 'center',
       shadowColor: theme.colors.gold,
       shadowOpacity: 0.45,
-      shadowRadius: 22,
-      shadowOffset: { width: 0, height: 10 },
+      shadowRadius: moderateScale(22),
+      shadowOffset: { width: 0, height: verticalScale(10) },
       elevation: 8,
     },
   });

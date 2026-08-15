@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -14,18 +15,18 @@ export const createStyles = (theme: Theme) =>
     warningCard: {
       borderColor: theme.colors.gold,
       backgroundColor: theme.colors.goldLight,
-      marginBottom: 14,
+      marginBottom: verticalScale(14),
     },
     warningTitle: {
-      marginBottom: 6,
+      marginBottom: verticalScale(6),
     },
     warningBody: {
-      lineHeight: 17,
-      marginBottom: 14,
+      lineHeight: theme.lineHeights.compact,
+      marginBottom: verticalScale(14),
     },
     warningActions: {
       flexDirection: 'row',
-      gap: 10,
+      gap: moderateScale(10),
     },
     warningButton: {
       flex: 1,

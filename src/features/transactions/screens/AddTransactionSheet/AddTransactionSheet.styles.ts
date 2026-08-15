@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -7,16 +8,16 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingBottom: 6,
-      marginBottom: 8,
+      paddingBottom: verticalScale(6),
+      marginBottom: verticalScale(8),
     },
     headSpacer: {
-      width: 34,
+      width: scale(34),
     },
     closeBtn: {
-      width: 34,
-      height: 34,
-      borderRadius: 17,
+      width: scale(34),
+      height: scale(34),
+      borderRadius: moderateScale(17),
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: theme.colors.sand2,
@@ -24,16 +25,16 @@ export const createStyles = (theme: Theme) =>
       borderColor: theme.colors.line,
     },
     field: {
-      marginTop: 12,
-      gap: 8,
+      marginTop: verticalScale(12),
+      gap: moderateScale(8),
     },
     fieldLabel: {
-      marginBottom: 2,
+      marginBottom: verticalScale(2),
     },
     actions: {
       flexDirection: 'row',
-      gap: 10,
-      marginTop: 14,
+      gap: moderateScale(10),
+      marginTop: verticalScale(14),
     },
     actionFlex: {
       flex: 1,

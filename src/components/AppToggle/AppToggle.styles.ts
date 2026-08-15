@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     track: {
-      width: 44,
-      height: 26,
+      width: scale(44),
+      height: scale(26),
       borderRadius: theme.radii.pill,
       backgroundColor: theme.colors.line,
       justifyContent: 'center',
@@ -15,16 +16,16 @@ export const createStyles = (theme: Theme) =>
     },
     knob: {
       position: 'absolute',
-      top: 3,
-      left: 3,
-      width: 20,
-      height: 20,
-      borderRadius: 10,
+      top: scale(3),
+      left: scale(3),
+      width: scale(20),
+      height: scale(20),
+      borderRadius: moderateScale(10),
       backgroundColor: '#fff',
       shadowColor: '#000',
       shadowOpacity: 0.25,
-      shadowRadius: 3,
-      shadowOffset: { width: 0, height: 1 },
+      shadowRadius: moderateScale(3),
+      shadowOffset: { width: 0, height: verticalScale(1) },
       elevation: 2,
     },
   });

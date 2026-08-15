@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import AppText from '@components/AppText';
+import { moderateScale } from '@config/scaling';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './CategoryDonut.styles';
 
@@ -19,8 +20,9 @@ export interface CategoryDonutProps {
 
 const R = 46;
 const C = 2 * Math.PI * R;
-const SIZE = 120;
-const CENTER = SIZE / 2;
+const VIEWBOX_SIZE = 120;
+const CENTER = VIEWBOX_SIZE / 2;
+const SIZE = moderateScale(VIEWBOX_SIZE);
 
 export const CategoryDonut: React.FC<CategoryDonutProps> = ({ segments }) => {
   const theme = useTheme();
@@ -31,7 +33,10 @@ export const CategoryDonut: React.FC<CategoryDonutProps> = ({ segments }) => {
   return (
     <View style={styles.card}>
       <View style={styles.content}>
-        <Svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+        <Svg
+          width={SIZE}
+          height={SIZE}
+          viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}>
           {segments.length === 0 ? (
             <Circle
               cx={CENTER}

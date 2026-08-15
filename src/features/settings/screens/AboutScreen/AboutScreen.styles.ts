@@ -12,6 +12,6 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.cardPadding,
     },
     body: {
-      lineHeight: 22,
+      lineHeight: theme.lineHeights.body,
     },
   });

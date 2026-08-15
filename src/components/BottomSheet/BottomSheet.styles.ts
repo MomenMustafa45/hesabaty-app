@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -25,21 +26,21 @@ export const createStyles = (theme: Theme) =>
       borderTopRightRadius: theme.radii.sheetRadius,
     },
     handle: {
-      width: 36,
-      height: 4,
-      borderRadius: 4,
+      width: scale(36),
+      height: verticalScale(4),
+      borderRadius: moderateScale(4),
       backgroundColor: theme.colors.line,
       alignSelf: 'center',
-      marginTop: 10,
-      marginBottom: 4,
+      marginTop: verticalScale(10),
+      marginBottom: verticalScale(4),
     },
     scroll: {
       flexGrow: 0,
     },
     body: {
-      paddingHorizontal: 20,
-      paddingTop: 6,
-      paddingBottom: 28,
-      gap: 12,
+      paddingHorizontal: scale(20),
+      paddingTop: verticalScale(6),
+      paddingBottom: verticalScale(28),
+      gap: moderateScale(12),
     },
   });

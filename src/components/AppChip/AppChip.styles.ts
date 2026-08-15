@@ -1,12 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     chip: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      gap: moderateScale(6),
       paddingVertical: theme.spacing.chipPaddingVertical,
       paddingHorizontal: theme.spacing.chipPaddingHorizontal,
       borderRadius: theme.radii.pill,
@@ -20,7 +21,7 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.nile,
     },
     label: {
-      fontSize: 13,
+      fontSize: moderateScale(13),
       fontFamily: theme.fontFamilyByWeight[600],
       color: theme.colors.ink,
     },
@@ -28,8 +29,8 @@ export const createStyles = (theme: Theme) =>
       color: '#fff',
     },
     dot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
+      width: scale(8),
+      height: scale(8),
+      borderRadius: moderateScale(4),
     },
   });

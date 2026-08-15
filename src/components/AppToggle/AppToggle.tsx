@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, I18nManager, Pressable, PressableProps } from 'react-native';
+import { Animated, Pressable, PressableProps } from 'react-native';
+import { scale } from '@config/scaling';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppToggle.styles';
 import { useSettingsStore } from '@store/settingsStore';
@@ -10,7 +11,7 @@ export interface AppToggleProps
   onValueChange: (value: boolean) => void;
 }
 
-const KNOB_TRAVEL_DISTANCE = 18;
+const KNOB_TRAVEL_DISTANCE = scale(18);
 
 export const AppToggle: React.FC<AppToggleProps> = ({
   value,

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -12,24 +13,24 @@ export const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.pill,
-      paddingVertical: 11,
-      paddingHorizontal: 16,
+      paddingVertical: verticalScale(11),
+      paddingHorizontal: scale(16),
       fontFamily: theme.fontFamilyByWeight[400],
-      fontSize: 14,
-      marginBottom: 10,
+      fontSize: moderateScale(14),
+      marginBottom: verticalScale(10),
       backgroundColor: theme.colors.sand2,
       color: theme.colors.ink,
     },
     sections: {
-      gap: 4,
+      gap: moderateScale(4),
     },
     section: {
-      marginBottom: 4,
+      marginBottom: verticalScale(4),
     },
     sectionTitle: {
-      marginTop: 12,
-      marginBottom: 6,
-      marginHorizontal: 2,
+      marginTop: verticalScale(12),
+      marginBottom: verticalScale(6),
+      marginHorizontal: scale(2),
     },
     list: {
       borderWidth: 1,
@@ -39,17 +40,17 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.colors.sand2,
     },
     listConstrained: {
-      maxHeight: 340,
+      maxHeight: verticalScale(340),
     },
     row: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 13,
-      paddingHorizontal: 14,
+      paddingVertical: verticalScale(13),
+      paddingHorizontal: scale(14),
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.line,
-      gap: 12,
+      gap: moderateScale(12),
     },
     rowLast: {
       borderBottomWidth: 0,
@@ -59,12 +60,12 @@ export const createStyles = (theme: Theme) =>
     },
     rowLeading: {
       flex: 1,
-      gap: 2,
+      gap: moderateScale(2),
     },
     rowLabelLine: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: moderateScale(8),
     },
     rowPressed: {
       backgroundColor: theme.colors.sand,

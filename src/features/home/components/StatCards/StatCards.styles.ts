@@ -1,12 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     grid: {
       flexDirection: 'row',
-      gap: 10,
-      marginBottom: 16,
+      gap: moderateScale(10),
+      marginBottom: verticalScale(16),
     },
     card: {
       flex: 1,
@@ -14,11 +15,11 @@ export const createStyles = (theme: Theme) =>
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radiusSm,
-      padding: 14,
+      padding: moderateScale(14),
     },
     value: {
-      fontSize: 18,
+      fontSize: moderateScale(18),
       fontFamily: theme.fontFamilyByWeight[700],
-      marginTop: 2,
+      marginTop: verticalScale(2),
     },
   });

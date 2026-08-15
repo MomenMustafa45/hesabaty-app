@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import AppText from '@components/AppText';
+import { moderateScale } from '@config/scaling';
 import { useCurrency } from '@hooks/useCurrency';
 import { localizationKeys } from '@locales/localizationKeys';
 import { useTheme } from '@providers/ThemeProvider';
@@ -19,6 +20,7 @@ const R1 = 48;
 const R2 = 38;
 const C1 = 2 * Math.PI * R1;
 const C2 = 2 * Math.PI * R2;
+const RING_SIZE = moderateScale(112);
 
 function spendRingColor(
   limitPct: number,
@@ -51,7 +53,7 @@ export const SpendRing: React.FC<SpendRingProps> = ({
   return (
     <View style={styles.card}>
       <View style={styles.wrap}>
-        <Svg width={112} height={112} viewBox="0 0 112 112">
+        <Svg width={RING_SIZE} height={RING_SIZE} viewBox="0 0 112 112">
           <Circle
             cx={56}
             cy={56}

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -12,26 +13,26 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: theme.spacing.cardPadding,
     },
     contentContainer: {
-      paddingBottom: 40,
+      paddingBottom: verticalScale(40),
     },
     section: {
-      marginBottom: 22,
+      marginBottom: verticalScale(22),
     },
     sectionTitle: {
-      marginBottom: 8,
+      marginBottom: verticalScale(8),
     },
     card: {
       backgroundColor: theme.colors.sand2,
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
-      paddingHorizontal: 16,
+      paddingHorizontal: scale(16),
     },
     row: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 12,
+      paddingVertical: verticalScale(12),
     },
     rowDivider: {
       borderBottomWidth: 1,
@@ -40,17 +41,17 @@ export const createStyles = (theme: Theme) =>
     rowLeading: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 10,
+      gap: moderateScale(10),
     },
     swatch: {
-      width: 10,
-      height: 10,
-      borderRadius: 3,
+      width: scale(10),
+      height: scale(10),
+      borderRadius: moderateScale(3),
     },
     removeBtn: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
+      width: scale(24),
+      height: scale(24),
+      borderRadius: moderateScale(12),
       backgroundColor: theme.colors.sand,
       alignItems: 'center',
       justifyContent: 'center',
@@ -58,14 +59,14 @@ export const createStyles = (theme: Theme) =>
     addRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
-      marginTop: 10,
+      gap: moderateScale(8),
+      marginTop: verticalScale(10),
     },
     addInput: {
       flex: 1,
       marginBottom: 0,
     },
     addButton: {
-      paddingHorizontal: 18,
+      paddingHorizontal: scale(18),
     },
   });

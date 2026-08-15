@@ -1,19 +1,20 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     toggle: {
       flexDirection: 'row',
-      gap: 8,
-      marginBottom: 16,
+      gap: moderateScale(8),
+      marginBottom: verticalScale(16),
     },
     toggleBtn: {
       flex: 1,
       borderWidth: 1,
       borderColor: theme.colors.line,
       backgroundColor: theme.colors.sand2,
-      paddingVertical: 10,
+      paddingVertical: verticalScale(10),
       borderRadius: theme.radii.radiusSm,
       alignItems: 'center',
     },
@@ -24,17 +25,17 @@ export const createStyles = (theme: Theme) =>
     card: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 12,
+      gap: moderateScale(12),
       backgroundColor: theme.colors.sand2,
       borderWidth: 1,
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
       padding: theme.spacing.cardPadding,
-      marginBottom: 6,
+      marginBottom: verticalScale(6),
     },
     mark: {
-      width: 38,
-      height: 38,
+      width: scale(38),
+      height: scale(38),
       borderRadius: theme.radii.radiusSm,
       backgroundColor: theme.colors.gold,
       alignItems: 'center',
@@ -42,9 +43,9 @@ export const createStyles = (theme: Theme) =>
     },
     markText: {
       color: '#FFFFFF',
-      fontSize: 16,
+      fontSize: moderateScale(16),
     },
     caption: {
-      marginBottom: 20,
+      marginBottom: verticalScale(20),
     },
   });

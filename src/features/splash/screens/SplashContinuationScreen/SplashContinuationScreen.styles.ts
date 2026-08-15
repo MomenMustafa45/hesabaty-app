@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
 import { splashColors } from '@features/splash/splashConstants';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -12,29 +13,29 @@ export const createStyles = (theme: Theme) =>
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 56,
-      paddingHorizontal: 24,
+      gap: moderateScale(56),
+      paddingHorizontal: scale(24),
     },
     titleBlock: {
       alignItems: 'center',
-      gap: 16,
+      gap: moderateScale(16),
     },
     title: {
-      fontSize: 44,
+      fontSize: moderateScale(44),
       fontFamily: theme.fontFamilyByWeight[600],
       color: '#FFFFFF',
       textAlign: 'center',
     },
     rule: {
-      width: 44,
-      height: 2,
+      width: scale(44),
+      height: verticalScale(2),
       backgroundColor: splashColors.gold,
     },
     tagline: {
-      fontSize: 11,
+      fontSize: moderateScale(11),
       fontFamily: theme.fontFamilyByWeight[600],
       color: 'rgba(255,255,255,0.6)',
-      letterSpacing: 4.8,
+      letterSpacing: moderateScale(4.8),
       textTransform: 'uppercase',
       textAlign: 'center',
     },

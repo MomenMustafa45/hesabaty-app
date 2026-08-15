@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -13,7 +14,7 @@ export const createStyles = (theme: Theme) =>
     content: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 18,
+      gap: moderateScale(18),
     },
     legend: {
       flex: 1,
@@ -22,16 +23,16 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: 9,
+      paddingVertical: verticalScale(9),
     },
     legendLeading: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 9,
+      gap: moderateScale(9),
     },
     swatch: {
-      width: 8,
-      height: 8,
-      borderRadius: 2,
+      width: scale(8),
+      height: scale(8),
+      borderRadius: moderateScale(2),
     },
   });

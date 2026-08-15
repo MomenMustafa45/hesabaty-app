@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,11 +10,11 @@ export const createStyles = (theme: Theme) =>
     },
     content: {
       paddingHorizontal: theme.spacing.cardPadding,
-      paddingBottom: 120,
+      paddingBottom: theme.spacing.tabBarClearance,
     },
     title: {
-      paddingTop: 14,
-      paddingBottom: 16,
+      paddingTop: verticalScale(14),
+      paddingBottom: verticalScale(16),
     },
     card: {
       backgroundColor: theme.colors.sand2,
@@ -21,17 +22,17 @@ export const createStyles = (theme: Theme) =>
       borderColor: theme.colors.line,
       borderRadius: theme.radii.radius,
       paddingHorizontal: theme.spacing.cardPadding,
-      marginBottom: 16,
+      marginBottom: verticalScale(16),
     },
     /** Matches the prototype's `.seg` width on Appearance/Language rows. */
     segmentWrap: {
-      width: 132,
+      width: scale(132),
     },
     prototypeLabel: {
-      marginTop: 4,
-      marginBottom: 8,
-      marginHorizontal: 4,
+      marginTop: verticalScale(4),
+      marginBottom: verticalScale(8),
+      marginHorizontal: scale(4),
       textTransform: 'uppercase',
-      letterSpacing: 0.4,
+      letterSpacing: moderateScale(0.4),
     },
   });

@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppIcon from '@components/AppIcon';
 import AppText from '@components/AppText';
 import EmptyState from '@components/EmptyState';
+import { scale } from '@config/scaling';
 import { SpendRing } from '@features/home/components/SpendRing';
 import { StatCards } from '@features/home/components/StatCards';
 import { RecentTransactionsList } from '@features/home/components/RecentTransactionsList';
@@ -76,7 +77,7 @@ export const HomeScreen: React.FC = () => {
 
         <View style={styles.sectionHead}>
           <AppText variant="h3">{t(localizationKeys.recent)}</AppText>
-          <Pressable onPress={handleSeeAll} hitSlop={8}>
+          <Pressable onPress={handleSeeAll} hitSlop={scale(8)}>
             <Text style={styles.seeAll}>{t(localizationKeys.seeAll)}</Text>
           </Pressable>
         </View>

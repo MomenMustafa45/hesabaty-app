@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { verticalScale, moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -13,16 +14,16 @@ export const createStyles = (theme: Theme) =>
     },
     chipsRow: {
       flexDirection: 'row',
-      gap: 10,
-      marginBottom: 8,
+      gap: moderateScale(10),
+      marginBottom: verticalScale(8),
     },
     chipHint: {
-      marginBottom: 18,
+      marginBottom: verticalScale(18),
     },
     field: {
-      marginBottom: 14,
+      marginBottom: verticalScale(14),
     },
     doneButton: {
-      marginTop: 8,
+      marginTop: verticalScale(8),
     },
   });

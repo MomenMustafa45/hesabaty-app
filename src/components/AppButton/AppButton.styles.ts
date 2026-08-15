@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@config/theme';
+import { moderateScale } from '@config/scaling';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -7,7 +8,7 @@ export const createStyles = (theme: Theme) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 8,
+      gap: moderateScale(8),
       borderRadius: theme.radii.radiusSm,
       paddingVertical: theme.spacing.buttonPaddingVertical,
       paddingHorizontal: theme.spacing.buttonPaddingHorizontal,
@@ -30,7 +31,7 @@ export const createStyles = (theme: Theme) =>
       opacity: 0.4,
     },
     label: {
-      fontSize: 15,
+      fontSize: moderateScale(15),
       fontFamily: theme.fontFamilyByWeight[600],
     },
     primaryLabel: {

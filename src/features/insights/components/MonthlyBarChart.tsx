@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutChangeEvent, ScrollView, View } from 'react-native';
 import AppText from '@components/AppText';
+import { scale, verticalScale, moderateScale } from '@config/scaling';
 import { formatMonthShort, localeForLanguage } from '@lib/dateUtils';
 import { MonthStat } from '@features/insights/hooks/useMonthlyStats';
 import { useSettingsStore } from '@store/settingsStore';
@@ -13,11 +14,11 @@ export interface MonthlyBarChartProps {
   bestMonthKey: string | null;
 }
 
-const MAX_BAR_HEIGHT = 96;
-const MIN_BAR_HEIGHT = 6;
+const MAX_BAR_HEIGHT = verticalScale(96);
+const MIN_BAR_HEIGHT = verticalScale(6);
 const VISIBLE_MONTHS = 6;
-const COLUMN_GAP = 8;
-const FALLBACK_COLUMN_WIDTH = 50;
+const COLUMN_GAP = moderateScale(8);
+const FALLBACK_COLUMN_WIDTH = scale(50);
 
 export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
   stats,

@@ -1,5 +1,6 @@
 import React from 'react';
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { moderateScale } from '@config/scaling';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppIcon.styles';
 
@@ -255,9 +256,14 @@ export const AppIcon: React.FC<AppIconProps> = ({ name, size = 20, color }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const resolvedColor = color ?? theme.colors.ink;
+  const scaledSize = moderateScale(size);
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" style={styles.base}>
+    <Svg
+      width={scaledSize}
+      height={scaledSize}
+      viewBox="0 0 24 24"
+      style={styles.base}>
       {iconRenderers[name](resolvedColor)}
     </Svg>
   );
