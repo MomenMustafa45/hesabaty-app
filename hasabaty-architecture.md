@@ -75,8 +75,15 @@ src/
       hooks/             usePendingRecurring, useCycleRolloverCheck
     settings/
       screens/           SettingsScreen, CurrencyScreen, CycleLimitScreen, CategoriesScreen,
-                          NotificationSettingsScreen, ExportImportScreen, AboutScreen
+                          NotificationSettingsScreen, ExportImportScreen, AboutScreen,
+                          PrivacyPolicyScreen (store-prep addition — same content as the hosted
+                          page, respecting the app's current language)
       api/               exportImportApi.ts
+    splash/              (added during store-prep phase, Section 16.3 — not part of the original
+                          M0-M12 milestones)
+      components/        MintStrikeHero (CoinMarkSvg sub-component — ported SVG coin artwork)
+      screens/           SplashContinuationScreen (Layer 2 — the animated splash continuation)
+      hooks/             useSkipAnimatedSplash
   components/            AppText, AppButton, AppCard, AppInput, AppDate, AppChip, AppToggle, AppBadge,
                           AppIcon, BottomSheet, EmptyState  (shared design-system components)
   hooks/                 useCycleRange, useCurrency  (shared, cross-feature)
@@ -618,6 +625,18 @@ A custom design (built in Claude Design, delivered as an HTML reference file) ne
 
 **Skip behavior:** a checkbox on this screen, persisted to MMKV (non-critical preference, doesn't need `settingsStore`'s reactive/typed shape — a simple stored flag is enough). Once checked, every future launch goes straight from Layer 1 into real content, skipping Layer 2 entirely. Unchecked (default): Layer 2 shows every launch.
 
+**Decided during implementation planning:** `SplashGate` lives in `providers/`, not `navigations/` — it gates what renders before navigation even starts based on readiness + stored preference, the same category of concern as `AppProviders`/`ThemeProvider`, not a navigation concept. `features/splash/` added to Section 2's folder tree as a new top-level feature (store-prep phase addition, not one of the original M0-M12 milestones).
+
 **First prompt to give Cursor (16.3):**
 
 > Read Section 16.3, plus 16.2 for how it fits together. I'm attaching an HTML file from Claude Design as the visual reference for a splash continuation — extract its exact colors, layout, and any animation/motion, then rebuild it as real native views (`react-native-reanimated` if there's real motion to reproduce), not a `WebView`. This renders _after_ Layer 1's true native screen (already built per 16.2), not instead of it. Add a "don't show this again" checkbox; persist the choice to MMKV; on future launches, skip straight from Layer 1 into real content when it's checked. Tell me your plan — specifically how you'll translate the HTML's visual details into native components — before writing code. Verify on both platforms: first launch shows Layer 1 → Layer 2 → real content; after checking skip, a fresh launch shows Layer 1 → real content only, with the checkbox choice surviving an app restart.
+
+---
+
+## 17. Store Submission
+
+Not a code milestone — the app is functionally complete. This tracks the actual publishing process, since real, easy-to-misremember decisions live here too (pricing, listing content), same reasoning as tracking everything else in this doc.
+
+### 17.1 Pricing (updated from the original Step 1 decision)
+
+**Changed:** base price is now **$2 USD**, not the originally-planned 10 EGP. This is a real, deliberate change, not drift — but it has a consequence worth being explicit about: Apple's automatic regional price conversion means Egyptian users would see a price roughly 4–10x higher than the original 10 EGP target unless Egypt's territory price is manually overridden to stay low. Decide explicitly at the Pricing and Availability step (17.2) whether Egypt should follow the global $2-equivalent or be manually kept near the original accessible price point — don't let this default silently either way.

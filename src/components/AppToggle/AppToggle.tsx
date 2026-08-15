@@ -2,18 +2,25 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, I18nManager, Pressable, PressableProps } from 'react-native';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './AppToggle.styles';
+import { useSettingsStore } from '@store/settingsStore';
 
-export interface AppToggleProps extends Omit<PressableProps, 'style' | 'onPress'> {
+export interface AppToggleProps
+  extends Omit<PressableProps, 'style' | 'onPress'> {
   value: boolean;
   onValueChange: (value: boolean) => void;
 }
 
 const KNOB_TRAVEL_DISTANCE = 18;
 
-export const AppToggle: React.FC<AppToggleProps> = ({ value, onValueChange, ...rest }) => {
+export const AppToggle: React.FC<AppToggleProps> = ({
+  value,
+  onValueChange,
+  ...rest
+}) => {
   const theme = useTheme();
   const styles = createStyles(theme);
   const translateX = useRef(new Animated.Value(value ? 1 : 0)).current;
+  const { language } = useSettingsStore();
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -23,7 +30,7 @@ export const AppToggle: React.FC<AppToggleProps> = ({ value, onValueChange, ...r
     }).start();
   }, [value, translateX]);
 
-  const direction = I18nManager.isRTL ? -1 : 1;
+  const direction = language === 'ar' ? -1 : 1;
   const knobTranslateX = translateX.interpolate({
     inputRange: [0, 1],
     outputRange: [0, KNOB_TRAVEL_DISTANCE * direction],
@@ -33,8 +40,11 @@ export const AppToggle: React.FC<AppToggleProps> = ({ value, onValueChange, ...r
     <Pressable
       style={[styles.track, value && styles.trackOn]}
       onPress={() => onValueChange(!value)}
-      {...rest}>
-      <Animated.View style={[styles.knob, { transform: [{ translateX: knobTranslateX }] }]} />
+      {...rest}
+    >
+      <Animated.View
+        style={[styles.knob, { transform: [{ translateX: knobTranslateX }] }]}
+      />
     </Pressable>
   );
 };

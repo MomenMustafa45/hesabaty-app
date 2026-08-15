@@ -6,6 +6,7 @@ import CurrencyScreen from '@features/settings/screens/CurrencyScreen';
 import CycleLimitScreen from '@features/settings/screens/CycleLimitScreen';
 import ExportImportScreen from '@features/settings/screens/ExportImportScreen';
 import NotificationSettingsScreen from '@features/settings/screens/NotificationSettingsScreen';
+import PrivacyPolicyScreen from '@features/settings/screens/PrivacyPolicyScreen';
 import SettingsScreen from '@features/settings/screens/SettingsScreen';
 import { SettingsStackParamList } from './types';
 
@@ -22,6 +23,7 @@ export const SettingsNavigator: React.FC = () => (
       component={NotificationSettingsScreen}
     />
     <Stack.Screen name="ExportImport" component={ExportImportScreen} />
+    <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
     <Stack.Screen name="About" component={AboutScreen} />
   </Stack.Navigator>
 );

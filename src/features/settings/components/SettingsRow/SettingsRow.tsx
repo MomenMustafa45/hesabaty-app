@@ -4,6 +4,7 @@ import AppIcon, { AppIconName } from '@components/AppIcon';
 import AppText from '@components/AppText';
 import { useTheme } from '@providers/ThemeProvider';
 import { createStyles } from './SettingsRow.styles';
+import { useSettingsStore } from '@store/settingsStore';
 
 export interface SettingsRowProps {
   icon: AppIconName;
@@ -26,7 +27,8 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({
 }) => {
   const theme = useTheme();
   const styles = createStyles(theme);
-  const forwardIcon = I18nManager.isRTL ? 'chevronLeft' : 'chevronForward';
+  const { language } = useSettingsStore();
+  const forwardIcon = language === 'ar' ? 'chevronLeft' : 'chevronForward';
 
   const content = (
     <View style={[styles.row, !isLast && styles.rowDivider]}>
@@ -58,7 +60,11 @@ export const SettingsRow: React.FC<SettingsRowProps> = ({
   }
 
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
       {content}
     </Pressable>
   );

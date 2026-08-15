@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { I18nManager, LayoutChangeEvent, ScrollView, View } from 'react-native';
+import { LayoutChangeEvent, ScrollView, View } from 'react-native';
 import AppText from '@components/AppText';
 import { formatMonthShort, localeForLanguage } from '@lib/dateUtils';
 import { MonthStat } from '@features/insights/hooks/useMonthlyStats';
@@ -40,7 +40,7 @@ export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
   // Bars always read oldest-to-newest, left to right — standard time-series
   // convention. Without this, RTL's automatic row-mirroring would put the
   // current month on the left, which reads backwards for a chart.
-  const orderedStats = I18nManager.isRTL ? [...stats].reverse() : stats;
+  const orderedStats = language === 'ar' ? [...stats].reverse() : stats;
 
   useEffect(() => {
     if (viewportWidth === 0) {
@@ -64,15 +64,16 @@ export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
         horizontal
         showsHorizontalScrollIndicator={false}
         onLayout={handleLayout}
-        contentContainerStyle={styles.row}>
+        contentContainerStyle={styles.row}
+      >
         {orderedStats.map(stat => {
           const isCurrent = stat.key === currentMonthKey;
           const isBest = stat.key === bestMonthKey;
           const barColor = isBest
             ? theme.colors.gold
             : isCurrent
-              ? theme.colors.nile
-              : theme.colors.line;
+            ? theme.colors.nile
+            : theme.colors.line;
           const barHeight = Math.max(
             MIN_BAR_HEIGHT,
             Math.round((stat.totalSpend / maxSpend) * MAX_BAR_HEIGHT),
@@ -81,14 +82,19 @@ export const MonthlyBarChart: React.FC<MonthlyBarChartProps> = ({
           return (
             <View
               key={stat.key}
-              style={[styles.column, { width: columnWidth }]}>
+              style={[styles.column, { width: columnWidth }]}
+            >
               <View
-                style={[styles.bar, { height: barHeight, backgroundColor: barColor }]}
+                style={[
+                  styles.bar,
+                  { height: barHeight, backgroundColor: barColor },
+                ]}
               />
               <AppText
                 variant="tiny"
                 weight={isCurrent ? 700 : 400}
-                style={styles.monthLabel}>
+                style={styles.monthLabel}
+              >
                 {formatMonthShort(stat.key, locale)}
               </AppText>
             </View>

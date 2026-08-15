@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { I18nManager, Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from '@components/AppButton';
@@ -110,7 +110,7 @@ export const NewMonthScreen: React.FC<NewMonthScreenProps> = ({
             accessibilityLabel={t(localizationKeys.back)}
           >
             <AppIcon
-              name={I18nManager.isRTL ? 'chevronRight' : 'chevronLeft'}
+              name={language === 'ar' ? 'chevronRight' : 'chevronLeft'}
               size={16}
               color={theme.colors.ink}
             />

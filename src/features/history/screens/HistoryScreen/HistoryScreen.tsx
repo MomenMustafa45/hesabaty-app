@@ -82,9 +82,8 @@ export const HistoryScreen: React.FC = () => {
   }, [categories]);
 
   const monthLabel = formatMonthLabel(monthKey, locale);
-  const isRtl = I18nManager.isRTL;
-  const prevIcon = isRtl ? 'chevronRight' : 'chevronLeft';
-  const nextIcon = isRtl ? 'chevronLeft' : 'chevronRight';
+  const prevIcon = language === 'ar' ? 'chevronRight' : 'chevronLeft';
+  const nextIcon = language === 'ar' ? 'chevronLeft' : 'chevronRight';
 
   const handlePrev = () => {
     if (!canGoPrev) {
@@ -115,18 +114,17 @@ export const HistoryScreen: React.FC = () => {
   return (
     <View style={styles.screen}>
       <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingTop: insets.top + 4 },
-        ]}
-        showsVerticalScrollIndicator={false}>
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 4 }]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Pressable
             style={[styles.iconBtn, !canGoPrev && styles.iconBtnDisabled]}
             onPress={handlePrev}
             disabled={!canGoPrev}
             accessibilityRole="button"
-            accessibilityLabel={t(localizationKeys.prevMonth)}>
+            accessibilityLabel={t(localizationKeys.prevMonth)}
+          >
             <AppIcon name={prevIcon} size={16} color={theme.colors.ink} />
           </Pressable>
 
@@ -134,7 +132,8 @@ export const HistoryScreen: React.FC = () => {
             style={styles.monthBtn}
             onPress={handleOpenPicker}
             accessibilityRole="button"
-            accessibilityLabel={t(localizationKeys.selectMonth)}>
+            accessibilityLabel={t(localizationKeys.selectMonth)}
+          >
             <AppText variant="h2">{monthLabel}</AppText>
             <AppIcon name="chevDown" size={15} color={theme.colors.ink} />
           </Pressable>
@@ -144,7 +143,8 @@ export const HistoryScreen: React.FC = () => {
             onPress={handleNext}
             disabled={!canGoNext}
             accessibilityRole="button"
-            accessibilityLabel={t(localizationKeys.nextMonth)}>
+            accessibilityLabel={t(localizationKeys.nextMonth)}
+          >
             <AppIcon name={nextIcon} size={16} color={theme.colors.ink} />
           </Pressable>
         </View>

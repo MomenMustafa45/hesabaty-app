@@ -15,6 +15,7 @@ export type SettingsStackParamList = {
   Categories: undefined;
   NotificationSettings: undefined;
   ExportImport: undefined;
+  PrivacyPolicy: undefined;
   About: undefined;
 };
 

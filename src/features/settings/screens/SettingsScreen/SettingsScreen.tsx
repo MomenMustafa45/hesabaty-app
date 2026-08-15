@@ -143,6 +143,11 @@ export const SettingsScreen: React.FC = () => {
           />
           <SettingsRow
             icon="info"
+            label={t(localizationKeys.privacyPolicy)}
+            onPress={() => navigation.navigate('PrivacyPolicy')}
+          />
+          <SettingsRow
+            icon="info"
             label={t(localizationKeys.about)}
             isLast
             onPress={() => navigation.navigate('About')}
